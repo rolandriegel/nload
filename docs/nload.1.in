@@ -2,7 +2,7 @@
 .\" Man page for nload
 .\" Copyright (C) 2001, 2002 by Roland Riegel <support@roland.riegel.de>
 .\"
-.TH nload 1 "January 20, 2002" nload "Network monitoring tools"
+.TH nload 1 "April 04, 2002" nload "Network monitoring tools"
 .SH NAME
 nload \- displays the current network usage
 
@@ -26,7 +26,7 @@ nload \- displays the current network usage
 .SH DESCRIPTION
 .B nload
 is a console application which monitors network traffic and bandwidth usage in real time.
-It visualizes the in- and outgoing traffic using two graphs and provides additionally info
+It visualizes the in- and outgoing traffic using two graphs and provides additional info
 like the total amount of transfered data and min/max network usage.
 
 .SH USAGE
