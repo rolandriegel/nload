@@ -1,0 +1,29 @@
+** version 0.3.0 ** 2001-09-25 *******************************************
+-two-dimensional graphs for current net load
+-arrow keys to switch between devices
+-'q' key to exit
+**************************************************************************
+** version 0.2.2 ** 2001-08-18 *******************************************
+-improved average calculation
+-warning if device doesn't exist
+-more command line parsing fixes
+-code cleanups
+**************************************************************************
+** version 0.2.1 ** 2001-08-08 *******************************************
+-added average calculation
+-fixed min/max calculation
+-fixed severe timing/calculation problems
+ (thanks to Magnus Roth)
+-fixed a command line parsing bug
+**************************************************************************
+** version 0.2.0 ** 2001-08-03 *******************************************
+-switched to ncurses
+-support of more than one network device
+-displays min/max bandwidth usage
+**************************************************************************
+** version 0.1.1 ** 2001-07-28 *******************************************
+-seg fault when specifying a network device fixed
+**************************************************************************
+** version 0.1.0 ** 2001-07-27 *******************************************
+-first public release
+**************************************************************************

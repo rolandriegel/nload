@@ -1,0 +1,75 @@
+nload 0.3.0 (2001-09-25)
+real time monitor for network traffic
+Copyright (C) 2001 by Roland Riegel <support@roland-riegel.de>
+
+1. Introduction
+   ------------
+
+This is version 0.3.0 of nload, a console application which monitors network
+traffic and bandwidth usage in real time.
+It visualizes the in- and outgoing traffic using two graphs and provides
+additionally info like total amount of transfered data
+and min/max network usage.
+
+2. Installing / Compiling nload
+   ----------------------------
+
+Compiling is done by running
+
+./configure
+make
+
+in the directory where this README is.
+To install nload, you have to be root:
+
+su
+make install
+
+You can find more detailed information in the file INSTALL in this directory.
+
+3. Using nload
+   -----------
+
+To learn about the command line switches of nload, simply run:
+
+nload --help
+
+When running nload, you can switch between the devices (which you gave nload
+on the command line) by pressing the left and right arrow keys.
+If you want to quit, do so by pressing 'q', 'Q' or Ctrl+C.
+
+PLEASE NOTE:
+Specifying refresh intervals shorter than about 200 milliseconds makes traffic
+calculation very unprecise. Also the display may flicker using such short
+refresh intervals.
+nload tries to balance this out by doing extra time measurements, but this may
+not always succeed.
+
+4. Uninstalling nload
+   ------------------
+
+If you want to uninstall nload (I hope you never don't want to ;-), run:
+
+make uninstall
+
+in the build directory.
+
+5. Copyright / License
+   -------------------
+
+Copyright (C) 2001 by Roland Riegel <support@roland-riegel.de>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
