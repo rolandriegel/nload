@@ -127,7 +127,7 @@ float *Proc::readLoad(void)
 	char s[32];
 	int mib[] = { CTL_NET, PF_ROUTE, 0, 0, NET_RT_IFLIST, 0 };
 	char *buf = 0;
-	int alloc = 0;
+	size_t alloc = 0;
 	
 	if( sysctl(mib, 6, NULL, &needed, NULL, 0) < 0 )
 		return ret;
