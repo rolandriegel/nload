@@ -28,29 +28,71 @@ Proc::~Proc()
 
 void Proc::setProcDev(const char *new_procdev)
 {
-	strcpy(dev, new_procdev);
+	strcpy( m_dev, new_procdev );
 	readLoad();
 }
 
-char *Proc::ProcDev()
+char* Proc::procDev()
 {
-	return dev;
+	return m_dev;
 }
 
-bool Proc::ProcDevExists()
+bool Proc::procDevExists()
 {
-	return dev_exists;
+	return m_dev_exists;
 }
 
-float *Proc::readLoad(void)
+char* Proc::ip()
+{
+	struct sockaddr_in* sin;
+	struct ifreq ifr;
+	int sk;
+	
+	m_ip[0] = 0;
+	
+	if( m_dev[0] == 0 ) return m_ip;
+	
+	/* create a temporary socket: ioctl needs one */
+	if( ( sk = socket( AF_INET, SOCK_STREAM, 0 ) ) < 0 ) return m_ip;
+	
+	/* copy the device name into the ifreq structure */
+	strncpy( ifr.ifr_name, m_dev, IFNAMSIZ - 1 );
+	ifr.ifr_name[ IFNAMSIZ - 1 ] = 0;
+	
+	/* make the request */
+	if( ! ioctl( sk, SIOCGIFADDR, &ifr ) )
+	{
+		sin = (struct sockaddr_in *) ( &ifr.ifr_addr );
+		
+		/* only use the IP number if the address family is really IPv4 */
+		if( sin->sin_family == AF_INET )
+		{
+			char* str_ip = inet_ntoa( sin->sin_addr );
+			sprintf( m_ip, "%s", str_ip );
+		}
+	}
+	
+	/* close the temporary socket */
+	close( sk );
+	
+	return m_ip;
+}
+
+float* Proc::readLoad()
 {
 	//measure the ellapsed time since the last function call
-	gettimeofday( &is_time, NULL );
-	elapsed_time = labs( is_time.tv_sec - was_time.tv_sec ) * 1000 + (float) labs( is_time.tv_usec - was_time.tv_usec ) / 1000;
-	was_time = is_time;
+	gettimeofday( &m_is_time, NULL );
+	m_elapsed_time = labs( m_is_time.tv_sec - m_was_time.tv_sec ) * 1000 + (float) labs( m_is_time.tv_usec - m_was_time.tv_usec ) / 1000;
+	m_was_time = m_is_time;
 
-	ret[0] = 0;
-	ret[1] = 0;
+	m_ret[0] = 0;
+	m_ret[1] = 0;
+
+	if( m_dev[0] == 0 )
+	{
+		m_dev_exists = false;
+		return m_ret;
+	}
 
 // === Linux specific network data reading code ===
 // Code taken out of knetload: Copyright by Markus Gustavsson <mighty@fragzone.se>
@@ -62,7 +104,7 @@ float *Proc::readLoad(void)
 	char *tmp, *tmp2;
 
 	if( ( fd = fopen( "/proc/net/dev", "r" ) ) == NULL )
-		return ret;
+		return m_ret;
 
 	fgets( buf, 512, fd );
 	fgets( buf, 512, fd );
@@ -82,34 +124,34 @@ float *Proc::readLoad(void)
 		*--tmp2 = '\0';
 
 		float d;
-		sscanf( tmp, "%f %f %f %f %f %f %f %f %f", &total_new[0], &d, &d, &d, &d, &d, &d, &d, &total_new[1] );
+		sscanf( tmp, "%f %f %f %f %f %f %f %f %f", &m_total_new[0], &d, &d, &d, &d, &d, &d, &d, &m_total_new[1] );
 
-		if( !strcmp( dev, tag ) )
+		if( ! strcmp( m_dev, tag ) )
 		{
 
-			if( total_new[0] > total[0] )
-				ret[0] = total_new[0] - total[0];
-			total[0] = total_new[0];
+			if( m_total_new[0] > m_total[0] )
+				m_ret[0] = m_total_new[0] - m_total[0];
+			m_total[0] = m_total_new[0];
 
-			if( total_new[1] > total[1] )
-				ret[1] = total_new[1] - total[1];
-			total[1] = total_new[1];
+			if( m_total_new[1] > m_total[1] )
+				m_ret[1] = m_total_new[1] - m_total[1];
+			m_total[1] = m_total_new[1];
 
 			fclose( fd );
 			
-			dev_exists = true;
+			m_dev_exists = true;
 			
-			return ret;
+			return m_ret;
 		}
 
 	}
 
-	total[0] = 0;
-	total[1] = 0;
+	m_total[0] = 0;
+	m_total[1] = 0;
 
 	fclose(fd);
 	
-	dev_exists = false;
+	m_dev_exists = false;
 #endif
 // === EndLinux specific network data reading code ===
 
@@ -129,20 +171,20 @@ float *Proc::readLoad(void)
 	char *buf = 0;
 	size_t alloc = 0;
 	
-	if( sysctl(mib, 6, NULL, &needed, NULL, 0) < 0 )
-		return ret;
+	if( sysctl( mib, 6, NULL, &needed, NULL, 0 ) < 0 )
+		return m_ret;
 	if( alloc < needed )
 	{
 		if( buf != NULL )
 			free( buf );
 		buf = (char *) malloc( needed );
 		if( buf == NULL )
-			return ret;
+			return m_ret;
 		alloc = needed;
 	}
 	
 	if( sysctl( mib, 6, buf, &needed, NULL, 0 ) < 0 )
-		return ret;
+		return m_ret;
 	lim = buf + needed;
 
 	next = buf;
@@ -150,7 +192,7 @@ float *Proc::readLoad(void)
 	{
 		ifm = (struct if_msghdr *) next;
 		if( ifm->ifm_type != RTM_IFINFO )
-			return ret;
+			return m_ret;
 		next += ifm->ifm_msglen;
 		
 		while( next < lim )
@@ -169,31 +211,31 @@ float *Proc::readLoad(void)
 			strncpy( s, sdl->sdl_data, sdl->sdl_nlen );
 			s[ sdl->sdl_nlen ] = '\0';
 			
-			if( strcmp( dev, s ) == 0 )
+			if( strcmp( m_dev, s ) == 0 )
 			{
-				total_new[0] = ifm->ifm_data.ifi_ibytes;
-				if( total_new[0] > total[0] )
-					ret[0] = total_new[0] - total[0];
-				total[0] = total_new[0];
+				m_total_new[0] = ifm->ifm_data.ifi_ibytes;
+				if( m_total_new[0] > m_total[0] )
+					m_ret[0] = m_total_new[0] - m_total[0];
+				m_total[0] = m_total_new[0];
 				
-				total_new[1] = ifm->ifm_data.ifi_obytes;
-				if( total_new[1] > total[1] )
-					ret[1] = total_new[1] - total[1];
-				total[1] = total_new[1];
+				m_total_new[1] = ifm->ifm_data.ifi_obytes;
+				if( m_total_new[1] > m_total[1] )
+					m_ret[1] = m_total_new[1] - m_total[1];
+				m_total[1] = m_total_new[1];
 				
-				dev_exists = true;
+				m_dev_exists = true;
 				
 				break;
 			}
 			else
 			{
-				dev_exists = false;
+				m_dev_exists = false;
 			}
 		}
 	}
 	
-	if( !dev_exists )
-		total[0] = total[1] = 0;
+	if( ! m_dev_exists )
+		m_total[0] = m_total[1] = 0;
 #endif
 // === End Free/Net/OpenBSD specific network data reading code ===
 
@@ -207,50 +249,51 @@ float *Proc::readLoad(void)
         kstat_named_t *knp;
 	
 	kc = kstat_open();
-	ksp = kstat_lookup( kc, NULL, -1, dev );
+	ksp = kstat_lookup( kc, NULL, -1, m_dev );
 	if( ksp && kstat_read( kc, ksp, NULL ) >= 0 )
 	{
 		knp = (kstat_named_t *) kstat_data_lookup( ksp, "rbytes" );
 		if( knp )
 		{
-			total_new[0] = knp->value.ui32;
-			if( total_new[0] > total[0] )
-				ret[0] = total_new[0] - total[0];
-			total[0] = total_new[0];
+			m_total_new[0] = knp->value.ui32;
+			if( m_total_new[0] > m_total[0] )
+				m_ret[0] = m_total_new[0] - m_total[0];
+			m_total[0] = m_total_new[0];
 		}
 		knp = (kstat_named_t *) kstat_data_lookup( ksp, "obytes" );
 		if( knp )
 		{
-			total_new[1] = knp->value.ui32;
-			if( total_new[1] > total[1] )
-				ret[1] = total_new[1] - total[1];
-			total[1] = total_new[1];
+			m_total_new[1] = knp->value.ui32;
+			if( m_total_new[1] > m_total[1] )
+				m_ret[1] = m_total_new[1] - m_total[1];
+			m_total[1] = m_total_new[1];
 		}
-		dev_exists = true;
+		m_dev_exists = true;
 	}
 	else
 	{
-		dev_exists = false;
-		total[0] = total[1] = 0;
+		m_dev_exists = false;
+		m_total[0] = m_total[1] = 0;
 	}
 	kstat_close( kc );
 #endif
 // === End Solaris specific network data reading code ===
 	
-	return ret;
+	return m_ret;
 }
 
 float Proc::getElapsedTime()
 {
-	return elapsed_time;
+	return m_elapsed_time;
 }
 
-float Proc::totalIn(void)
+float Proc::totalIn()
 {
-	return total[0];
+	return m_total[0];
 }
 
-float Proc::totalOut(void)
+float Proc::totalOut()
 {
-	return total[1];
+	return m_total[1];
 }
+

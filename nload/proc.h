@@ -20,21 +20,26 @@
 
 #include <config.h>
 
-#ifdef HAVE_LINUX
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <net/if.h>
+#include <unistd.h>
+
+#ifdef HAVE_LINUX
 #include <sys/time.h>
 #include <string>
 using std::string;
 #endif
 
 #ifdef HAVE_BSD
-#include <stdlib.h>
-#include <sys/types.h>
 #include <sys/param.h>
 #include <sys/sysctl.h>
-#include <sys/socket.h>
-#include <net/if.h>
 #include <net/if_dl.h>
 #include <net/route.h>
 #include <string>
@@ -42,9 +47,7 @@ using std::string;
 #endif
 
 #ifdef HAVE_SOLARIS
-#include <sys/socket.h>
 #include <kstat.h>
-#include <net/if.h>
 #include <sys/sockio.h>
 #endif
 
@@ -56,30 +59,34 @@ public:
 	~Proc();
 
 	void setProcDev(const char *);
-	char *ProcDev();
+	char* procDev();
 	
-	bool ProcDevExists();
+	bool procDevExists();
+	
+	char* ip();
+	
+	float* readLoad();
 
-	float *readLoad(void);
-
-	float totalIn(void);
-	float totalOut(void);
+	float totalIn();
+	float totalOut();
 	
 	float getElapsedTime();
 	
 private:
 
-	struct timeval was_time;
-	struct timeval is_time;
-	float elapsed_time;
+	struct timeval m_was_time;
+	struct timeval m_is_time;
+	float m_elapsed_time;
 	
-	bool dev_exists;
-	char dev[128];
+	bool m_dev_exists;
+	char m_dev[128];
 	
-	float ret[2];
+	char m_ip[16];
 	
-	float total[2];
-	float total_new[2];
+	float m_ret[2];
+	
+	float m_total[2];
+	float m_total_new[2];
 
 };
 

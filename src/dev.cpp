@@ -56,7 +56,7 @@ void Dev::update()
 	//update graphs and statistics
 	for( int i = 0; i < 2; i++ )
 	{
-		if( ProcDevExists() )
+		if( procDevExists() )
 		{
 			device_status[i] -> update( (int) currentio[i], (unsigned int) ( i == 0 ? totalIn() : totalOut() ) );
 			traffic_graph[i] -> update( (int) currentio[i] );
@@ -75,10 +75,10 @@ void Dev::print( Window& window )
 	char fText[100] = "";
 	
 	//if device does not exist
-	if ( ! ProcDevExists() )
+	if ( ! procDevExists() )
 	{
 		//... print warning message ...
-		sprintf( fText, "Device %s (%i/%i): does not exist\n", ProcDev(), m_devicenumber, m_totalnumberofdevices );
+		sprintf( fText, "Device %s (%i/%i): does not exist\n", procDev(), m_devicenumber, m_totalnumberofdevices );
 		window.print( fText );
 		for( int i = 0; i < window.width(); i++ )
 			window.print( '=' );
@@ -89,7 +89,10 @@ void Dev::print( Window& window )
 	}
 	
 	//print header
-	sprintf( fText, "Device %s (%i/%i):\n", ProcDev(), m_devicenumber, m_totalnumberofdevices );
+	if( strlen( ip() ) > 0 )
+		sprintf( fText, "Device %s [%s] (%i/%i):\n", procDev(), ip(), m_devicenumber, m_totalnumberofdevices );
+	else
+		sprintf( fText, "Device %s (%i/%i):\n", procDev(), m_devicenumber, m_totalnumberofdevices );
 	window.print( fText );
 	for( int i = 0; i < window.width(); i++ )
 		window.print( '=' );

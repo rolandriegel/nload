@@ -42,6 +42,8 @@ case $target in
     *solaris*)
         AC_CHECK_LIB(rt, main)
         AC_CHECK_LIB(kstat, kstat_open)
+        AC_CHECK_LIB(socket, main)
+        AC_CHECK_LIB(nsl, main)
         AC_DEFINE(HAVE_SOLARIS, 1)
         ;;
 esac
