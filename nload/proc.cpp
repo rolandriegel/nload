@@ -52,6 +52,9 @@ float *Proc::readLoad(void)
 	ret[0] = 0;
 	ret[1] = 0;
 
+// === Linux specific network data reading code ===
+// Code taken out of knetload: Copyright by Markus Gustavsson <mighty@fragzone.se>
+// ================================================
 #ifdef HAVE_LINUX
 	FILE *fd;
 	char buf[512] = "";
@@ -108,7 +111,14 @@ float *Proc::readLoad(void)
 	
 	dev_exists = false;
 #endif
+// === EndLinux specific network data reading code ===
 
+// === Free/Net/OpenBSD specific network data reading code ===
+// Code taken out of gkrellm: Copyright by Bill Wilson <bill@gkrellm.net>
+//                            FreeBSD code contributed by Hajimu Umemoto <ume@mahoroba.org>
+//                            NetBSD code contributed by Anthony Mallet <anthony.mallet@useless-ficus.net>
+//                            Hajimu Umemoto merged Free/Net/OpenBSD code
+// ===========================================================
 #ifdef HAVE_BSD
 	struct if_msghdr *ifm, *nextifm;
 	struct sockaddr_dl *sdl;
@@ -185,7 +195,12 @@ float *Proc::readLoad(void)
 	if( !dev_exists )
 		total[0] = total[1] = 0;
 #endif
-	
+// === End Free/Net/OpenBSD specific network data reading code ===
+
+// === Solaris specific network data reading code ===
+// Code taken out of gkrellm: Copyright by Bill Wilson <bill@gkrellm.net>
+//                            Solaris code by Daisuke Yabuki <dxy@acm.org>
+// ==================================================
 #ifdef HAVE_SOLARIS
         kstat_ctl_t *kc;
         kstat_t *ksp;
@@ -220,6 +235,7 @@ float *Proc::readLoad(void)
 	}
 	kstat_close( kc );
 #endif
+// === End Solaris specific network data reading code ===
 	
 	return ret;
 }
