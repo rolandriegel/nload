@@ -1,11 +1,11 @@
-nload 0.3.0 (2001-09-25)
+nload 0.3.1 (2001-10-17)
 real time monitor for network traffic
 Copyright (C) 2001 by Roland Riegel <support@roland-riegel.de>
 
 1. Introduction
    ------------
 
-This is version 0.3.0 of nload, a console application which monitors network
+This is version 0.3.1 of nload, a console application which monitors network
 traffic and bandwidth usage in real time.
 It visualizes the in- and outgoing traffic using two graphs and provides
 additionally info like total amount of transfered data
@@ -30,20 +30,14 @@ You can find more detailed information in the file INSTALL in this directory.
 3. Using nload
    -----------
 
-To learn about the command line switches of nload, simply run:
+To learn about the command line switches and the usage of nload in general,
+simply run:
 
 nload --help
 
-When running nload, you can switch between the devices (which you gave nload
-on the command line) by pressing the left and right arrow keys.
-If you want to quit, do so by pressing 'q', 'Q' or Ctrl+C.
+Alternatively, there is a nload man page available by typing:
 
-PLEASE NOTE:
-Specifying refresh intervals shorter than about 200 milliseconds makes traffic
-calculation very unprecise. Also the display may flicker using such short
-refresh intervals.
-nload tries to balance this out by doing extra time measurements, but this may
-not always succeed.
+man nload
 
 4. Uninstalling nload
    ------------------

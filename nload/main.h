@@ -25,7 +25,7 @@
 #include <signal.h>
 #include "dev.h"
 
-#define NLOAD_VERSION "0.3.0"
+#define NLOAD_VERSION "0.3.1"
 
 char **network_device;
 Dev **devs;

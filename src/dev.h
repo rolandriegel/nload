@@ -29,12 +29,12 @@
 #include "graph.h"
 #include "status.h"
 
-#define STANDARD_BAR_MAX_IN 10240
-#define STANDARD_BAR_MAX_OUT 10240
-#define STANDARD_SHOW_GRAPHS true
-#define STANDARD_SLEEP_INTERVAL 500
-#define STANDARD_NETWORK_DEVICE "eth0"
-#define STANDARD_AVERAGE_SMOOTHNESS 9
+const long STANDARD_BAR_MAX_IN = 10240;
+const long STANDARD_BAR_MAX_OUT = 10240;
+const bool STANDARD_SHOW_GRAPHS = true;
+const int STANDARD_SLEEP_INTERVAL = 500;
+char* const STANDARD_NETWORK_DEVICE = "eth0";
+const int STANDARD_AVERAGE_SMOOTHNESS = 9;
 
 class Dev : public Proc
 {
@@ -50,7 +50,7 @@ public:
 	void setShowGraphs( bool );
 	void setTrafficWithMaxDeflectionOfGraphs( int, int );
 	
-  void setWindow( WINDOW * );
+	void setWindow( WINDOW * );
 	
 private:
 	int m_devicenumber;

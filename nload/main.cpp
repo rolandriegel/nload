@@ -137,7 +137,7 @@ for ( int i = 1; i < argc; i++ )
 			exit(1);
 		}
 	}
-  //has the user chosen to display multiple devices and thus not to desplay graphs?
+	//has the user chosen to display multiple devices and thus not to desplay graphs?
 	else if ( strcmp( argv[i], "-m" ) == 0 )
 	{
 		show_graphs = false;

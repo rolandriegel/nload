@@ -1,3 +1,8 @@
+** version 0.3.1 ** 2001-10-17 *******************************************
+-parameter -m introduced: don't show graphs
+-added the nload(1) man page
+-workaround for the 4GB kernel variable overflow
+**************************************************************************
 ** version 0.3.0 ** 2001-09-25 *******************************************
 -two-dimensional graphs for current net load
 -arrow keys to switch between devices
