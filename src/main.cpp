@@ -421,7 +421,7 @@ void printhelp()
 //print disclaimer
 fprintf( stderr,
 	"\n%s version %s\n"
-	"Copyright (C) 2001, 2002 by Roland Riegel <feedback@roland-riegel.de>\n"
+	"Copyright (C) 2001 - 2003 by Roland Riegel <feedback@roland-riegel.de>\n"
 	"%s comes with ABSOLUTELY NO WARRANTY. This is free software, and you are\n"
 	"welcome to redistribute it under certain conditions. For more details see the\n"
 	"GNU General Public License Version 2 (http://www.gnu.org/copyleft/gpl.html).\n\n"
