@@ -1,5 +1,2 @@
-Makefile.dist
-acinclude.m4.in
-configure.in.no_shlib
-libtool.m4.in
 nload.kdevses
+acinclude.m4
