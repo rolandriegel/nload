@@ -1,7 +1,7 @@
 /***************************************************************************
-                          dev.h  -  description
+                          status.h  -  description
                              -------------------
-    begin                : Wed Aug 1 2001
+    begin                : Sat Sep 29 2001
     copyright            : (C) 2001 by Roland Riegel
     email                : support@roland-riegel.de
  ***************************************************************************/
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DEV_H
-#define DEV_H
+#ifndef STATUS_H
+#define STATUS_H
 
 
 /**
@@ -25,39 +25,29 @@
 
 #include <iostream.h>
 #include <curses.h>
-#include "proc.h"
-#include "graph.h"
-#include "status.h"
 
-#define STANDARD_BAR_MAX_IN 10240
-#define STANDARD_BAR_MAX_OUT 10240
-#define STANDARD_SLEEP_INTERVAL 500
-#define STANDARD_NETWORK_DEVICE "eth0"
-#define STANDARD_AVERAGE_SMOOTHNESS 9
-
-class Dev : public Proc
+class Status
 {
 
 public:
-	Dev();
-	Dev( char *, long, long, int, WINDOW *, int, int );
-	~Dev();
-
-	void update( bool );
-	void setDeviceNumber( int );
-	void setTotalNumberOfDevices( int );
+	Status();
+	~Status();
 	
-  void setWindow( WINDOW * );
+	void update( int, int );
+	void setWindow( WINDOW * );
+	void print( int, int );
+	
+	void setAverageSmoothness( int );
 	
 private:
-	int device_number;
-	int total_number_of_devices;
+	void minMax( int );
+	void average( int );
 	
-	Status *device_status[2];
-	Graph *traffic_graph[2];
+	int m_min, m_max, m_average, m_cur, m_total;
+	int m_averagesmoothness;
 	
-	WINDOW *window;
-	
+	WINDOW *m_window;
+
 };
 
 #endif

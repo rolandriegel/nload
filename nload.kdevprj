@@ -27,7 +27,7 @@ ldflags=
 AMChanged=false
 author=Roland Riegel
 configure_args=
-debug_args=-t 100 eth0 eth1 lo
+debug_args=-t 200 -i 768 -o 128
 email=support@roland-riegel.de
 execute_args=-b -t 200 -o 64 -i 128 eth0 eth1
 kdevprj_version=1.3
@@ -84,7 +84,7 @@ install_location=
 type=DATA
 
 [nload/Makefile.am]
-files=nload/proc.cpp,nload/proc.h,nload/main.cpp,nload/main.h,nload/dev.cpp,nload/dev.h
+files=nload/proc.cpp,nload/proc.h,nload/main.cpp,nload/main.h,nload/dev.cpp,nload/dev.h,nload/graph.cpp,nload/graph.h,nload/status.cpp,nload/status.h
 sub_dirs=
 type=prog_main
 
@@ -95,6 +95,18 @@ install_location=
 type=SOURCE
 
 [nload/dev.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[nload/graph.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[nload/graph.h]
 dist=true
 install=false
 install_location=
@@ -119,6 +131,18 @@ install_location=
 type=SOURCE
 
 [nload/proc.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[nload/status.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[nload/status.h]
 dist=true
 install=false
 install_location=

@@ -187,10 +187,10 @@ x_libraries = @x_libraries@
 
 ####### kdevelop will overwrite this part!!! (end)############
 bin_PROGRAMS = nload
-nload_SOURCES = dev.cpp main.cpp proc.cpp 
+nload_SOURCES = status.cpp graph.cpp dev.cpp main.cpp proc.cpp 
 nload_LDADD = -lncurses
 
-EXTRA_DIST = proc.cpp proc.h main.cpp main.h dev.cpp dev.h 
+EXTRA_DIST = proc.cpp proc.h main.cpp main.h dev.cpp dev.h graph.cpp graph.h status.cpp status.h 
 
 # set the include path found by configure
 INCLUDES = $(all_includes)
@@ -208,7 +208,8 @@ DEFS = @DEFS@ -I. -I$(srcdir) -I..
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
-nload_OBJECTS =  dev.$(OBJEXT) main.$(OBJEXT) proc.$(OBJEXT)
+nload_OBJECTS =  status.$(OBJEXT) graph.$(OBJEXT) dev.$(OBJEXT) \
+main.$(OBJEXT) proc.$(OBJEXT)
 nload_DEPENDENCIES = 
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -222,7 +223,8 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP_ENV = --best
-DEP_FILES =  .deps/dev.P .deps/main.P .deps/proc.P
+DEP_FILES =  .deps/dev.P .deps/graph.P .deps/main.P .deps/proc.P \
+.deps/status.P
 SOURCES = $(nload_SOURCES)
 OBJECTS = $(nload_OBJECTS)
 

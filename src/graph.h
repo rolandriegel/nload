@@ -1,7 +1,7 @@
 /***************************************************************************
-                          dev.h  -  description
+                          graph.h  -  description
                              -------------------
-    begin                : Wed Aug 1 2001
+    begin                : Sat Sep 29 2001
     copyright            : (C) 2001 by Roland Riegel
     email                : support@roland-riegel.de
  ***************************************************************************/
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DEV_H
-#define DEV_H
+#ifndef GRAPH_H
+#define GRAPH_H
 
 
 /**
@@ -24,39 +24,32 @@
   */
 
 #include <iostream.h>
+#include <stdlib.h>
 #include <curses.h>
-#include "proc.h"
-#include "graph.h"
-#include "status.h"
 
-#define STANDARD_BAR_MAX_IN 10240
-#define STANDARD_BAR_MAX_OUT 10240
-#define STANDARD_SLEEP_INTERVAL 500
-#define STANDARD_NETWORK_DEVICE "eth0"
-#define STANDARD_AVERAGE_SMOOTHNESS 9
-
-class Dev : public Proc
+class Graph
 {
 
 public:
-	Dev();
-	Dev( char *, long, long, int, WINDOW *, int, int );
-	~Dev();
-
-	void update( bool );
-	void setDeviceNumber( int );
-	void setTotalNumberOfDevices( int );
+	Graph();
+	~Graph();
 	
+	void setNumOfBars( int );
+	void setHeightOfBars( int );
+	void setTrafficWithMaxDeflectionOfBars( int );
+	
+	void update( int );
   void setWindow( WINDOW * );
-	
+	void print( int, int );
+
 private:
-	int device_number;
-	int total_number_of_devices;
+	int m_numofbars, max_numofbars;
+	int m_heightofbars;
+	int m_trafficwithmaxdeflectionofbars;
 	
-	Status *device_status[2];
-	Graph *traffic_graph[2];
+	int *m_values;
 	
-	WINDOW *window;
+	WINDOW *m_window;
 	
 };
 

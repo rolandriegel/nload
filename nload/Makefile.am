@@ -1,10 +1,10 @@
 ####### kdevelop will overwrite this part!!! (begin)##########
 bin_PROGRAMS = nload
-nload_SOURCES = dev.cpp main.cpp proc.cpp 
+nload_SOURCES = status.cpp graph.cpp dev.cpp main.cpp proc.cpp 
 nload_LDADD   = -lncurses
 
 
-EXTRA_DIST = proc.cpp proc.h main.cpp main.h dev.cpp dev.h 
+EXTRA_DIST = proc.cpp proc.h main.cpp main.h dev.cpp dev.h graph.cpp graph.h status.cpp status.h 
 
 ####### kdevelop will overwrite this part!!! (end)############
 bin_PROGRAMS = nload

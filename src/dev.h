@@ -26,6 +26,8 @@
 #include <iostream.h>
 #include <curses.h>
 #include "proc.h"
+#include "graph.h"
+#include "status.h"
 
 #define STANDARD_BAR_MAX_IN 10240
 #define STANDARD_BAR_MAX_OUT 10240
@@ -37,38 +39,22 @@ class Dev : public Proc
 {
 
 public:
-
 	Dev();
 	Dev( char *, long, long, int, WINDOW *, int, int );
 	~Dev();
 
-	void update(bool);
+	void update( bool );
 	void setDeviceNumber( int );
 	void setTotalNumberOfDevices( int );
-  void setPrintBars( bool );
-  void setBarMaxIn( long );
-  void setBarMaxOut( long );
-  void setNumOfGraphValues( int );
-  void setAverageSmoothness( int );
+	
   void setWindow( WINDOW * );
-
+	
 private:
-
-	void printGraph( bool, int, int );
-	void MinMax( float &, float &, float );
-	void average( float &, float );
-
 	int device_number;
 	int total_number_of_devices;
 	
-  long bar_max_in;
-	long bar_max_out;
-	int cur_num_values;
-	int average_smoothness;
-	
-	float *traffic[2];
-	float min_in, max_in, avg_in;
-	float min_out, max_out, avg_out;
+	Status *device_status[2];
+	Graph *traffic_graph[2];
 	
 	WINDOW *window;
 	
