@@ -1,7 +1,7 @@
 /***************************************************************************
-                                   main.h
+                                 options.cpp
                              -------------------
-    begin                : Wed Jul 25 2001
+    begin                : Sun Dec 23 2001
     copyright            : (C) 2001 by Roland Riegel
     email                : support@roland-riegel.de
  ***************************************************************************/
@@ -15,22 +15,45 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-#include <iostream.h>
-#include <ctype.h>
-#include <time.h>
-#include <curses.h>
-#include <signal.h>
-#include <string>
-#include <vector>
-#include "dev.h"
-#include "options.h"
+template<class T>
+Option<T>::Option()
+{
+}
 
-using std::string;
-using std::vector;
+template<class T>
+Option<T>::Option( T new_value )
+{
+	m_value = new_value;
+}
 
-void printhelp();
-void finish(int);
-int main(int, char **);
+template<class T>
+Option<T>::Option( T new_value, string new_description = "" )
+{
+	setDescription( new_description );
+	
+	m_value = new_value;
+}
+
+template<class T>
+Option<T>::~Option()
+{
+}
+
+template<class T>
+Option<T>::operator T() const
+{
+	return m_value;
+}
+
+template<class T>
+void Option<T>::setDescription( string new_description )
+{
+	m_description = new_description;
+}
+
+template<class T>
+string Option<T>::getDescription()
+{
+	return m_description;
+}
+

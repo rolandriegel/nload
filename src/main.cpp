@@ -34,17 +34,18 @@
 int main (int argc, char *argv[])
 {
 
-int sleep_interval = STANDARD_SLEEP_INTERVAL;
-bool show_graphs = STANDARD_SHOW_GRAPHS;
-long bar_max_in = STANDARD_BAR_MAX_IN;
-long bar_max_out = STANDARD_BAR_MAX_OUT;
-int average_smoothness = STANDARD_AVERAGE_SMOOTHNESS;
-bool print_only_once = false;
-Status::status_format traffic_format = STANDARD_TRAFFIC_FORMAT;
-Status::status_format data_format = STANDARD_DATA_FORMAT;
-
 vector<string *> network_device;
 vector<Dev *> devs;
+
+Option<int> sleep_interval( STANDARD_SLEEP_INTERVAL, "Display refresh interval" );
+Option<bool> show_graphs( STANDARD_SHOW_GRAPHS, "Display multiple devices" );
+Option<long> bar_max_in( STANDARD_BAR_MAX_IN, "100% mark in kBit/s of the incoming bandwidth graph" );
+Option<long> bar_max_out( STANDARD_BAR_MAX_OUT, "100% mark in kBit/s of the outgoing bandwidth graph" );
+Option<int> average_smoothness( STANDARD_AVERAGE_SMOOTHNESS, "smoothness of the average in/out values" );
+Option<Status::status_format> traffic_format = STANDARD_TRAFFIC_FORMAT;
+Option<Status::status_format> data_format = STANDARD_DATA_FORMAT;
+
+bool print_only_once = false;
 
 struct timespec wanted_time;
 int cur_dev = 0;

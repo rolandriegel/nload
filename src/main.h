@@ -26,6 +26,7 @@
 #include <string>
 #include <vector>
 #include "dev.h"
+#include "options.h"
 
 using std::string;
 using std::vector;

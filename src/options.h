@@ -1,7 +1,7 @@
 /***************************************************************************
-                                   main.h
+                                  options.h
                              -------------------
-    begin                : Wed Jul 25 2001
+    begin                : Sun Dec 23 2001
     copyright            : (C) 2001 by Roland Riegel
     email                : support@roland-riegel.de
  ***************************************************************************/
@@ -15,22 +15,34 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-#include <iostream.h>
-#include <ctype.h>
-#include <time.h>
-#include <curses.h>
-#include <signal.h>
 #include <string>
-#include <vector>
-#include "dev.h"
-#include "options.h"
 
 using std::string;
-using std::vector;
 
-void printhelp();
-void finish(int);
-int main(int, char **);
+//dummy class to put different template class
+//instances into a single array
+class OptionBase{};
+
+template<class T>
+class Option : public OptionBase
+{
+	
+public:
+	Option();
+	Option( T );
+	Option( T, string );
+	~Option();
+	
+	operator T() const;
+	
+	void setDescription( string );
+	string getDescription();
+	
+private:
+	
+	string m_description;
+	T m_value;
+	
+};
+
+#include "options.cpp"
