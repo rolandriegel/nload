@@ -133,7 +133,7 @@ bool operator==( const Field& field1, const FIELD* field2 )
 }
 
 
-Form::Form( Slots* slots = 0 ) : m_slots( slots ), m_form(0), m_visible( false )
+Form::Form( Slots* slots ) : m_slots( slots ), m_form(0), m_visible( false )
 {
 	m_instances.push_back( this );
 }
