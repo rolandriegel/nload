@@ -18,19 +18,18 @@
 #ifndef PROC_H
 #define PROC_H
 
-
 #include <config.h>
 
 #ifdef HAVE_LINUX
 #include <stdlib.h>
-#include <string.h>
 #include <stdio.h>
 #include <sys/time.h>
+#include <string>
+using std::string;
 #endif
 
 #ifdef HAVE_BSD
 #include <stdlib.h>
-#include <string.h>
 #include <sys/types.h>
 #include <sys/param.h>
 #include <sys/sysctl.h>
@@ -38,6 +37,8 @@
 #include <net/if.h>
 #include <net/if_dl.h>
 #include <net/route.h>
+#include <string>
+using std::string;
 #endif
 
 #ifdef HAVE_SOLARIS

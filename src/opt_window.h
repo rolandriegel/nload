@@ -20,17 +20,13 @@
 
 #include <vector>
 #include <string>
-#include <sstream>
 using std::string;
 using std::vector;
-using std::stringstream;
-using std::ostringstream;
 
 #include <curses.h>
 #include <form.h>
 
 #include "status.h"
-
 #include "options.h"
 
 class OptWindow
@@ -40,27 +36,40 @@ public:
 	OptWindow();
 	~OptWindow();
 	
-	void show( int, int, int, int, void (*)( FORM * ) );
+	void setFieldChangedFunc( void (*)( FORM * ) );
+	
+	void show( int, int, int, int );
 	void hide();
 	bool visible();
+	
+	void refresh();
+	void resize( int, int, int, int );
 	
 	void processRequest( int );
 	void fieldChanged( FORM * );
 	
 	vector<OptionBase *>& options();
 	
-	WINDOW *window();
-	
 private:
 	
-	const char *optionAsString( OptionBase * );
-	void assignStringToOption( OptionBase *, const char * );
+	void createForm( int, int );
+	void deleteForm();
+	
+	void createWindow( int, int, int, int );
+	void deleteWindow();
+	
+	void createSubWindow( int, int, int, int );
+	void deleteSubWindow();
 	
 	bool m_visible;
 	vector<OptionBase *> m_options;
+	
 	WINDOW *m_window;
+	WINDOW *m_sub_window;
 	FORM *m_form;
 	FIELD **m_fields;
+	
+	void ( *m_fieldchangedfunc )( FORM* );
 	
 };
 

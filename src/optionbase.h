@@ -19,39 +19,35 @@
 #define OPTIONBASE_H
 
 #include <form.h>
-#include <string>
 
+#include <string>
 using std::string;
 
 class OptionBase
 {
 
 public:
-	enum ValueType
-	{
-		Bool,
-		Int,
-		Long,
-		Status
-	};
-	
-	OptionBase();
-	OptionBase( ValueType new_valuetype, string new_description = "" );
-	~OptionBase();
-	
-	ValueType valueType();
+	OptionBase( string new_description = "" );
+	virtual ~OptionBase(){};
 	
 	void setDescription( string );
-	string description();
+	string description() const;
 	
-	void setCursesField( FIELD* );
-	FIELD *cursesField();
+	virtual string asString() const = 0;
+	virtual void assignString( const string new_value ) = 0;
+	
+	virtual FIELD* createCursesEditField( int x, int y, int width, int height ) = 0;
+	virtual FIELD* cursesEditField() const = 0;
+	virtual void deleteCursesEditField() = 0;
+	
+	FIELD* createCursesLabelField( int x, int y, int width, int height );
+	FIELD* cursesLabelField() const;
+	void deleteCursesLabelField();
 	
 private:
 	
-	ValueType m_valuetype;
 	string m_description;
-	FIELD *m_cursesfield;
+	FIELD* m_curses_label_field;
 	
 };
 

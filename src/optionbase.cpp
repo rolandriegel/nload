@@ -17,23 +17,10 @@
 
 #include "optionbase.h"
 
-OptionBase::OptionBase()
+OptionBase::OptionBase( string new_description )
+ : m_curses_label_field(0)
 {
-}
-
-OptionBase::OptionBase( ValueType new_valuetype, string new_description )
-{
-	m_valuetype = new_valuetype;
 	m_description = new_description;
-}
-
-OptionBase::~OptionBase()
-{
-}
-
-OptionBase::ValueType OptionBase::valueType()
-{
-	return m_valuetype;
 }
 
 void OptionBase::setDescription( string new_description )
@@ -41,17 +28,30 @@ void OptionBase::setDescription( string new_description )
 	m_description = new_description;
 }
 
-string OptionBase::description()
+string OptionBase::description() const
 {
 	return m_description;
 }
 
-void OptionBase::setCursesField( FIELD *new_cursesfield )
+FIELD* OptionBase::createCursesLabelField( int x, int y, int width, int height )
 {
-	m_cursesfield = new_cursesfield;
+	if( ! m_curses_label_field )
+	{
+		m_curses_label_field = new_field( height, width, y, x, 0, 0 );
+		set_field_opts( m_curses_label_field, field_opts( m_curses_label_field ) & ~O_ACTIVE );
+		set_field_buffer( m_curses_label_field, 0, ( m_description + ":" ).c_str() );
+	}
+	return m_curses_label_field;
 }
 
-FIELD *OptionBase::cursesField()
+FIELD* OptionBase::cursesLabelField() const
 {
-	return m_cursesfield;
+	return m_curses_label_field;
 }
+
+void OptionBase::deleteCursesLabelField()
+{
+	free_field( m_curses_label_field );
+	m_curses_label_field = 0;
+}
+

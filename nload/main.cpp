@@ -37,13 +37,15 @@ int main (int argc, char *argv[])
 vector<string *> network_device;
 vector<Dev *> devs;
 
-Option<int> sleep_interval( OptionBase::Int, STANDARD_SLEEP_INTERVAL, "Refresh interval (ms)" );
-Option<bool> show_multiple_devices( OptionBase::Bool, ! STANDARD_SHOW_GRAPHS, "Show multiple devices" );
-Option<long> bar_max_in( OptionBase::Long, STANDARD_BAR_MAX_IN, "Full deflection \"Incoming\" graph (kBit/s)" );
-Option<long> bar_max_out( OptionBase::Long, STANDARD_BAR_MAX_OUT, "Full deflection \"Outgoing\" graph (kBit/s)" );
-Option<int> average_smoothness( OptionBase::Int, STANDARD_AVERAGE_SMOOTHNESS, "Smoothness of the average in/out values" );
-Option<Status::status_format> traffic_format( OptionBase::Status, STANDARD_TRAFFIC_FORMAT, "Unit for traffic numbers" );
-Option<Status::status_format> data_format( OptionBase::Status, STANDARD_DATA_FORMAT, "Unit for data numbers" );
+OptionInt sleep_interval( STANDARD_SLEEP_INTERVAL, "Refresh interval (ms)" );
+OptionBool show_multiple_devices( ! STANDARD_SHOW_GRAPHS, "Show multiple devices" );
+OptionLong bar_max_in( STANDARD_BAR_MAX_IN, "Max Incoming deflection (kBit/s)" );
+OptionLong bar_max_out( STANDARD_BAR_MAX_OUT, "Max Outgoing deflection (kBit/s)" );
+OptionInt average_smoothness( STANDARD_AVERAGE_SMOOTHNESS, "Smoothness of average" );
+average_smoothness.min(1);
+average_smoothness.max(9);
+OptionStatusFormat traffic_format( STANDARD_TRAFFIC_FORMAT, "Unit for traffic numbers" );
+OptionStatusFormat data_format( STANDARD_DATA_FORMAT, "Unit for data numbers" );
 m_optwindow.options().push_back( &sleep_interval );
 m_optwindow.options().push_back( &show_multiple_devices );
 m_optwindow.options().push_back( &bar_max_in );
@@ -261,6 +263,7 @@ if ( network_device.size() == 0 )
 //handle interrrupt signal
 signal( SIGINT, finish );
 signal( SIGTERM, finish );
+signal( SIGWINCH, terminal_resized );
 
 //initialize ncurses
 initscr();
@@ -271,14 +274,14 @@ nonl();
 cbreak();
 
 //create main window
-WINDOW *window = newwin( 0, 0, 0, 0 );
+m_window = newwin( 0, 0, 0, 0 );
 
 //create one instance of the Dev class per device
 for ( vector<string *>::size_type i = 0; i < network_device.size(); i++ )
 {
 	devs.push_back( new Dev() );
 	devs.back() -> setProcDev( network_device[i] -> c_str() );
-	devs.back() -> setWindow( window );
+	devs.back() -> setWindow( m_window );
 	devs.back() -> setDeviceNumber( i + 1 );
 	devs.back() -> setTotalNumberOfDevices( network_device.size() );
 }
@@ -294,7 +297,7 @@ do
 	//get screen dimensions
 	int x, y, x_main, y_main;
 	getmaxyx( stdscr, y, x );
-	getmaxyx( window, y_main, x_main );
+	getmaxyx( m_window, y_main, x_main );
 	
 	//wait sleep_interval milliseconds (in steps of 100 ms)
 	struct timespec wanted_time;
@@ -337,20 +340,15 @@ do
 					if( m_optwindow.visible() )
 					{
 						m_optwindow.hide();
-						mvwin( window, 0, 0 );
-						wresize( window, y, x );
-						
-						touchwin( stdscr );
-						wnoutrefresh( stdscr );
+						mvwin( m_window, 0, 0 );
+						wresize( m_window, y, x );
 					}
 					else
 					{
-						touchwin( stdscr );
-						wnoutrefresh( stdscr );
-						
-						wresize( window, y - y / 3, x );
-						mvwin( window, y / 3, 0 );
-						m_optwindow.show( 0, 0, x, y / 3, optwindow_fieldChanged );
+						wresize( m_window, y - y / 4, x );
+						mvwin( m_window, y / 4, 0 );
+						m_optwindow.setFieldChangedFunc( optwindow_fieldChanged );
+						m_optwindow.show( 0, 0, x, y / 4 );
 					}
 					rest_of_sleep_interval = 0; //update the screen
 					break;
@@ -376,7 +374,7 @@ do
 	}
 	
 	//clear the screen
-	wclear( window );
+	wclear( m_window );
 	
 	//update all devices and print the data of the current one
 	for( int i = 0; i < size; i++ )
@@ -388,16 +386,15 @@ do
 		else
 		{
 			int curx, cury;
-			getyx( window, cury, curx );
+			getyx( m_window, cury, curx );
 			
 			devs[i] -> update( i >= cur_dev && y_main - cury >= 9 );
 		}
 	}
 	
 	//refresh the screen
-	wnoutrefresh( window );
-	if( m_optwindow.visible() ) wnoutrefresh( m_optwindow.window() ); //always show cursor in option dialog
-	doupdate();
+	wrefresh( m_window );
+	if( m_optwindow.visible() ) m_optwindow.refresh(); //always show cursor in option dialog
 	
 } while ( print_only_once != true ); //do this endless except the user said "-t 0"
 
@@ -420,12 +417,40 @@ exit( EXIT_SUCCESS );
 
 }
 
+void terminal_resized( int signal )
+{
+	endwin();
+	initscr();
+	keypad( stdscr, true );
+	nodelay( stdscr, true );
+	noecho();
+	nonl();
+	cbreak();
+	
+	int width, height;
+	getmaxyx( stdscr, height, width );
+	
+	if( m_optwindow.visible() )
+	{
+		wresize( m_window, height - height / 4, width );
+		mvwin( m_window, height / 4, 0 );
+		
+		m_optwindow.resize( 0, 0, width, height / 4 );
+	}
+	else
+	{
+		wresize( m_window, height, width );
+		mvwin( m_window, 0, 0 );
+	}
+}
+
 void printhelp()
 {
 
 //print disclaimer
 fprintf( stderr,
-	"\n%s version %s, Copyright (C) 2001 Roland Riegel <support@roland-riegel.de>\n"
+	"\n%s version %s\n"
+	"Copyright (C) 2001, 2002 by Roland Riegel <support@roland-riegel.de>\n"
 	"%s comes with ABSOLUTELY NO WARRANTY. This is free software, and you are\n"
 	"welcome to redistribute it under certain conditions. For more details see the\n"
 	"GNU General Public License Version 2 (http://www.gnu.org/copyleft/gpl.html).\n\n"
@@ -459,8 +484,7 @@ fprintf( stderr,
 	"devices		network devices to use\n"
 	"		default is \"%s\"\n"
 	"--help\n"
-	"-h		print this help\n"
-	"-b		obsolete - ignored\n\n"
+	"-h		print this help\n\n"
 	"example: %s -t 200 -s 7 -i 1024 -o 128 -U h eth0 eth1\n\n",
 	
 	PACKAGE,

@@ -21,7 +21,6 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#include <iostream.h>
 #include <ctype.h>
 #include <time.h>
 #include <curses.h>
@@ -36,9 +35,15 @@ using std::string;
 using std::vector;
 
 int main( int, char ** );
+
 void optwindow_fieldChanged( FORM * );
+
 void finish( int );
+void terminal_resized( int );
+
 void printhelp();
+
+WINDOW* m_window;
 
 OptWindow m_optwindow;
 

@@ -18,9 +18,9 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
-#include <iostream.h>
 #include <curses.h>
 #include <list>
+using std::list;
 
 class Graph
 {
