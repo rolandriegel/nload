@@ -1,27 +1,29 @@
 .\"
 .\" Man page for nload
-.\" Copyright (C) 2001, 2002 by Roland Riegel <feedback@roland.riegel.de>
+.\" Copyright (C) 2001 - 2003 by Roland Riegel <feedback@roland.riegel.de>
 .\"
-.TH nload 1 "July 31, 2002" nload "Network monitoring tools"
+.TH nload 1 "December 07, 2003" nload "Network monitoring tools"
 .SH NAME
 nload \- displays the current network usage
 
 .SH SYNOPSIS
-.B nload [-i
-.I max_scaling
-.B ] [-m] [-o
-.I max_scaling
-.B ] [-s
-.I smoothness
-.B ] [-t
-.I interval
-.B ] [-u
-.I h|H|b|B|k|K|m|M|g|G
-.B ] [-U
-.I h|H|b|B|k|K|m|M|g|G
-.B ] [devices]
+.B nload
+.RB [ \-i
+.IR max_scaling ]
+.RB [ \-m ]
+.RB [ \-o
+.IR max_scaling ]
+.RB [ \-s
+.IR smoothness ]
+.RB [ \-t
+.IR interval ]
+.RB [ \-u
+.IR h|H|b|B|k|K|m|M|g|G ]
+.RB [ \-U
+.IR h|H|b|B|k|K|m|M|g|G ]
+.RI [ devices ]
 
-.B nload --help|-h
+.B nload \-\-help|\-h
 
 .SH DESCRIPTION
 .B nload
@@ -34,10 +36,16 @@ When running
 .B nload,
 you can switch between the devices (which you gave
 .B nload
-on the command line) by pressing the left and right arrow keys. If the -m command line
-parameter is given, the arrow keys switch as many devices back and forth as there are shown
-on the screen.
-If you want to quit, do so by pressing 'q', 'Q' or Ctrl+C.
+on the command line) by pressing the left and right arrow keys. If the
+.B \-m
+command line parameter is given, the arrow keys switch as many devices back and forth as
+there are shown on the screen. If you want to quit, do so by pressing 'q' or 'Ctrl+C'.
+
+For further key shortcuts, have a look at the sections
+.B MAIN WINDOW
+and
+.B OPTION WINDOW
+below.
 
 .SH OPTIONS
 A summary of the options supported by
@@ -85,10 +93,42 @@ Same as -u, but for an amount of data, e.g. Bit, kByte, GBit etc. (without "/s")
 The default is M.
 .TP
 .B devices
-Network devices to use. The default device is "eth0".
+Network devices to use. The default device is "eth0" on Linux, "fxp0" on
+BSD, "hme0" on Solaris and "lan0" on HP-UX.
 .TP
 .B \-h, \-\-help
 Show a short summary of these command line options.
+
+.SH MAIN WINDOW
+After starting,
+.B nload
+begins to monitor the network devices given on the
+command line, or, if none where specified, the default device. In this mode,
+the following key shortcuts are available.
+
+.TP
+.B 'o'
+Show the option window (see section 
+.B OPTION WINDOW
+below).
+
+.TP
+.B 'ArrowRight', 'ArrowDown', 'PageDown', 'Enter', 'Tab', 'n'
+Switch the display to the next network device, or, when started with the
+.B \-m
+flag, to the next page of devices.
+
+.TP
+.B 'ArrowLeft', 'ArrowUp', 'PageUp', 'p'
+Switch the display to the previous network device, or, when started with
+the
+.B \-m
+flag, to the previous page of devices.
+
+.TP
+.B 'q', 'Ctrl+C'
+Quit
+.BR nload .
 
 .SH OPTION WINDOW
 The parameters given to
@@ -101,32 +141,58 @@ small window appears on the top of the screen, listing the available settings.
 Show/hide the option window.
 
 .TP
-.B arrow keys (left, right, up, down), tab
-Step through the options to manipulate them. Changes will apply directly after
-leaving the corresponding field.
+.B 'ArrowLeft', 'ArrowRight', 'Home', 'End'
+Navigate within the edit fields.
 
 .TP
-.B 'PageDown', 'PageUp'
-Step through the presets of some settings not being editable freely.
+.B 'ArrowUp', 'ArrowDown', 'Enter'
+Navigate between the settings.
 
 .TP
-.B '+', '-'
-Scroll the option window.
+.B 'PageUp', 'PageDown', 'Tab'
+Toggle between the different values possible for the current field.
+
+.TP
+.B '+', 'n' / '-', 'p'
+Switch to the next / previous page of settings.
 
 .SH FILES
 .I /proc/net/dev
-is read by nload to get the network traffic data.
+is read by
+.B nload
+when running on Linux to get the network traffic data.
 
 .SH VERSION
-This is version @VERSION@ of nload.
-For updates, look at http://www.roland-riegel.de/nload/index_en.html.
+This manual page describes version @VERSION@ of
+.BR nload .
+
+For updates, look at the nload homepage:
+.br
+.B http://www.roland-riegel.de/nload/index_en.html
 
 .SH HELP
 If you need help, either contact me directly (see below) or write to the
 nload-user mailing list at
+.br
 .B nload-user@lists.sourceforge.net
+.br
 after having subscribed at
-.B https://lists.sourceforge.net/lists/listinfo/nload-user
+.br
+.BR https://lists.sourceforge.net/lists/listinfo/nload-user .
 
 .SH AUTHOR
-Roland Riegel <feedback@roland-riegel.de>
+Copyright (C) 2001 - 2003 Roland Riegel <feedback@roland-riegel.de>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
