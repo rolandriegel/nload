@@ -8,12 +8,11 @@ Packager  : Helder Correia <helder.correia@netcabo.pt>
 Group     : Applications/Networking
 Source    : %{name}-%{version}.tar.gz
 BuildRoot : /var/tmp/%{name}-%{version}-rpmbuildroot
-Prefix    : /usr/local
 
 
 %description
 nload is a console application which monitors network traffic and bandwidth
-usage in real time. It visualizes the in- and outgoing traffic using two graphs
+usage in real time. It visualizes the in and outgoing traffic using two graphs
 and provides additionally info like total amount of transfered data and min/max
 network usage.
 
@@ -22,7 +21,7 @@ network usage.
 
 
 %setup
-CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{prefix} $LOCALFLAGS
+CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{_prefix}
 
 
 %build
@@ -45,12 +44,15 @@ rm -rf $RPM_BUILD_DIR/%{name}-%{version}
 
 
 %files
-%attr(-,root,root)
-%{prefix}/bin/nload
-%{prefix}/share/man/man1/nload.1.gz
+%defattr(-,root,root)
+%attr(0755,root,root) %{_prefix}/bin/@PACKAGE@
+%{_prefix}/man/man1/@PACKAGE@.1.gz
 
 
 %changelog
+* Thu Dec  6 2001 Helder Correia <helder.correia@netcabo.pt>
+- Some minor adjustments
+
 * Wed Dec  5 2001 Helder Correia <helder.correia@netcabo.pt>
 - Little path modifications and removal of man page gzipping
 

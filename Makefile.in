@@ -360,12 +360,12 @@ maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
 install:
-	$(mkinstalldirs) $(prefix)/share/man/man1
-	$(INSTALL_DATA) $(top_srcdir)/docs/$(PACKAGE).1 $(prefix)/share/man/man1
-	gzip $(prefix)/share/man/man1/$(PACKAGE).1
+	$(mkinstalldirs) $(DESTDIR)$(prefix)/man/man1
+	$(INSTALL_DATA) $(top_srcdir)/docs/$(PACKAGE).1 $(DESTDIR)$(prefix)/man/man1
+	gzip $(DESTDIR)$(prefix)/man/man1/$(PACKAGE).1
 
 uninstall:
-	rm $(prefix)/share/man/man1/$(PACKAGE).1.gz
+	rm $(DESTDIR)$(prefix)/man/man1/$(PACKAGE).1.gz
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -20,6 +20,7 @@ AC_CHECK_HEADERS(limits.h sys/time.h)
 dnl Only use -Wall if we have gcc.
 if test "x$GCC" = "xyes" ; then
         CFLAGS="$CFLAGS -Wall"
+        CXXFLAGS="$CXXFLAGS -Wall"
 fi
 
 dnl Checks for typedefs, structures, and compiler characteristics.
