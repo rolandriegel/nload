@@ -1,4 +1,4 @@
-# Helder Correia <helder.correia@netcabo.pt>
+dnl Helder Correia <helder.correia@netcabo.pt>
 
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src/dev.cpp)
@@ -17,8 +17,8 @@ dnl Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS(limits.h sys/time.h)
 
-# Only use -Wall if we have gcc.
- if test "x$GCC" = "xyes" ; then
+dnl Only use -Wall if we have gcc.
+if test "x$GCC" = "xyes" ; then
         CFLAGS="$CFLAGS -Wall"
 fi
 
@@ -31,7 +31,7 @@ dnl Checks for library functions.
 AC_CHECK_FUNCS(gettimeofday)
 
 dnl System dependant jobs
-# AC_MSG_CHECKING(for operating system type)
+dnl AC_MSG_CHECKING(for operating system type)
 case $target in
     *linux*)
          AC_DEFINE(HAVE_LINUX, 1)
