@@ -15,14 +15,35 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef PROC_H
 #define PROC_H
 
-#include <stdio.h>
+
+//======== Linux includes ========
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include <sys/time.h>
+//======== Linux includes (end) ========
+/*
+//======== Free/Open/NetBSD includes ========
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/sysctl.h>
+#include <sys/socket.h>
+#include <net/if.h>
+#include <net/if_dl.h>
+#include <net/route.h>
+//======== Free/Open/NetBSD includes (end) ========
+
+//======== Solaris includes ========
+#include <sys/socket.h>
+#include <kstat.h>
+#include <net/if.h>
+#include <sys/sockio.h>
+//======== Solaris includes (end) ========
+*/
 
 class Proc
 {
@@ -50,12 +71,12 @@ private:
 	float elapsed_time;
 	
 	bool dev_exists;
+	char dev[128];
 	
-	FILE *fd;
-
-	char *buf, *tag, *dev, *tmp, *tmp2;
-
-	float *S, *cS, *ret;
+	float ret[2];
+	
+	float total[2];
+	float total_new[2];
 
 };
 

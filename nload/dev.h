@@ -28,10 +28,20 @@ const int STANDARD_BAR_MAX_IN = 10240;
 const int STANDARD_BAR_MAX_OUT = 10240;
 const bool STANDARD_SHOW_GRAPHS = true;
 const int STANDARD_SLEEP_INTERVAL = 500;
-char* const STANDARD_NETWORK_DEVICE = "eth0";
 const int STANDARD_AVERAGE_SMOOTHNESS = 9;
 const Status::status_format STANDARD_TRAFFIC_FORMAT = Status::kilobit;
 const Status::status_format STANDARD_DATA_FORMAT = Status::megabit;
+
+//======= standard Linux network device ======
+char* const STANDARD_NETWORK_DEVICE = "eth0";
+
+/*
+//======= standard Free/Open/NetBSD network device ======
+char* const STANDARD_NETWORK_DEVICE = "fxp0";
+
+//======= standard Solaris network device ======
+char* const STANDARD_NETWORK_DEVICE = "hme0";
+*/
 
 class Dev : public Proc
 {

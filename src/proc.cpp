@@ -20,32 +20,10 @@
 
 Proc::Proc()
 {
-	buf = (char *) calloc(512, sizeof(char));
-	tag = (char *) calloc(128, sizeof(char));
-	dev = (char *) calloc(128, sizeof(char));
-
-	cS = (float *) calloc(16, sizeof(float));
-	S = (float *) calloc(2, sizeof(float));
-	ret = (float *) calloc(2, sizeof(float));
-
-	S[0] = 0;
-	S[1] = 0;
-	
-	was_time.tv_sec = was_time.tv_usec = 0;
-	is_time.tv_sec = is_time.tv_usec = 0;
-	elapsed_time = 0;
-	dev_exists = 0;
-	
 }
 
 Proc::~Proc()
 {
-	free(buf);
-	free(tag);
-	free(dev);
-	free(cS);
-	free(S);
-	free(ret);
 }
 
 void Proc::setProcDev(const char *new_procdev)
@@ -67,82 +45,202 @@ bool Proc::ProcDevExists()
 float *Proc::readLoad(void)
 {
 	//measure the ellapsed time since the last function call
-	gettimeofday(&is_time, NULL);
-	elapsed_time = labs(is_time.tv_sec - was_time.tv_sec) * 1000 + (float) labs(is_time.tv_usec - was_time.tv_usec) / 1000;
+	gettimeofday( &is_time, NULL );
+	elapsed_time = labs( is_time.tv_sec - was_time.tv_sec ) * 1000 + (float) labs( is_time.tv_usec - was_time.tv_usec ) / 1000;
 	was_time = is_time;
-		
+
 	ret[0] = 0;
 	ret[1] = 0;
 
-	if((fd = fopen("/proc/net/dev", "r")) == NULL) return ret;
+	// ======== Linux section ========
 
-	fgets(buf, 512, fd);
-	fgets(buf, 512, fd);
+	FILE *fd;
+	char buf[512] = "";
+	char tag[128] = "";
+	char *tmp, *tmp2;
 
-	while(!feof(fd)) {
+	if( ( fd = fopen( "/proc/net/dev", "r" ) ) == NULL )
+		return ret;
 
-		fgets(buf, 512, fd);
+	fgets( buf, 512, fd );
+	fgets( buf, 512, fd );
 
-		memset(tag, 0, 32);
+	while( !feof( fd ) )
+	{
+		fgets( buf, 512, fd );
+
+		memset( tag, 0, 32 );
 
 		tmp = buf;
 		tmp2 = tag;
 
-		while(*tmp == ' ') tmp++;
-		while((*tmp2++ = *tmp++) != ':');
+		while( *tmp == ' ' ) tmp++;
+		while( ( *tmp2++ = *tmp++ ) != ':' );
 
 		*--tmp2 = '\0';
 
-		sscanf(tmp, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
-		&cS[0], &cS[1], &cS[2], &cS[3], &cS[4], &cS[5], &cS[6], &cS[7], &cS[8], &cS[9], &cS[10], &cS[11], &cS[12], &cS[13], &cS[14], &cS[15]);
+		float d;
+		sscanf( tmp, "%f %f %f %f %f %f %f %f %f", &total_new[0], &d, &d, &d, &d, &d, &d, &d, &total_new[1] );
 
-		if(!strcmp(dev, tag)) {
+		if( !strcmp( dev, tag ) )
+		{
 
-			if(cS[0] > S[0]) {
-				ret[0] = cS[0] - S[0];
-				S[0] = cS[0];
-			}
+			if( total_new[0] > total[0] )
+				ret[0] = total_new[0] - total[0];
+			total[0] = total_new[0];
 
-			if(cS[8] > S[1]) {
-				ret[1] = cS[8] - S[1];
-				S[1] = cS[8];
-			}
+			if( total_new[1] > total[1] )
+				ret[1] = total_new[1] - total[1];
+			total[1] = total_new[1];
 
-			if(cS[0] < S[0] | cS[8] < S[1]) {
-				S[0] = cS[0];
-				S[1] = cS[8];
-			}
-
-			fclose(fd);
+			fclose( fd );
 			
 			dev_exists = true;
 			
-			return(ret);
+			return ret;
 		}
 
 	}
 
-	S[0] = 0;
-	S[1] = 0;
+	total[0] = 0;
+	total[1] = 0;
 
 	fclose(fd);
 	
 	dev_exists = false;
 	
-	return(ret);
+	//======== Linux section (end) ========
+/*
+	//======== Free/Open/NetBSD section ========
+	
+	struct if_msghdr *ifm, *nextifm;
+	struct sockaddr_dl *sdl;
+	char *lim, *next;
+	size_t needed;
+	char s[32];
+	int mib[] = { CTL_NET, PF_ROUTE, 0, 0, NET_RT_IFLIST, 0 };
+	char *buf = 0;
+	int alloc = 0;
+	
+	if( sysctl(mib, 6, NULL, &needed, NULL, 0) < 0 )
+		return ret;
+	if( alloc < needed )
+	{
+		if( buf != NULL )
+			free( buf );
+		buf = (char *) malloc( needed );
+		if( buf == NULL )
+			return ret;
+		alloc = needed;
+	}
+	
+	if( sysctl( mib, 6, buf, &needed, NULL, 0 ) < 0 )
+		return ret;
+	lim = buf + needed;
+
+	next = buf;
+	while( next < lim )
+	{
+		ifm = (struct if_msghdr *) next;
+		if( ifm->ifm_type != RTM_IFINFO )
+			return ret;
+		next += ifm->ifm_msglen;
+		
+		while( next < lim )
+		{
+			nextifm = (struct if_msghdr *) next;
+			if( nextifm->ifm_type != RTM_NEWADDR )
+				break;
+			next += nextifm->ifm_msglen;
+		}
+		
+		if( ifm->ifm_flags & IFF_UP )
+		{
+			sdl = (struct sockaddr_dl *) ( ifm + 1 );
+			if( sdl->sdl_family != AF_LINK )
+				continue;
+			strncpy( s, sdl->sdl_data, sdl->sdl_nlen );
+			s[ sdl->sdl_nlen ] = '\0';
+			
+			if( strcmp( dev, s ) == 0 )
+			{
+				total_new[0] = ifm->ifm_data.ifi_ibytes;
+				if( total_new[0] > total[0] )
+					ret[0] = total_new[0] - total[0];
+				total[0] = total_new[0];
+				
+				total_new[1] = ifm->ifm_data.ifi_obytes;
+				if( total_new[1] > total[1] )
+					ret[1] = total_new[1] - total[1];
+				total[1] = total_new[1];
+				
+				dev_exists = true;
+				
+				break;
+			}
+			else
+			{
+				dev_exists = false;
+			}
+		}
+	}
+	
+	if( !dev_exists )
+		total[0] = total[1] = 0;
+	
+	//======== Free/Open/NetBSD section (end) ========
+	
+	//======== Solaris section ========
+	
+        kstat_ctl_t *kc;
+        kstat_t *ksp;
+        kstat_named_t *knp;
+	
+	kc = kstat_open();
+	ksp = kstat_lookup( kc, NULL, -1, dev );
+	if( ksp && kstat_read( kc, ksp, NULL ) >= 0 )
+	{
+		knp = (kstat_named_t *) kstat_data_lookup( ksp, "rbytes" );
+		if( knp )
+		{
+			total_new[0] = knp->value.ui32;
+			if( total_new[0] > total[0] )
+				ret[0] = total_new[0] - total[0];
+			total[0] = total_new[0];
+		}
+		knp = (kstat_named_t *) kstat_data_lookup( ksp, "obytes" );
+		if( knp )
+		{
+			total_new[1] = knp->value.ui32;
+			if( total_new[1] > total[1] )
+				ret[1] = total_new[1] - total[1];
+			total[1] = total_new[1];
+		}
+		dev_exists = true;
+	}
+	else
+	{
+		dev_exists = false;
+		total[0] = total[1] = 0;
+	}
+	kstat_close( kc );
+	
+	//======== Solaris section (end) ========
+*/
+	return ret;
 }
 
 float Proc::getElapsedTime()
 {
-	return(elapsed_time);
+	return elapsed_time;
 }
 
 float Proc::totalIn(void)
 {
-	return(S[0]);
+	return total[0];
 }
 
 float Proc::totalOut(void)
 {
-	return(S[1]);
+	return total[1];
 }
