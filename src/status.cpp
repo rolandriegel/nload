@@ -28,7 +28,7 @@ Status::~Status()
 }
 
 //new traffic measurement has been made => update statistics
-void Status::update( int new_value, long long new_total )
+void Status::update( int new_value, unsigned int new_total )
 {
 	
 	m_cur = new_value;

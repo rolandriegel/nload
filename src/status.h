@@ -35,7 +35,7 @@ public:
 	Status();
 	~Status();
 	
-	void update( int, long long );
+	void update( int, unsigned int );
 	void setWindow( WINDOW * );
 	void print( int, int );
 	
