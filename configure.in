@@ -50,7 +50,7 @@ case $target in
         ;;
 esac
 
-# Adds extra arguments to configure script.
+dnl Adds extra arguments to configure script.
 AC_ARG_ENABLE(debug,[  --enable-debug          enable runtime debugging [no]],
               [AC_CHECK_LIB(efence, main)],
                LDFLAGS="$LDFLAGS -s")
