@@ -52,8 +52,7 @@ float *Proc::readLoad(void)
 	ret[0] = 0;
 	ret[1] = 0;
 
-	// ======== Linux section ========
-
+#ifdef HAVE_LINUX
 	FILE *fd;
 	char buf[512] = "";
 	char tag[128] = "";
@@ -108,11 +107,9 @@ float *Proc::readLoad(void)
 	fclose(fd);
 	
 	dev_exists = false;
-	
-	//======== Linux section (end) ========
-/*
-	//======== Free/Open/NetBSD section ========
-	
+#endif
+
+#ifdef HAVE_BSD
 	struct if_msghdr *ifm, *nextifm;
 	struct sockaddr_dl *sdl;
 	char *lim, *next;
@@ -187,11 +184,9 @@ float *Proc::readLoad(void)
 	
 	if( !dev_exists )
 		total[0] = total[1] = 0;
+#endif
 	
-	//======== Free/Open/NetBSD section (end) ========
-	
-	//======== Solaris section ========
-	
+#ifdef HAVE_SOLARIS
         kstat_ctl_t *kc;
         kstat_t *ksp;
         kstat_named_t *knp;
@@ -224,9 +219,8 @@ float *Proc::readLoad(void)
 		total[0] = total[1] = 0;
 	}
 	kstat_close( kc );
+#endif
 	
-	//======== Solaris section (end) ========
-*/
 	return ret;
 }
 

@@ -20,6 +20,7 @@
 
 #include <iostream.h>
 #include <curses.h>
+#include <config.h>
 #include "proc.h"
 #include "graph.h"
 #include "status.h"
@@ -32,16 +33,17 @@ const int STANDARD_AVERAGE_SMOOTHNESS = 9;
 const Status::status_format STANDARD_TRAFFIC_FORMAT = Status::kilobit;
 const Status::status_format STANDARD_DATA_FORMAT = Status::megabit;
 
-//======= standard Linux network device ======
+#ifdef HAVE_LINUX
 char* const STANDARD_NETWORK_DEVICE = "eth0";
+#endif
 
-/*
-//======= standard Free/Open/NetBSD network device ======
+#ifdef HAVE_BSD
 char* const STANDARD_NETWORK_DEVICE = "fxp0";
+#endif
 
-//======= standard Solaris network device ======
+#ifdef HAVE_SOLARIS
 char* const STANDARD_NETWORK_DEVICE = "hme0";
-*/
+#endif
 
 class Dev : public Proc
 {

@@ -2,34 +2,49 @@
 
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src/dev.cpp)
+AC_CANONICAL_SYSTEM
 AM_INIT_AUTOMAKE(nload, 0.3.2)
 AM_CONFIG_HEADER(config.h)
 
 dnl Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
-AC_PROG_CPP
-AC_PROG_INSTALL
 
 dnl Checks for libraries.
-dnl Replace `main' with a function in -lncurses:
 AC_CHECK_LIB(ncurses, initscr)
 
 dnl Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS(limits.h sys/time.h)
 
-# Use -Wall if we have gcc.
-if test "x$GCC" = "xyes" ; then
+# Only use -Wall if we have gcc.
+ if test "x$GCC" = "xyes" ; then
         CFLAGS="$CFLAGS -Wall"
 fi
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
+AC_TYPE_SIZE_T
 AC_HEADER_TIME
 
 dnl Checks for library functions.
 AC_CHECK_FUNCS(gettimeofday)
+
+dnl System dependant jobs
+# AC_MSG_CHECKING(for operating system type)
+case $target in
+    *linux*)
+         AC_DEFINE(HAVE_LINUX, 1)
+         ;;
+    *bsd*)
+        AC_DEFINE(HAVE_BSD, 1)
+        ;;
+    *solaris*)
+        AC_CHECK_LIB(rt, main)
+        AC_CHECK_LIB(kstat, kstat_open)
+        AC_DEFINE(HAVE_SOLARIS, 1)
+        ;;
+esac
 
 AC_OUTPUT([
 Makefile

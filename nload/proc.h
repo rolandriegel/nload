@@ -19,14 +19,16 @@
 #define PROC_H
 
 
-//======== Linux includes ========
+#include <config.h>
+
+#ifdef HAVE_LINUX
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <sys/time.h>
-//======== Linux includes (end) ========
-/*
-//======== Free/Open/NetBSD includes ========
+#endif
+
+#ifdef HAVE_BSD
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
@@ -35,15 +37,14 @@
 #include <net/if.h>
 #include <net/if_dl.h>
 #include <net/route.h>
-//======== Free/Open/NetBSD includes (end) ========
+#endif
 
-//======== Solaris includes ========
+#ifdef HAVE_SOLARIS
 #include <sys/socket.h>
 #include <kstat.h>
 #include <net/if.h>
 #include <sys/sockio.h>
-//======== Solaris includes (end) ========
-*/
+#endif
 
 class Proc
 {

@@ -3,11 +3,23 @@
 /* Define to empty if the keyword does not work.  */
 #undef const
 
+/* Define to `unsigned' if <sys/types.h> doesn't define.  */
+#undef size_t
+
 /* Define if you have the ANSI C header files.  */
 #undef STDC_HEADERS
 
 /* Define if you can safely include both <sys/time.h> and <time.h>.  */
 #undef TIME_WITH_SYS_TIME
+
+/* Is Linux the build target OS? */
+#undef HAVE_LINUX
+
+/* Is *BSD the build target OS? */
+#undef HAVE_BSD
+
+/* Is Solaris the build target OS? */
+#undef HAVE_SOLARIS
 
 /* Define if you have the gettimeofday function.  */
 #undef HAVE_GETTIMEOFDAY
@@ -18,8 +30,14 @@
 /* Define if you have the <sys/time.h> header file.  */
 #undef HAVE_SYS_TIME_H
 
+/* Define if you have the kstat library (-lkstat).  */
+#undef HAVE_LIBKSTAT
+
 /* Define if you have the ncurses library (-lncurses).  */
 #undef HAVE_LIBNCURSES
+
+/* Define if you have the rt library (-lrt).  */
+#undef HAVE_LIBRT
 
 /* Name of package */
 #undef PACKAGE
