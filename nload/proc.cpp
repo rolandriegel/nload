@@ -48,7 +48,7 @@ Proc::~Proc()
 	free(ret);
 }
 
-void Proc::setProcDev(char *new_procdev)
+void Proc::setProcDev(const char *new_procdev)
 {
 	strcpy(dev, new_procdev);
 	readLoad();

@@ -85,8 +85,8 @@ void Dev::update( bool print )
 	}
 	
 	//calculate the traffic (Bytes/s)
-	currentio[0] = currentio[0] / ( getElapsedTime() / (float) 1000 );
-	currentio[1] = currentio[1] / ( getElapsedTime() / (float) 1000 );
+	currentio[0] = currentio[0] / ( getElapsedTime() / 1000.0F );
+	currentio[1] = currentio[1] / ( getElapsedTime() / 1000.0F );
 	
 	//update graphs and statistics
 	for( int i = 0; i < 2; i++ )

@@ -31,7 +31,7 @@ public:
 	Proc();
 	~Proc();
 
-	void setProcDev(char *);
+	void setProcDev(const char *);
 	char *ProcDev();
 	
 	bool ProcDevExists();

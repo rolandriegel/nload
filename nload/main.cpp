@@ -41,23 +41,18 @@ long bar_max_out = STANDARD_BAR_MAX_OUT;
 int average_smoothness = STANDARD_AVERAGE_SMOOTHNESS;
 bool print_only_once = false;
 
+vector<string *> network_device;
+vector<Dev *> devs;
+
 struct timespec wanted_time;
-int index = 0;
 int cur_dev = 0;
 int key = 0;
 int x, y, curx, cury;
 
-network_device = (char **) malloc( sizeof( char * ) );
-if ( network_device == NULL )
-{
-    fprintf( stderr, "Running out of memory.\n\n" );
-    exit( EXIT_FAILURE );
-}
-
 //parse the command line
 for ( int i = 1; i < argc; i++ )
 {
-  //wants the user help?
+	//wants the user help?
 	if ( strcmp( argv[i], "-h" ) == 0 || strcmp( argv[i], "--help" ) == 0 )
 	{
 		printhelp();
@@ -147,26 +142,13 @@ for ( int i = 1; i < argc; i++ )
 	//assume unknown parameter to be the network device
 	else
 	{
-		network_device = (char **) realloc( network_device, ( index + 1 ) * sizeof( char * ) );
-		if ( network_device == NULL )
-		{
-			fprintf( stderr, "Running out of memory.\n\n" );
-			exit( EXIT_FAILURE );
-		}
-	  network_device[ index++ ] = argv[i];
+		network_device.push_back( new string( argv[i] ) );
 	}
 
 }
 
-if ( index == 0 )
-	network_device[ index++ ] = STANDARD_NETWORK_DEVICE;
-
-devs = (Dev **) malloc( index * sizeof( Dev * ) );
-if ( devs == NULL )
-{
-	fprintf( stderr, "Running out of memory.\n\n" );
-	exit( EXIT_FAILURE );
-}
+if ( network_device.size() == 0 )
+	network_device.push_back( new string( STANDARD_NETWORK_DEVICE ) );
 
 //handle interrrupt signal
 signal( SIGINT, finish );
@@ -179,24 +161,27 @@ nodelay( stdscr, true );
 noecho();
 
 //create one instance of the Dev class per device
-for ( int i = 0; i < index; i++ )
+for ( vector<string *>::size_type i = 0; i < network_device.size(); i++ )
 {
-	devs[i] = new Dev();
-	devs[i] -> setProcDev( network_device[i] );
-	devs[i] -> setShowGraphs( show_graphs );
-	devs[i] -> setTrafficWithMaxDeflectionOfGraphs( bar_max_in * 1024 / 8, bar_max_out * 1024 / 8 );
-	devs[i] -> setAverageSmoothness( average_smoothness );
-	devs[i] -> setWindow( window );
-	devs[i] -> setDeviceNumber( i + 1 );
-	devs[i] -> setTotalNumberOfDevices( index );
+	devs.push_back( new Dev() );
+	devs.back() -> setProcDev( network_device[i] -> c_str() );
+	devs.back() -> setShowGraphs( show_graphs );
+	devs.back() -> setTrafficWithMaxDeflectionOfGraphs( bar_max_in * 1024 / 8, bar_max_out * 1024 / 8 );
+	devs.back() -> setAverageSmoothness( average_smoothness );
+	devs.back() -> setWindow( window );
+	devs.back() -> setDeviceNumber( i + 1 );
+	devs.back() -> setTotalNumberOfDevices( network_device.size() );
 }
 
 do
 {
-
+	
+	//get the number of devices
+	long size = devs.size();
+	
 	//wait sleep_interval milliseconds
 	wanted_time.tv_sec = sleep_interval / 1000;
-	wanted_time.tv_nsec = sleep_interval % 1000 * (long) 1000000;
+	wanted_time.tv_nsec = sleep_interval % 1000 * 1000000L;
 	nanosleep( &wanted_time, NULL );
 	
 	getmaxyx( window, y, x );
@@ -206,14 +191,14 @@ do
 		switch( key )
 		{
 			case KEY_RIGHT:
-				cur_dev += show_graphs ? 1 : ( y / 9 >= index ? 0 : y / 9 );
-				if( cur_dev >= index )
+				cur_dev += show_graphs ? 1 : ( y / 9 >= size ? 0 : y / 9 );
+				if( cur_dev >= size )
 					cur_dev = 0;
 				break;
 			case KEY_LEFT:
-				cur_dev -= show_graphs ? 1 : ( y / 9 >= index ? 0 : y / 9 );
+				cur_dev -= show_graphs ? 1 : ( y / 9 >= size ? 0 : y / 9 );
 				if( cur_dev < 0 )
-					cur_dev = index - 1;
+					cur_dev = size - 1;
 				break;
 			case 'q':
 			case 'Q':
@@ -221,7 +206,7 @@ do
 				break;
 		}
 	
-	if( ! show_graphs && y / 9 >= index )
+	if( ! show_graphs && y / 9 >= size )
 		cur_dev = 0;
 	
 	//clear the screen
@@ -229,7 +214,7 @@ do
 	move( 0, 0 ); //this shouldn't be necessary at all
 	
 	//update all devices and print the data of the current one
-	for( int i = 0; i < index; i++ )
+	for( int i = 0; i < size; i++ )
 	{
 		if( show_graphs )
 		{
@@ -257,9 +242,6 @@ void finish( int signal )
 
 //stop ncurses
 endwin();
-
-free( network_device );
-free( devs );
 
 exit( EXIT_SUCCESS );
 

@@ -24,8 +24,8 @@
   */
 
 #include <iostream.h>
-#include <stdlib.h>
 #include <curses.h>
+#include <list>
 
 class Graph
 {
@@ -39,15 +39,14 @@ public:
 	void setTrafficWithMaxDeflectionOfBars( int );
 	
 	void update( int );
-  void setWindow( WINDOW * );
+	void setWindow( WINDOW * );
 	void print( int, int );
 
 private:
-	int m_numofbars, max_numofbars;
 	int m_heightofbars;
 	int m_trafficwithmaxdeflectionofbars;
 	
-	int *m_values;
+	list<int> m_values;
 	
 	WINDOW *m_window;
 	

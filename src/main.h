@@ -23,12 +23,10 @@
 #include <time.h>
 #include <curses.h>
 #include <signal.h>
+#include <string>
+#include <vector>
 #include "dev.h"
-
-char **network_device;
-Dev **devs;
 
 void printhelp();
 void finish(int);
 int main(int, char **);
-

@@ -19,63 +19,22 @@
 
 Graph::Graph()
 {
-	
-	m_numofbars = max_numofbars = 0;
 	m_heightofbars = 0;
 	m_trafficwithmaxdeflectionofbars = 0;
-	
 }
 
 Graph::~Graph()
 {
-	setNumOfBars(0);
 }
 
 //sets the number of the graph's vertical #-bars
 void Graph::setNumOfBars( int new_numofbars )
 {
 	//logically wrong: number of #-bars has always to be positive
-	if( new_numofbars < 0 )
-		return;
-	//logically wrong, but used for freeing value array memory
-	else if( new_numofbars == 0 )
-	{
-		m_numofbars = max_numofbars = new_numofbars;
-		free( m_values );
-		return;
-	}
-	/*
-	 *set new number, but don't reserve more array elements, as there had already been more
-	 *elements some time before
-	 */
-	else if( new_numofbars <= max_numofbars )
-	{
-		m_numofbars = new_numofbars;
-		return;
-	}
-	//number has never been larger before => reserve more array elements
-	else if( new_numofbars > max_numofbars )
-	{
-		//if there are already some bars, resize memory block
-		if( max_numofbars != 0 )
-			m_values = (int *) realloc( m_values, new_numofbars * sizeof( int ) );
-		//if not, get new memory
-		else
-			m_values = (int *) malloc( new_numofbars * sizeof( int ) );
-		
-		//not enough memory left
-		if ( m_values == NULL )
-		{
-			fprintf( stderr, "Running out of memory.\n\n" );
-			exit( EXIT_FAILURE );
-		}
-		
-		//initialize memory
-		for( int i = m_numofbars; i < new_numofbars; i++ )
-			m_values[i] = 0;
-		
-		m_numofbars = max_numofbars = new_numofbars;
-	}
+	if( new_numofbars <= 0 ) return;
+	
+	//vertically resize the graph's value list
+	m_values.resize( new_numofbars );
 }
 
 //sets the height of the graph's vertical #-bars
@@ -92,19 +51,17 @@ void Graph::setTrafficWithMaxDeflectionOfBars( int new_trafficwithmaxdeflectiono
 	m_trafficwithmaxdeflectionofbars = new_trafficwithmaxdeflectionofbars;
 }
 
-//new traffic measurement has been made => update the graph's value array
+//new traffic measurement has been made => update the graph's value list
 void Graph::update(int new_value)
 {
 	//[new_value] = Bytes/s
 	
-	if( m_numofbars <= 0 ) return;
+	if( m_values.size() == 0 ) return;
 	
-	//put all values one position back (this deletes the last one)
-	for( int i = m_numofbars - 2 - 1; i >= 0; i--)
-		m_values[ i + 1 ] = m_values[i];
-	
-	//new traffic value becomes the first one in the graph
-	m_values[0] = new_value;
+	//put new value to the beginning of the list, it becomes the first #-bar
+	m_values.push_front( new_value );
+	//delete the last #-bar of the list
+	m_values.pop_back();
 	
 }
 
@@ -121,11 +78,13 @@ void Graph::print( int x, int y )
 	
 	move( y, x );
 	
-	for( int l = 0; l < m_heightofbars; l++ ) //cycle through through the lines
+	//cycle through through the lines
+	for( int l = 0; l < m_heightofbars; l++ )
 	{
-		for( int r = 0; r < m_numofbars; r++ ) //for each line cycle through the rows
+		//for each line cycle through the rows
+		for( list<int>::reverse_iterator r = m_values.rbegin(); r != m_values.rend() ; r++ )
 		{
-			if( m_values[ m_numofbars - r - 1 ] / (float) m_trafficwithmaxdeflectionofbars >= 1.0 - ( l / (float) m_heightofbars ) )
+			if( (*r) / (float) m_trafficwithmaxdeflectionofbars >= 1.0 - ( l / (float) m_heightofbars ) )
 				addch( '#' );
 			else
 				addch( ' ' );
