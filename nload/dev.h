@@ -18,11 +18,6 @@
 #ifndef DEV_H
 #define DEV_H
 
-
-/**
-  *@author Roland Riegel
-  */
-
 #include <iostream.h>
 #include <curses.h>
 #include "proc.h"
@@ -35,6 +30,8 @@ const bool STANDARD_SHOW_GRAPHS = true;
 const int STANDARD_SLEEP_INTERVAL = 500;
 char* const STANDARD_NETWORK_DEVICE = "eth0";
 const int STANDARD_AVERAGE_SMOOTHNESS = 9;
+const Status::status_format STANDARD_TRAFFIC_FORMAT = Status::kilobit;
+const Status::status_format STANDARD_DATA_FORMAT = Status::megabit;
 
 class Dev : public Proc
 {
@@ -49,6 +46,7 @@ public:
 	void setAverageSmoothness( int );
 	void setShowGraphs( bool );
 	void setTrafficWithMaxDeflectionOfGraphs( int, int );
+	void setStatusFormat( Status::status_format, Status::status_format );
 	
 	void setWindow( WINDOW * );
 	
@@ -56,6 +54,8 @@ private:
 	int m_devicenumber;
 	int m_totalnumberofdevices;
 	bool m_showgraphs;
+	Status::status_format m_trafficformat;
+	Status::status_format m_dataformat;
 	
 	Status *device_status[2];
 	Graph *traffic_graph[2];

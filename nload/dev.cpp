@@ -48,6 +48,8 @@ Dev::Dev() : Proc::Proc()
 	
 	setProcDev( STANDARD_NETWORK_DEVICE );
 	
+	setStatusFormat( STANDARD_TRAFFIC_FORMAT, STANDARD_DATA_FORMAT );
+	
 	setDeviceNumber(0);
 	setTotalNumberOfDevices(0);
 	
@@ -85,8 +87,8 @@ void Dev::update( bool print )
 	}
 	
 	//calculate the traffic (Bytes/s)
-	currentio[0] = currentio[0] / ( getElapsedTime() / 1000.0F );
-	currentio[1] = currentio[1] / ( getElapsedTime() / 1000.0F );
+	currentio[0] = currentio[0] / ( getElapsedTime() / 1000 );
+	currentio[1] = currentio[1] / ( getElapsedTime() / 1000 );
 	
 	//update graphs and statistics
 	for( int i = 0; i < 2; i++ )
@@ -117,7 +119,7 @@ void Dev::update( bool print )
 		traffic_graph[0] -> print( 0, cury );
 		
 		getyx( m_window, cury, curx );
-		device_status[0] -> print( x * 2 / 3 + 2, cury - 5 );
+		device_status[0] -> print( x * 2 / 3 + 2, cury - 5, m_trafficformat, m_dataformat );
 		
 		//outgoing traffic
 		addstr( "Outgoing:\n" );
@@ -128,7 +130,7 @@ void Dev::update( bool print )
 		traffic_graph[1] -> print( 0, cury );
 		
 		getyx( m_window, cury, curx );
-		device_status[1] -> print( x * 2 / 3 + 2, cury - 4 );
+		device_status[1] -> print( x * 2 / 3 + 2, cury - 4, m_trafficformat, m_dataformat );
 	}
 	//... or not
 	else
@@ -140,8 +142,8 @@ void Dev::update( bool print )
 		
 		getyx( m_window, cury, curx );
 		
-		device_status[0] -> print( 0, cury ); //incoming traffic
-		device_status[1] -> print( x / 2, cury ); //outgoing traffic
+		device_status[0] -> print( 0, cury, m_trafficformat, m_dataformat ); //incoming traffic
+		device_status[1] -> print( x / 2, cury, m_trafficformat, m_dataformat ); //outgoing traffic
 		
 		addch( '\n' );
 	}
@@ -201,3 +203,9 @@ void Dev::setTotalNumberOfDevices( int new_totalnumberofdevices )
 	m_totalnumberofdevices = new_totalnumberofdevices;
 }
 
+//set the display format (unit) for traffic and data numbers
+void Dev::setStatusFormat( Status::status_format new_trafficformat, Status::status_format new_dataformat )
+{
+	m_trafficformat = new_trafficformat;
+	m_dataformat = new_dataformat;
+}

@@ -27,6 +27,9 @@
 #include <vector>
 #include "dev.h"
 
+using std::string;
+using std::vector;
+
 void printhelp();
 void finish(int);
 int main(int, char **);

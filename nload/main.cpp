@@ -40,6 +40,8 @@ long bar_max_in = STANDARD_BAR_MAX_IN;
 long bar_max_out = STANDARD_BAR_MAX_OUT;
 int average_smoothness = STANDARD_AVERAGE_SMOOTHNESS;
 bool print_only_once = false;
+Status::status_format traffic_format = STANDARD_TRAFFIC_FORMAT;
+Status::status_format data_format = STANDARD_DATA_FORMAT;
 
 vector<string *> network_device;
 vector<Dev *> devs;
@@ -132,7 +134,90 @@ for ( int i = 1; i < argc; i++ )
 			exit(1);
 		}
 	}
-	//has the user chosen to display multiple devices and thus not to desplay graphs?
+	//has the user set a non-default unit for traffic numbers?
+	else if ( strcmp( argv[i], "-u" ) == 0 )
+	{
+		if ( i < argc - 1 && isalpha( argv[ i + 1 ][0] ) != 0 )
+		{
+			switch( argv[ i + 1 ][0] )
+			{
+				case 'H':
+				case 'h':
+					traffic_format = Status::human_readable;
+					break;
+				case 'B':
+				case 'b':
+					traffic_format = Status::bit;
+					break;
+				case 'K':
+				case 'k':
+					traffic_format = Status::kilobit;
+					break;
+				case 'M':
+				case 'm':
+					traffic_format = Status::megabit;
+					break;
+				case 'G':
+				case 'g':
+					traffic_format = Status::gigabit;
+					break;
+				default:
+					fprintf( stderr, "Wrong argument for the -u parameter.\n\n" );
+					printhelp();
+					exit(1);
+			}
+			i++;
+		}
+		else
+		{
+			fprintf( stderr, "Wrong argument for the -u parameter.\n\n" );
+			printhelp();
+			exit(1);
+		}
+	}
+	//has the user set a non-default unit for numbers of amount of data?
+	else if( strcmp( argv[i], "-U" ) == 0 )
+	{
+		if ( i < argc - 1 && isalpha( argv[ i + 1 ][0] ) != 0 )
+		{
+			switch( argv[ i + 1 ][0] )
+			{
+				case 'H':
+				case 'h':
+					data_format = Status::human_readable;
+					break;
+				case 'B':
+				case 'b':
+					data_format = Status::bit;
+					break;
+				case 'K':
+				case 'k':
+					data_format = Status::kilobit;
+					break;
+				case 'M':
+				case 'm':
+					data_format = Status::megabit;
+					break;
+				case 'G':
+				case 'g':
+					data_format = Status::gigabit;
+					break;
+				default:
+					fprintf( stderr, "Wrong argument for the -U parameter.\n\n" );
+					printhelp();
+					exit(1);
+			}
+			i++;
+		}
+		else
+		{
+			fprintf( stderr, "Wrong argument for the -U parameter.\n\n" );
+			printhelp();
+			exit(1);
+		}
+	
+	}
+	//has the user chosen to display multiple devices and thus not to display graphs?
 	else if ( strcmp( argv[i], "-m" ) == 0 )
 	{
 		show_graphs = false;
@@ -168,6 +253,7 @@ for ( vector<string *>::size_type i = 0; i < network_device.size(); i++ )
 	devs.back() -> setShowGraphs( show_graphs );
 	devs.back() -> setTrafficWithMaxDeflectionOfGraphs( bar_max_in * 1024 / 8, bar_max_out * 1024 / 8 );
 	devs.back() -> setAverageSmoothness( average_smoothness );
+	devs.back() -> setStatusFormat( traffic_format, data_format );
 	devs.back() -> setWindow( window );
 	devs.back() -> setDeviceNumber( i + 1 );
 	devs.back() -> setTotalNumberOfDevices( network_device.size() );
@@ -276,12 +362,17 @@ fprintf( stderr,
 	"-t intervall	determines the refresh interval of the display in milliseconds\n"
 	"		if 0 print net load only one time and exit\n"
 	"		default is %d\n"
+	"-u h|b|k|m|g	sets the type of unit used for the display of traffic numbers\n"
+	"		h: human readable (auto), b: byte/s, k: kbyte/s, m: mbyte/s, g: gbyte/s\n"
+	"		default is k\n"
+	"-U h|b|k|m|g	same as -u, but for an amount of data, e.g. byte, kbyte etc.\n"
+	"		default is k\n"
 	"devices		network devices to use\n"
 	"		default is \"%s\"\n"
 	"--help\n"
 	"-h		print this help\n"
 	"-b		obsolete - ignored\n\n"
-	"example: %s -t 200 -s 7 -i 1024 -o 128 eth0 eth1\n\n",
+	"example: %s -t 200 -s 7 -i 1024 -o 128 -U h eth0 eth1\n\n",
 	
 	PACKAGE,
 	VERSION,

@@ -56,37 +56,91 @@ void Status::setWindow( WINDOW *new_window )
 }
 
 //print statistics
-void Status::print( int x, int y )
+void Status::print( int x, int y, status_format traff_format, status_format data_format )
 {
 	
 	int curx, cury;
+	double value;
 	char fText[100] = "";
 	
 	//print current traffic
 	move( y, x );
-	sprintf( fText, "Curr: %.2f kBit/s\n", (float) m_cur * 8 / 1024 );
+	value = (double) m_cur * 8 / getUnitFactor( traff_format, m_cur * 8 );
+	sprintf( fText, "Curr: %.2f %s/s\n", value, getUnitString( traff_format, m_cur * 8, false ) );
 	addstr( fText );
 	//print average traffic since nload start
 	getyx( m_window, cury, curx );
 	move( cury, x );
-	sprintf( fText, "Avg: %.2f kbit/s\n", (float) m_average * 8 / 1024 );
+	value = (double) m_average * 8 / getUnitFactor( traff_format, m_average * 8 );
+	sprintf( fText, "Avg: %.2f %s/s\n", value, getUnitString( traff_format, m_average * 8, false ) );
 	addstr( fText );
 	//print min traffic since nload start
 	getyx( m_window, cury, curx );
 	move( cury, x );
-	sprintf( fText, "Min: %.2f kBit/s\n", (float) m_min * 8 / 1024 );
+	value = (double) m_min * 8 / getUnitFactor( traff_format, m_min * 8 );
+	sprintf( fText, "Min: %.2f %s/s\n", value, getUnitString( traff_format, m_min * 8, false ) );
 	addstr( fText );
 	//print max traffic since nload start
 	getyx( m_window, cury, curx );
 	move( cury, x );
-	sprintf( fText, "Max: %.2f kBit/s\n", (float) m_max * 8 / 1024);
+	value = (double) m_max * 8 / getUnitFactor( traff_format, m_max * 8 );
+	sprintf( fText, "Max: %.2f %s/s\n", value, getUnitString( traff_format, m_max * 8, false ) );
 	addstr( fText );
 	//print total traffic since last system reboot
 	getyx( m_window, cury, curx );
 	move( cury, x );
-	sprintf( fText, "Ttl: %.2f MB\n", (double) m_total / 1024 / 1024 );
+	value = (double) m_total / getUnitFactor( data_format, m_total );
+	sprintf( fText, "Ttl: %.2f %s\n", value,  getUnitString( data_format, m_total, true ) );
 	addstr( fText );
 	
+}
+
+//return the matching unit string, e.g. "kBit" for status_format::kilobit
+const char* Status::getUnitString( status_format format, long long value, bool bytes )
+{
+	switch( format )
+	{
+		case human_readable:
+			for( int i = 3; i >= 0; i-- )
+				if ( value >= pow( 1024, i ) )
+					switch(i)
+					{
+						case 3:
+							return bytes ? "GByte" : "GBit";
+						case 2:
+							return bytes ? "MByte" : "MBit";
+						case 1:
+							return bytes ? "kByte" : "kBit";
+						case 0:
+							return bytes ? "Byte" : "Bit";
+					}
+		case bit:
+			return bytes ? "Byte" : "Bit";
+		case kilobit:
+			return bytes ? "kByte" : "kBit";
+		case megabit:
+			return bytes ? "MByte" : "MBit";
+		case gigabit:
+			return bytes ? "GByte" : "GBit";
+		default: //should never be executed
+			return "";
+	}
+}
+
+//return the matching conversion factor between Bit and e.g. status_format::kilobit
+int Status::getUnitFactor( status_format format, long long value )
+{
+	if( format == human_readable )
+	{
+		for( int i = 3; i >= 0; i-- )
+			if ( value >= pow( 1024, i ) )
+				return int( pow( 1024, i ) );
+		return 1;
+	}
+	else
+	{
+		return int( pow( 1024, format ) );
+	}
 }
 
 //calculate min and max traffic values

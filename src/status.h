@@ -18,15 +18,10 @@
 #ifndef STATUS_H
 #define STATUS_H
 
-
-/**
-  *@author Roland Riegel
-  */
-
 #include <iostream.h>
 #include <curses.h>
-
 #include <limits.h>
+#include <math.h>
 
 class Status
 {
@@ -35,15 +30,27 @@ public:
 	Status();
 	~Status();
 	
+	enum status_format
+	{
+		human_readable = -1,
+		bit = 0,
+		kilobit = 1,
+		megabit = 2,
+		gigabit = 3
+	};
+	
 	void update( int, unsigned int );
 	void setWindow( WINDOW * );
-	void print( int, int );
+	void print( int, int, status_format, status_format );
 	
 	void setAverageSmoothness( int );
 	
 private:
 	void minMax( int );
 	void average( int );
+	
+	const char* getUnitString( status_format, long long, bool );
+	int getUnitFactor( status_format, long long );
 	
 	int m_min, m_max, m_average, m_cur;
 	long long m_total;
