@@ -62,6 +62,7 @@ AC_CHECK_FUNCS([gettimeofday pow inet_ntoa socket])
 
 AC_CONFIG_FILES([
 Makefile
+nload.spec
 docs/Makefile
 docs/nload.1
 src/Makefile
