@@ -1,4 +1,4 @@
-# Helder Correia <helder.correia@netcabo.pt>
+/* Helder Correia <helder.correia@netcabo.pt> */
 
 /* Is Linux the build target OS? */
 #undef HAVE_LINUX
