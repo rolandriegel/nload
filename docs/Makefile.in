@@ -69,17 +69,17 @@ am__include = @am__include@
 am__quote = @am__quote@
 install_sh = @install_sh@
 
-dist_man1_MANS = nload.1.gz
+dist_man1_MANS = nload.1
 EXTRA_DIST = $(dist_man1_MANS)
 subdir = docs
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = nload.1
 DIST_SOURCES =
 
 NROFF = nroff
 MANS = $(dist_man1_MANS)
-DIST_COMMON = $(dist_man1_MANS) Makefile.am Makefile.in
+DIST_COMMON = $(dist_man1_MANS) Makefile.am Makefile.in nload.1.in
 all: all-am
 
 .SUFFIXES:
@@ -90,6 +90,8 @@ Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && \
 	  CONFIG_HEADERS= CONFIG_LINKS= \
 	  CONFIG_FILES=$(subdir)/$@ $(SHELL) ./config.status
+nload.1: $(top_builddir)/config.status nload.1.in
+	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= CONFIG_LINKS= $(SHELL) ./config.status
 uninstall-info-am:
 
 man1dir = $(mandir)/man1
