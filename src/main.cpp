@@ -34,8 +34,6 @@
 int main (int argc, char *argv[])
 {
 
-OptWindow optwindow;
-
 vector<string *> network_device;
 vector<Dev *> devs;
 
@@ -46,13 +44,13 @@ Option<long> bar_max_out( OptionBase::Long, STANDARD_BAR_MAX_OUT, "Full deflecti
 Option<int> average_smoothness( OptionBase::Int, STANDARD_AVERAGE_SMOOTHNESS, "Smoothness of the average in/out values" );
 Option<Status::status_format> traffic_format( OptionBase::Status, STANDARD_TRAFFIC_FORMAT, "Unit for traffic numbers" );
 Option<Status::status_format> data_format( OptionBase::Status, STANDARD_DATA_FORMAT, "Unit for data numbers" );
-optwindow.options().push_back( &sleep_interval );
-optwindow.options().push_back( &show_multiple_devices );
-optwindow.options().push_back( &bar_max_in );
-optwindow.options().push_back( &bar_max_out );
-optwindow.options().push_back( &average_smoothness );
-optwindow.options().push_back( &traffic_format );
-optwindow.options().push_back( &data_format );
+m_optwindow.options().push_back( &sleep_interval );
+m_optwindow.options().push_back( &show_multiple_devices );
+m_optwindow.options().push_back( &bar_max_in );
+m_optwindow.options().push_back( &bar_max_out );
+m_optwindow.options().push_back( &average_smoothness );
+m_optwindow.options().push_back( &traffic_format );
+m_optwindow.options().push_back( &data_format );
 
 bool print_only_once = false;
 
@@ -280,10 +278,6 @@ for ( vector<string *>::size_type i = 0; i < network_device.size(); i++ )
 {
 	devs.push_back( new Dev() );
 	devs.back() -> setProcDev( network_device[i] -> c_str() );
-	devs.back() -> setShowGraphs( ! show_multiple_devices );
-	devs.back() -> setTrafficWithMaxDeflectionOfGraphs( bar_max_in * 1024 / 8, bar_max_out * 1024 / 8 );
-	devs.back() -> setAverageSmoothness( average_smoothness );
-	devs.back() -> setStatusFormat( traffic_format, data_format );
 	devs.back() -> setWindow( window );
 	devs.back() -> setDeviceNumber( i + 1 );
 	devs.back() -> setTotalNumberOfDevices( network_device.size() );
@@ -302,66 +296,84 @@ do
 	getmaxyx( stdscr, y, x );
 	getmaxyx( window, y_main, x_main );
 	
-	//wait sleep_interval milliseconds
+	//wait sleep_interval milliseconds (in steps of 100 ms)
 	struct timespec wanted_time;
-	wanted_time.tv_sec = sleep_interval / 1000;
-	wanted_time.tv_nsec = sleep_interval % 1000 * 1000000L;
-	nanosleep( &wanted_time, NULL );
+	wanted_time.tv_sec = 0;
 	
-	//process keyboard
-	int key;
-	while( ( key = getch() ) != ERR )
+	int rest_of_sleep_interval = sleep_interval;
+	
+	while( rest_of_sleep_interval > 0 )
 	{
-		optwindow.processRequest( key );
-		switch( key )
+		rest_of_sleep_interval -= 100;
+		wanted_time.tv_nsec = ( rest_of_sleep_interval >= 0 ? 100 : 100 + rest_of_sleep_interval ) * 1000000L;
+		
+		nanosleep( &wanted_time, 0 );
+		
+		//process keyboard
+		int key;
+		while( ( key = getch() ) != ERR )
 		{
-			case KEY_RIGHT:
-				if( ! optwindow.visible() )
-				{
-					cur_dev += show_multiple_devices ? ( y_main / 9 >= size ? 0 : y_main / 9 ) : 1;
-					if( cur_dev >= size )
-						cur_dev = 0;
-				}
-				break;
-			case KEY_LEFT:
-				if( ! optwindow.visible() )
-				{
-					cur_dev -= show_multiple_devices ? ( y_main / 9 >= size ? 0 : y_main / 9 ) : 1;
-					if( cur_dev < 0 )
-						cur_dev = size - 1;
-				}
-				break;
-			case 'o':
-			case 'O':
-				if( optwindow.visible() )
-				{
-					optwindow.hide();
-					mvwin( window, 0, 0 );
-					wresize( window, y, x );
-					
-					touchwin( stdscr );
-					wnoutrefresh( stdscr );
-				}
-				else
-				{
-					touchwin( stdscr );
-					wnoutrefresh( stdscr );
-					
-					wresize( window, y - y / 3, x );
-					mvwin( window, y / 3, 0 );
-					optwindow.show( 0, 0, x, y / 3 );
-				}
-				break;
-			case 'q':
-			case 'Q':
-				if( ! optwindow.visible() )
-					finish (0);
-				break;
+			m_optwindow.processRequest( key );
+			switch( key )
+			{
+				case KEY_RIGHT:
+					if( ! m_optwindow.visible() )
+					{
+						cur_dev += show_multiple_devices ? ( y_main / 9 >= size ? 0 : y_main / 9 ) : 1;
+						if( cur_dev >= size )
+							cur_dev = 0;
+					}
+					break;
+				case KEY_LEFT:
+					if( ! m_optwindow.visible() )
+					{
+						cur_dev -= show_multiple_devices ? ( y_main / 9 >= size ? 0 : y_main / 9 ) : 1;
+						if( cur_dev < 0 )
+							cur_dev = size - 1;
+					}
+					break;
+				case 'o':
+				case 'O':
+					if( m_optwindow.visible() )
+					{
+						m_optwindow.hide();
+						mvwin( window, 0, 0 );
+						wresize( window, y, x );
+						
+						touchwin( stdscr );
+						wnoutrefresh( stdscr );
+					}
+					else
+					{
+						touchwin( stdscr );
+						wnoutrefresh( stdscr );
+						
+						wresize( window, y - y / 3, x );
+						mvwin( window, y / 3, 0 );
+						m_optwindow.show( 0, 0, x, y / 3, optwindow_fieldChanged );
+					}
+					rest_of_sleep_interval = 0; //update the screen
+					break;
+				case 'q':
+				case 'Q':
+					if( ! m_optwindow.visible() )
+						finish (0);
+					break;
+			}
 		}
 	}
 	
 	if( show_multiple_devices && y_main / 9 >= size )
 		cur_dev = 0;
+	
+	//pipe through new settings
+	for ( vector<Dev *>::const_iterator r = devs.begin(); r != devs.end(); r++ )
+	{
+		(*r) -> setShowGraphs( ! show_multiple_devices );
+		(*r) -> setTrafficWithMaxDeflectionOfGraphs( bar_max_in * 1024 / 8, bar_max_out * 1024 / 8 );
+		(*r) -> setAverageSmoothness( average_smoothness );
+		(*r) -> setStatusFormat( traffic_format, data_format );
+	}
 	
 	//clear the screen
 	wclear( window );
@@ -384,12 +396,18 @@ do
 	
 	//refresh the screen
 	wnoutrefresh( window );
+	if( m_optwindow.visible() ) wnoutrefresh( m_optwindow.window() ); //always show cursor in option dialog
 	doupdate();
 	
 } while ( print_only_once != true ); //do this endless except the user said "-t 0"
 
 finish(0);
 
+}
+
+void optwindow_fieldChanged( FORM * form )
+{
+	m_optwindow.fieldChanged( form );
 }
 
 void finish( int signal )

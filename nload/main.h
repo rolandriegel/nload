@@ -36,7 +36,10 @@ using std::string;
 using std::vector;
 
 int main( int, char ** );
+void optwindow_fieldChanged( FORM * );
 void finish( int );
 void printhelp();
+
+OptWindow m_optwindow;
 
 #endif

@@ -28,8 +28,8 @@ OptWindow::~OptWindow()
 		hide();
 }
 
-//create window and show it with the given coordinates and sizes
-void OptWindow::show( int x, int y, int width, int height )
+//create option window and display the current settings
+void OptWindow::show( int x, int y, int width, int height, void ( *fieldChanged_func )( FORM * ) )
 {
 	if( m_visible )
 		hide();
@@ -49,65 +49,7 @@ void OptWindow::show( int x, int y, int width, int height )
 		set_field_opts( m_fields[ i + 1 ], field_opts( m_fields[ i + 1 ] ) & ~O_BLANK & ~O_AUTOSKIP );
 		
 		set_field_buffer( m_fields[i], 0, ( (*r) -> description() + ":" ).c_str() );
-		
-		char value[ value_field_width + 1 ];
-		switch( (*r) -> valueType() )
-		{
-			case OptionBase::Bool:
-				Option<bool> *bool_option;
-				bool_option = static_cast<Option<bool> *> (*r);
-				sprintf( value, (bool) *bool_option ? "[X]" : "[ ]" );
-				break;
-			case OptionBase::Int:
-				Option<int> *int_option;
-				int_option = static_cast<Option<int> *> (*r);
-				sprintf( value, "%i", (int) *int_option );
-				break;
-			case OptionBase::Long:
-				Option<long> *long_option;
-				long_option = static_cast<Option<long> *> (*r);
-				sprintf( value, "%li", (long) *long_option );
-				break;
-			case OptionBase::Status:
-				Option<Status::status_format> *status_option;
-				status_option = static_cast<Option<Status::status_format> *> (*r);
-                                switch( (Status::status_format) *status_option )
-				{
-					case Status::human_readable_bit:
-						sprintf( value, "Human Readable (Bit)" );
-						break;
-					case Status::human_readable_byte:
-						sprintf( value, "Human Readable (Byte)" );
-						break;
-					case Status::bit:
-						sprintf( value, "Bit" );
-						break;
-					case Status::byte:
-						sprintf( value, "Byte" );
-						break;
-					case Status::kilobit:
-						sprintf( value, "kBit" );
-						break;
-					case Status::kilobyte:
-						sprintf( value, "kByte" );
-						break;
-					case Status::megabit:
-						sprintf( value, "MBit" );
-						break;
-					case Status::megabyte:
-						sprintf( value, "MByte" );
-						break;
-					case Status::gigabit:
-						sprintf( value, "GBit" );
-						break;
-					case Status::gigabyte:
-						sprintf( value, "GByte" );
-						break;
-				}
-				break;
-		}
-		
-		set_field_buffer( m_fields[ i + 1 ], 0, value );
+		set_field_buffer( m_fields[ i + 1 ], 0, optionAsString( *r ) );
 		
 		(*r) -> setCursesField( m_fields[ i + 1 ] );
 		
@@ -119,10 +61,24 @@ void OptWindow::show( int x, int y, int width, int height )
 	
 	set_form_win( m_form, m_window );
 	
+	set_field_term( m_form, fieldChanged_func );
+	
 	post_form( m_form );
 	wrefresh( m_window );
 	
 	m_visible = true;
+}
+
+//this function is called when a form field changes
+//it is called by the function the fifth argument of show() points to
+//this can not be done in a nicer way as ncurses does not accept pointers to member functions
+void OptWindow::fieldChanged( FORM *changedform )
+{
+	for( vector<OptionBase *>::const_iterator r = m_options.begin(); r != m_options.end(); r++ )
+	{
+		if( (*r) -> cursesField() == current_field( m_form ) )
+			assignStringToOption( *r, field_buffer( (*r) -> cursesField(), 0 ) );
+	}
 }
 
 //hide window and destroy it
@@ -151,6 +107,119 @@ bool OptWindow::visible()
 	return m_visible;
 }
 
+const char *OptWindow::optionAsString( OptionBase *option )
+{
+	ostringstream oss;
+	switch( option -> valueType() )
+	{
+		case OptionBase::Bool:
+			Option<bool> *bool_option;
+			bool_option = static_cast<Option<bool> *> (option);
+			oss << ( *bool_option ? "[X]" : "[ ]" );
+			break;
+		case OptionBase::Int:
+			Option<int> *int_option;
+			int_option = static_cast<Option<int> *> (option);
+			oss << *int_option;
+			break;
+		case OptionBase::Long:
+			Option<long> *long_option;
+			long_option = static_cast<Option<long> *> (option);
+			oss << *long_option;
+			break;
+		case OptionBase::Status:
+			Option<Status::status_format> *status_option;
+			status_option = static_cast<Option<Status::status_format> *> (option);
+			switch( *status_option )
+			{
+				case Status::human_readable_bit:
+					oss << "Human Readable (Bit)";
+					break;
+				case Status::human_readable_byte:
+					oss << "Human Readable (Byte)";
+					break;
+				case Status::bit:
+					oss << "Bit";
+					break;
+				case Status::byte:
+					oss << "Byte";
+					break;
+				case Status::kilobit:
+					oss << "kBit";
+					break;
+				case Status::kilobyte:
+					oss << "kByte";
+					break;
+				case Status::megabit:
+					oss << "MBit";
+					break;
+				case Status::megabyte:
+					oss << "MByte";
+					break;
+				case Status::gigabit:
+					oss << "GBit";
+					break;
+				case Status::gigabyte:
+					oss << "GByte";
+					break;
+			}
+	}
+	
+	return oss.str().c_str();
+}
+
+void OptWindow::assignStringToOption( OptionBase *option, const char *value )
+{
+	stringstream ss;
+	ss << value;
+	switch( option -> valueType() )
+	{
+		case OptionBase::Bool:
+			Option<bool> *bool_option;
+			bool_option = static_cast<Option<bool> *> (option);
+			*bool_option = ( ss.str().find( "[X]" ) != string::npos );
+			break;
+		case OptionBase::Int:
+			Option<int> *int_option;
+			int_option = static_cast<Option<int> *> (option);
+			int int_dummy;
+			ss >> int_dummy;
+			*int_option = int_dummy;
+			break;
+		case OptionBase::Long:
+			Option<long> *long_option;
+			long_option = static_cast<Option<long> *> (option);
+			long long_dummy;
+			ss >> long_dummy;
+			*long_option = long_dummy;
+			break;
+		case OptionBase::Status:
+			Option<Status::status_format> *status_option;
+			status_option = static_cast<Option<Status::status_format> *> (option);
+			if( ss.str().find( "Human Readable (Bit)" ) != string::npos )
+				*status_option = Status::human_readable_bit;
+			else if( ss.str().find( "Human Readable (Byte)" ) != string::npos )
+				*status_option = Status::human_readable_byte;
+			else if( ss.str().find( "GBit" ) != string::npos )
+				*status_option = Status::gigabit;
+			else if( ss.str().find( "GByte" ) != string::npos )
+				*status_option = Status::gigabyte;
+			else if( ss.str().find( "MBit" ) != string::npos )
+				*status_option = Status::megabit;
+			else if( ss.str().find( "MByte" ) != string::npos )
+				*status_option = Status::megabyte;
+			else if( ss.str().find( "kBit"  ) != string::npos )
+				*status_option = Status::kilobit;
+			else if( ss.str().find( "kByte" ) != string::npos )
+				*status_option = Status::kilobyte;
+			else if( ss.str().find( "Bit" ) != string::npos )
+				*status_option = Status::bit;
+			else if( ss.str().find( "Byte" ) != string::npos )
+				*status_option = Status::byte;
+			break;
+	}
+}
+
 //process key presses
 void OptWindow::processRequest( int request )
 {
@@ -165,23 +234,29 @@ void OptWindow::processRequest( int request )
 				request = REQ_NEXT_CHAR;
 				break;
 			case KEY_UP:
-				request = REQ_SPREV_FIELD;
+				request = REQ_PREV_FIELD;
 				break;
 			case KEY_DOWN:
 			case '\t':
-				request = REQ_SNEXT_FIELD;
+				request = REQ_NEXT_FIELD;
 				break;
 			case KEY_DC:
 				request = REQ_DEL_CHAR;
 				break;
-			case KEY_IC:
-				beep();
+			case KEY_BACKSPACE:
+				request = REQ_DEL_PREV;
 				break;
 			case KEY_PPAGE:
 				request = REQ_PREV_CHOICE;
 				break;
 			case KEY_NPAGE:
 				request = REQ_NEXT_CHOICE;
+				break;
+			case KEY_HOME:
+				request = REQ_BEG_LINE;
+				break;
+			case KEY_END:
+				request = REQ_END_LINE;
 				break;
 		}
 		form_driver( m_form, request );
@@ -194,4 +269,9 @@ void OptWindow::processRequest( int request )
 vector<OptionBase *>& OptWindow::options()
 {
 	return m_options;
+}
+
+WINDOW *OptWindow::window()
+{
+	return m_window;
 }

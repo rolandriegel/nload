@@ -19,9 +19,13 @@
 #define OPT_WINDOW_H
 
 #include <vector>
+#include <string>
+#include <sstream>
+using std::string;
+using std::vector;
+using std::stringstream;
+using std::ostringstream;
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <curses.h>
 #include <form.h>
 
@@ -36,15 +40,21 @@ public:
 	OptWindow();
 	~OptWindow();
 	
-	void show( int, int, int, int );
+	void show( int, int, int, int, void (*)( FORM * ) );
 	void hide();
 	bool visible();
 	
 	void processRequest( int );
+	void fieldChanged( FORM * );
 	
 	vector<OptionBase *>& options();
 	
+	WINDOW *window();
+	
 private:
+	
+	const char *optionAsString( OptionBase * );
+	void assignStringToOption( OptionBase *, const char * );
 	
 	bool m_visible;
 	vector<OptionBase *> m_options;
