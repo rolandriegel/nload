@@ -2,7 +2,7 @@
 .\" Man page for nload
 .\" Copyright (C) 2001 by Roland Riegel <support@roland.riegel.de>
 .\"
-.TH nload 1 "October 11, 2001" nload "Network monitoring tools"
+.TH nload 1 "October 24, 2001" nload "Network monitoring tools"
 .SH NAME
 nload \- displays the current network usage
 
@@ -15,6 +15,10 @@ nload \- displays the current network usage
 .I smoothness
 .B ] [-t
 .I interval
+.B ] [-u
+.I h|b|k|m|g
+.B ] [-U
+.I h|b|k|m|g
 .B ] [devices]
 
 .B nload --help|-h
@@ -69,6 +73,14 @@ refresh intervals.
 .B nload
 tries to balance this out by doing extra time measurements, but this may
 not always succeed.
+.TP
+.B \-u h|b|k|m|g
+Sets the type of unit used for the display of traffic numbers.
+h means human readable (auto), b byte/s, k kbyte/s, m mbyte/s and g gbyte/s. The default
+is k.
+.TP
+.B \-U h|b|k|m|g
+Same as -u, but for an amount of data, e.g. byte, kbyte etc.. The default is k.
 .TP
 .B devices
 Network devices to use. The default device is "eth0".
