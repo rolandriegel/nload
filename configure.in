@@ -21,8 +21,8 @@ dnl Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS(limits.h sys/time.h)
 
-dnl Only use -Wall if we have gcc.
-if test "x$GCC" = "xyes" ; then
+dnl Use some gcc specific options.
+if test "$GCC" = "yes" ; then
         CFLAGS="$CFLAGS -Wall"
         CXXFLAGS="$CXXFLAGS -Wall"
 fi
@@ -53,7 +53,7 @@ esac
 
 dnl Adds extra arguments to configure script.
 AC_ARG_ENABLE(debug,[  --enable-debug          enable runtime debugging [no]],
-              [AC_CHECK_LIB(efence, main)],
+              [],  
                LDFLAGS="$LDFLAGS -s")
 
 AC_OUTPUT([
