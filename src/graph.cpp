@@ -2,7 +2,7 @@
                           graph.cpp  -  description
                              -------------------
     begin                : Sat Sep 29 2001
-    copyright            : (C) 2001 by Roland Riegel
+    copyright            : (C) 2001, 2002 by Roland Riegel
     email                : support@roland-riegel.de
  ***************************************************************************/
 
@@ -76,7 +76,7 @@ void Graph::print( int x, int y )
 {
 	int curx, cury;
 	
-	move( y, x );
+	wmove( m_window, y, x );
 	
 	//cycle through through the lines
 	for( int l = 0; l < m_heightofbars; l++ )
@@ -87,17 +87,17 @@ void Graph::print( int x, int y )
 			int trafficperline = m_trafficwithmaxdeflectionofbars / m_heightofbars;
 			int restoftraffic = ( (*r) - ( m_heightofbars - l - 1 ) * trafficperline ) % trafficperline;
 			if( (float) (*r) / m_trafficwithmaxdeflectionofbars >= (float) ( m_heightofbars - l ) / m_heightofbars )
-				addch( '#' );
+				waddch( m_window, '#' );
 			else if( restoftraffic >= 0.7 * trafficperline )
-				addch( '|' );
+				waddch( m_window, '|' );
 			else if( restoftraffic >= 0.3 * trafficperline )
-				addch( '.' );
+				waddch( m_window, '.' );
 			else
-				addch( ' ' );
+				waddch( m_window, ' ' );
 		}
-		addch( '\n' );
+		waddch( m_window, '\n' );
 		getyx( m_window, cury, curx );
-		move( cury, x );
+		wmove( m_window, cury, x );
 	}
 	
 }

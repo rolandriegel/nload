@@ -2,7 +2,7 @@
                           status.cpp  -  description
                              -------------------
     begin                : Sat Sep 29 2001
-    copyright            : (C) 2001 by Roland Riegel
+    copyright            : (C) 2001, 2002 by Roland Riegel
     email                : support@roland-riegel.de
  ***************************************************************************/
 
@@ -64,34 +64,34 @@ void Status::print( int x, int y, status_format traff_format, status_format data
 	char fText[100] = "";
 	
 	//print current traffic
-	move( y, x );
+	wmove( m_window, y, x );
 	value = (double) m_cur * 8 / getUnitFactor( traff_format, m_cur * 8 );
 	sprintf( fText, "Curr: %.2f %s/s\n", value, getUnitString( traff_format, m_cur * 8, false ) );
-	addstr( fText );
+	waddstr( m_window, fText );
 	//print average traffic since nload start
 	getyx( m_window, cury, curx );
-	move( cury, x );
+	wmove( m_window, cury, x );
 	value = (double) m_average * 8 / getUnitFactor( traff_format, m_average * 8 );
 	sprintf( fText, "Avg: %.2f %s/s\n", value, getUnitString( traff_format, m_average * 8, false ) );
-	addstr( fText );
+	waddstr( m_window, fText );
 	//print min traffic since nload start
 	getyx( m_window, cury, curx );
-	move( cury, x );
+	wmove( m_window, cury, x );
 	value = (double) m_min * 8 / getUnitFactor( traff_format, m_min * 8 );
 	sprintf( fText, "Min: %.2f %s/s\n", value, getUnitString( traff_format, m_min * 8, false ) );
-	addstr( fText );
+	waddstr( m_window, fText );
 	//print max traffic since nload start
 	getyx( m_window, cury, curx );
-	move( cury, x );
+	wmove( m_window, cury, x );
 	value = (double) m_max * 8 / getUnitFactor( traff_format, m_max * 8 );
 	sprintf( fText, "Max: %.2f %s/s\n", value, getUnitString( traff_format, m_max * 8, false ) );
-	addstr( fText );
+	waddstr( m_window, fText );
 	//print total traffic since last system reboot
 	getyx( m_window, cury, curx );
-	move( cury, x );
+	wmove( m_window, cury, x );
 	value = (double) m_total / getUnitFactor( data_format, m_total );
 	sprintf( fText, "Ttl: %.2f %s\n", value,  getUnitString( data_format, m_total, true ) );
-	addstr( fText );
+	waddstr( m_window, fText );
 	
 }
 

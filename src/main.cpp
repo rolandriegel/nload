@@ -2,7 +2,7 @@
                                    main.cpp
                              -------------------
     begin                : Wed Jul 25 2001
-    copyright            : (C) 2001 by Roland Riegel 
+    copyright            : (C) 2001, 2002 by Roland Riegel 
     email                : support@roland-riegel.de
  ***************************************************************************/
 
@@ -17,7 +17,7 @@
 /*
  * nload
  * real time monitor for network traffic
- * Copyright (C) 2001 Roland Riegel <support@roland-riegel.de>
+ * Copyright (C) 2001, 2002 Roland Riegel <support@roland-riegel.de>
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,6 +34,8 @@
 int main (int argc, char *argv[])
 {
 
+OptWindow optwindow;
+
 vector<string *> network_device;
 vector<Dev *> devs;
 
@@ -44,13 +46,15 @@ Option<long> bar_max_out( STANDARD_BAR_MAX_OUT, "100% mark in kBit/s of the outg
 Option<int> average_smoothness( STANDARD_AVERAGE_SMOOTHNESS, "smoothness of the average in/out values" );
 Option<Status::status_format> traffic_format = STANDARD_TRAFFIC_FORMAT;
 Option<Status::status_format> data_format = STANDARD_DATA_FORMAT;
+optwindow.getOptions().push_back( &sleep_interval );
+optwindow.getOptions().push_back( &show_graphs );
+optwindow.getOptions().push_back( &bar_max_in );
+optwindow.getOptions().push_back( &bar_max_out );
+optwindow.getOptions().push_back( &average_smoothness );
+optwindow.getOptions().push_back( &traffic_format );
+optwindow.getOptions().push_back( &data_format );
 
 bool print_only_once = false;
-
-struct timespec wanted_time;
-int cur_dev = 0;
-int key = 0;
-int x, y, curx, cury;
 
 //parse the command line
 for ( int i = 1; i < argc; i++ )
@@ -241,10 +245,13 @@ signal( SIGINT, finish );
 signal( SIGTERM, finish );
 
 //initialize ncurses
-WINDOW *window = initscr();
+initscr();
 keypad( stdscr, true );
 nodelay( stdscr, true );
 noecho();
+
+//create main window
+WINDOW *window = newwin( 0, 0, 0, 0 );
 
 //create one instance of the Dev class per device
 for ( vector<string *>::size_type i = 0; i < network_device.size(); i++ )
@@ -263,29 +270,57 @@ for ( vector<string *>::size_type i = 0; i < network_device.size(); i++ )
 do
 {
 	
+	static int cur_dev = 0;
+
 	//get the number of devices
 	long size = devs.size();
 	
+	//get screen dimensions
+	int x, y, x_main, y_main;
+	getmaxyx( stdscr, y, x );
+	getmaxyx( window, y_main, x_main );
+	
 	//wait sleep_interval milliseconds
+	struct timespec wanted_time;
 	wanted_time.tv_sec = sleep_interval / 1000;
 	wanted_time.tv_nsec = sleep_interval % 1000 * 1000000L;
 	nanosleep( &wanted_time, NULL );
 	
-	getmaxyx( window, y, x );
-	
 	//process keyboard
+	int key;
 	while( ( key = getch() ) != ERR )
 		switch( key )
 		{
 			case KEY_RIGHT:
-				cur_dev += show_graphs ? 1 : ( y / 9 >= size ? 0 : y / 9 );
+				cur_dev += show_graphs ? 1 : ( y_main / 9 >= size ? 0 : y_main / 9 );
 				if( cur_dev >= size )
 					cur_dev = 0;
 				break;
 			case KEY_LEFT:
-				cur_dev -= show_graphs ? 1 : ( y / 9 >= size ? 0 : y / 9 );
+				cur_dev -= show_graphs ? 1 : ( y_main / 9 >= size ? 0 : y_main / 9 );
 				if( cur_dev < 0 )
 					cur_dev = size - 1;
+				break;
+			case 'o':
+			case 'O':
+				if( optwindow.getVisible() )
+				{
+					optwindow.hide();
+					mvwin( window, 0, 0 );
+					wresize( window, y, x );
+					
+					touchwin( stdscr );
+					wnoutrefresh( stdscr );
+				}
+				else
+				{
+					touchwin( stdscr );
+					wnoutrefresh( stdscr );
+					
+					wresize( window, y - y / 3, x );
+					mvwin( window, y / 3, 0 );
+					optwindow.show( 0, 0, x, y / 3 );
+				}
 				break;
 			case 'q':
 			case 'Q':
@@ -293,12 +328,11 @@ do
 				break;
 		}
 	
-	if( ! show_graphs && y / 9 >= size )
+	if( ! show_graphs && y_main / 9 >= size )
 		cur_dev = 0;
 	
 	//clear the screen
-	clear();
-	move( 0, 0 ); //this shouldn't be necessary at all
+	wclear( window );
 	
 	//update all devices and print the data of the current one
 	for( int i = 0; i < size; i++ )
@@ -309,14 +343,16 @@ do
 		}
 		else
 		{
+			int curx, cury;
 			getyx( window, cury, curx );
 			
-			devs[i] -> update( i >= cur_dev && y - cury >= 9 );
+			devs[i] -> update( i >= cur_dev && y_main - cury >= 9 );
 		}
 	}
 	
 	//refresh the screen
-	refresh();
+	wnoutrefresh( window );
+	doupdate();
 	
 } while ( print_only_once != true ); //do this endless except the user said "-t 0"
 

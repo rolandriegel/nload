@@ -2,7 +2,7 @@
                                    main.h
                              -------------------
     begin                : Wed Jul 25 2001
-    copyright            : (C) 2001 by Roland Riegel
+    copyright            : (C) 2001, 2002 by Roland Riegel
     email                : support@roland-riegel.de
  ***************************************************************************/
 
@@ -14,6 +14,9 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+
+#ifndef MAIN_H
+#define MAIN_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -27,10 +30,13 @@
 #include <vector>
 #include "dev.h"
 #include "options.h"
+#include "opt_window.h"
 
 using std::string;
 using std::vector;
 
+int main( int, char ** );
+void finish( int );
 void printhelp();
-void finish(int);
-int main(int, char **);
+
+#endif

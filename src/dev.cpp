@@ -2,7 +2,7 @@
                           dev.cpp  -  description
                              -------------------
     begin                : Wed Aug 1 2001
-    copyright            : (C) 2001 by Roland Riegel
+    copyright            : (C) 2001, 2002 by Roland Riegel
     email                : support@roland-riegel.de
  ***************************************************************************/
 
@@ -97,10 +97,10 @@ void Dev::update( bool print )
 	{
 		//... print warning message ...
 		sprintf( fText, "Device %s (%i/%i): does not exist\n", ProcDev(), m_devicenumber, m_totalnumberofdevices );
-		addstr( fText );
+		waddstr( m_window, fText );
 		for( int i = 0; i < x; i++ )
-			addch( '=' );
-		addch( '\n' );
+			waddch( m_window, '=' );
+		waddch( m_window, '\n' );
 		
 		//... and exit
 		return;
@@ -108,15 +108,15 @@ void Dev::update( bool print )
 	
 	//print header
 	sprintf( fText, "Device %s (%i/%i):\n", ProcDev(), m_devicenumber, m_totalnumberofdevices );
-	addstr( fText );
+	waddstr( m_window, fText );
 	for( int i = 0; i < x; i++ )
-		addch( '=' );
+		waddch( m_window, '=' );
 	
 	//if graphs should be shown ...
 	if( m_showgraphs )
 	{
 		//incoming traffic
-		addstr( "Incoming:\n" );
+		waddstr( m_window, "Incoming:\n" );
 		
 		getyx( m_window, cury, curx );
 		
@@ -128,7 +128,7 @@ void Dev::update( bool print )
 		device_status[0] -> print( x * 2 / 3 + 2, cury - 5, m_trafficformat, m_dataformat );
 		
 		//outgoing traffic
-		addstr( "Outgoing:\n" );
+		waddstr( m_window, "Outgoing:\n" );
 		
 		getyx( m_window, cury, curx );
 		traffic_graph[1] -> setNumOfBars( x * 2 / 3 );
@@ -141,17 +141,17 @@ void Dev::update( bool print )
 	//... or not
 	else
 	{
-		addstr( "Incoming:" );
+		waddstr( m_window, "Incoming:" );
 		getyx( m_window, cury, curx );
-		move( cury, x / 2 );
-		addstr( "Outgoing:\n" );
+		wmove( m_window, cury, x / 2 );
+		waddstr( m_window, "Outgoing:\n" );
 		
 		getyx( m_window, cury, curx );
 		
 		device_status[0] -> print( 0, cury, m_trafficformat, m_dataformat ); //incoming traffic
 		device_status[1] -> print( x / 2, cury, m_trafficformat, m_dataformat ); //outgoing traffic
 		
-		addch( '\n' );
+		waddch( m_window, '\n' );
 	}
 	
 }

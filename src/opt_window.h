@@ -1,8 +1,8 @@
 /***************************************************************************
-                                  options.h
+                                opt_window.h
                              -------------------
-    begin                : Sun Dec 23 2001
-    copyright            : (C) 2001, 2002 by Roland Riegel
+    begin                : Thu Jan 17 2002
+    copyright            : (C) 2002 by Roland Riegel
     email                : support@roland-riegel.de
  ***************************************************************************/
 
@@ -15,39 +15,32 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef OPTIONS_H
-#define OPTIONS_H
+#ifndef OPT_WINDOW_H
+#define OPT_WINDOW_H
 
-#include <string>
+#include <vector>
+#include <curses.h>
+#include "options.h"
 
-using std::string;
-
-//dummy class to put different template class
-//instances into a single array
-class OptionBase{};
-
-template<class T>
-class Option : public OptionBase
+class OptWindow
 {
-	
 public:
-	Option();
-	Option( T );
-	Option( T, string );
-	~Option();
 	
-	operator T() const;
+	OptWindow();
+	~OptWindow();
 	
-	void setDescription( string );
-	string getDescription();
+	void show( int, int, int, int );
+	void hide();
+	bool getVisible();
+	
+	vector<OptionBase *>& getOptions();
 	
 private:
 	
-	string m_description;
-	T m_value;
+	bool m_visible;
+	vector<OptionBase *> m_options;
+	WINDOW *m_window;
 	
 };
-
-#include "options.cpp"
 
 #endif
