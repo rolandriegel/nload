@@ -26,6 +26,8 @@
 #include <iostream.h>
 #include <curses.h>
 
+#include <limits.h>
+
 class Status
 {
 
@@ -33,7 +35,7 @@ public:
 	Status();
 	~Status();
 	
-	void update( int, int );
+	void update( int, long long );
 	void setWindow( WINDOW * );
 	void print( int, int );
 	
@@ -43,7 +45,8 @@ private:
 	void minMax( int );
 	void average( int );
 	
-	int m_min, m_max, m_average, m_cur, m_total;
+	int m_min, m_max, m_average, m_cur;
+	long long m_total;
 	int m_averagesmoothness;
 	
 	WINDOW *m_window;

@@ -28,14 +28,24 @@ Status::~Status()
 }
 
 //new traffic measurement has been made => update statistics
-void Status::update( int new_value, int new_total )
+void Status::update( int new_value, long long new_total )
 {
 	
 	m_cur = new_value;
 	minMax( m_cur ); //calculate new min/max traffic values
 	average( m_cur ); //calculate new average
 	
-	m_total = new_total; //set new total transfered data
+	/*
+	 *set new total transfered data
+	 *the following is a workaround for the value limitations of the
+	 *unsigned int variable used in the kernel to produce
+	 *the /proc/net/dev file
+	 *(the total bytes value reaches 4GB and then switches to 0)
+	 */
+	if( new_total < ( m_total % UINT_MAX ) )
+		m_total = ( ( m_total / UINT_MAX ) + 1 ) * UINT_MAX + new_total;
+	else
+		m_total = ( m_total / UINT_MAX ) * UINT_MAX + new_total;
 	
 }
 
@@ -74,7 +84,7 @@ void Status::print( int x, int y )
 	//print total traffic since last system reboot
 	getyx( m_window, cury, curx );
 	move( cury, x );
-	sprintf( fText, "Ttl: %.2f MB\n", (float) m_total / 1024 / 1024 );
+	sprintf( fText, "Ttl: %.2f MB\n", (double) m_total / 1024 / 1024 );
 	addstr( fText );
 	
 }
