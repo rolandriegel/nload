@@ -98,7 +98,9 @@ void OptWindow::processKey( int request )
 				request = REQ_PREV_FIELD;
 				break;
 			case KEY_DOWN:
-			case '\t':
+			case KEY_ENTER:
+			case '\n':
+			case '\015':
 				request = REQ_NEXT_FIELD;
 				break;
 			case KEY_DC:
@@ -111,6 +113,7 @@ void OptWindow::processKey( int request )
 				request = REQ_PREV_CHOICE;
 				break;
 			case KEY_NPAGE:
+			case '\t':
 				request = REQ_NEXT_CHOICE;
 				break;
 			case KEY_HOME:
@@ -120,9 +123,11 @@ void OptWindow::processKey( int request )
 				request = REQ_END_LINE;
 				break;
 			case '+':
+			case 'n':
 				request = REQ_NEXT_PAGE;
 				break;
 			case '-':
+			case 'p':
 				request = REQ_PREV_PAGE;
 				break;
 		}

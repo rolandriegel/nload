@@ -43,11 +43,21 @@ void TrafficWindow::processKey( int key )
 	switch( key )
 	{
 		case KEY_RIGHT:
+		case KEY_DOWN:
+		case KEY_NPAGE:
+		case KEY_ENTER:
+		case 'n':
+		case '\n':
+		case '\t':
+		case '\015':
 			m_cur_dev += showMultipleDevices() ? height() / 9 : 1;
 			if( (unsigned int) m_cur_dev >= m_devs.size() )
 				m_cur_dev = 0;
 			break;
 		case KEY_LEFT:
+		case KEY_UP:
+		case KEY_PPAGE:
+		case 'p':
 			m_cur_dev -= showMultipleDevices() ? height() / 9 : 1;
 			if( m_cur_dev < 0 )
 				m_cur_dev = m_devs.size() - 1;
