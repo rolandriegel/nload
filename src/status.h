@@ -21,7 +21,9 @@
 #include <curses.h>
 #include <limits.h>
 #include <math.h>
+#include <string>
 #include <list>
+using std::string;
 using std::list;
 
 class Window;
@@ -50,27 +52,26 @@ public:
 		gigabyte = 7
 	};
 	
-	void update( int, unsigned int );
+	void update( unsigned long, unsigned long );
 	void print( Window&, int, int, status_format traff_format, status_format data_format );
 	void resetTrafficData();
 
 	void setAverageSmoothness( OptionInt* );
 	
 private:
-	void minMax( int );
+	void minMax( unsigned long );
 	
-	void updateAverage( int );
-	int calcAverage();
+	void updateAverage( unsigned long );
+	unsigned long calcAverage();
 	
 	int averageSmoothness();
 	
-	const char* getUnitString( status_format, long long );
-	double getUnitFactor( status_format, long long );
+	void getUnit( status_format format, long long value, string& description, float& factor );
 	
-	int m_min, m_max, m_cur;
+	unsigned long m_min, m_max, m_cur;
 	long long m_total;
 	
-	list<int> m_average_values;
+	list<unsigned long> m_average_values;
 	
 	OptionInt* m_averagesmoothness;
 	

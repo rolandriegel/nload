@@ -48,6 +48,10 @@ const Status::status_format STANDARD_DATA_FORMAT = Status::megabyte;
 	char* const STANDARD_NETWORK_DEVICE = "hme0";
 #endif
 
+#ifdef HAVE_HPUX
+	char* const STANDARD_NETWORK_DEVICE = "lan0";
+#endif
+
 class Dev : public Proc
 {
 

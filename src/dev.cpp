@@ -45,25 +45,34 @@ Dev::Dev() : Proc::Proc()
 
 Dev::~Dev()
 {
+	for( int i = 0; i < 2; i++ )
+	{
+		
+		delete device_status[i];
+		delete traffic_graph[i];
+		
+	}
 }
 
 //update the device's data
 void Dev::update()
 {
+	unsigned long currentio[2];
+	
 	//read current traffic
-	float *currentio = readLoad();
-	
+	readLoad( currentio[0], currentio[1] );
+
 	//calculate the traffic (Bytes/s)
-	currentio[0] = currentio[0] / ( getElapsedTime() / 1000 );
-	currentio[1] = currentio[1] / ( getElapsedTime() / 1000 );
-	
+	currentio[0] = (unsigned long) ( currentio[0] * 1000.0 / getElapsedTime() );
+	currentio[1] = (unsigned long) ( currentio[1] * 1000.0 / getElapsedTime() );
+
 	//update graphs and statistics
 	for( int i = 0; i < 2; i++ )
 	{
 		if( procDevExists() )
 		{
-			device_status[i] -> update( (int) currentio[i], (unsigned int) ( i == 0 ? totalIn() : totalOut() ) );
-			traffic_graph[i] -> update( (int) currentio[i] );
+			device_status[i] -> update( currentio[i], i == 0 ? totalIn() : totalOut() );
+			traffic_graph[i] -> update( currentio[i] );
 		}
 		else
 		{

@@ -21,8 +21,7 @@
 
 Status::Status()
 {
-	m_min = m_max = -1;
-	m_cur = m_total = 0;
+	m_min = m_max = m_cur = m_total = 0;
 	m_averagesmoothness = 0;
 }
 
@@ -31,7 +30,7 @@ Status::~Status()
 }
 
 //new traffic measurement has been made => update statistics
-void Status::update( int new_value, unsigned int new_total )
+void Status::update( unsigned long new_value, unsigned long new_total )
 {
 	
 	m_cur = new_value;
@@ -55,35 +54,40 @@ void Status::update( int new_value, unsigned int new_total )
 //print statistics
 void Status::print( Window& window, int x, int y, status_format traff_format, status_format data_format )
 {
-	double value;
-	double tmp_value;
+	unsigned long value;
 	char fText[100] = "";
+	string unit_string;
+	float unit_factor;
 	
 	//print current traffic
 	window.setXY( x, y );
-	value = m_cur * getUnitFactor( traff_format, m_cur );
-	sprintf( fText, "Curr: %.2f %s/s\n", value, getUnitString( traff_format, m_cur ) );
+	getUnit( traff_format, m_cur, unit_string, unit_factor );
+	sprintf( fText, "Curr: %.2f %s/s\n", m_cur / unit_factor, unit_string.c_str() );
 	window.print( fText );
+	
 	//print average traffic
 	window.setX( x );
-	tmp_value = calcAverage();
-	value = tmp_value * getUnitFactor( traff_format, (long long int)tmp_value );
-	sprintf( fText, "Avg: %.2f %s/s\n", value, getUnitString( traff_format, (long long int)tmp_value ) );
+	value = calcAverage();
+	getUnit( traff_format, value, unit_string, unit_factor );
+	sprintf( fText, "Avg: %.2f %s/s\n", value / unit_factor, unit_string.c_str() );
 	window.print( fText );
+	
 	//print min traffic since nload start
 	window.setX( x );
-	value = m_min * getUnitFactor( traff_format, m_min );
-	sprintf( fText, "Min: %.2f %s/s\n", value, getUnitString( traff_format, m_min ) );
+	getUnit( traff_format, m_min, unit_string, unit_factor );
+	sprintf( fText, "Min: %.2f %s/s\n", m_min / unit_factor, unit_string.c_str() );
 	window.print( fText );
+	
 	//print max traffic since nload start
 	window.setX( x );
-	value = m_max * getUnitFactor( traff_format, m_max );
-	sprintf( fText, "Max: %.2f %s/s\n", value, getUnitString( traff_format, m_max ) );
+	getUnit( traff_format, m_max, unit_string, unit_factor );
+	sprintf( fText, "Max: %.2f %s/s\n", m_max / unit_factor, unit_string.c_str() );
 	window.print( fText );
+	
 	//print total traffic since last system reboot
 	window.setX( x );
-	value = m_total * getUnitFactor( data_format, m_total );
-	sprintf( fText, "Ttl: %.2f %s\n", value,  getUnitString( data_format, m_total ) );
+	getUnit( data_format, m_total, unit_string, unit_factor );
+	sprintf( fText, "Ttl: %.2f %s\n", m_total / unit_factor, unit_string.c_str() );
 	window.print( fText );
 }
 
@@ -94,69 +98,68 @@ void Status::resetTrafficData()
 	m_average_values.clear();
 }
 
-//return the matching unit string, e.g. "kBit" for status_format::kilobit
-const char* Status::getUnitString( status_format format, long long value )
+//determine the matching unit string, e.g. "kBit" for status_format::kilobit, and
+//the matching conversion factor between Byte and e.g. status_format::kilobit
+void Status::getUnit( status_format format, long long value, string& description, float& factor )
 {
+	factor = (float) 1 / ( format % 2 == 0 ? 8 : 1 );
+	description = format % 2 == 0 ? "Bit" : "Byte";
+	
 	switch( format )
 	{
 		case human_readable_bit:
 		case human_readable_byte:
+			factor *= 1024 * 1024 * 1024;
 			for( int i = 3; i >= 0; i-- )
-				if ( value * ( format % 2 == 0 ? 8 : 1 ) >= pow( 1024, i ) )
+			{
+				if ( value * ( format % 2 == 0 ? 8 : 1 ) >= factor )
 					switch(i)
 					{
 						case 3:
-							return format % 2 == 0 ? "GBit" : "GByte";
+							description = 'G' + description;
+							return;
 						case 2:
-							return format % 2 == 0 ? "MBit" : "MByte";
+							description = 'M' + description;
+							return;
 						case 1:
-							return format % 2 == 0 ? "kBit" : "kByte";
-						case 0:
-							return format % 2 == 0 ? "Bit" : "Byte";
+							description = 'k' + description;
+							return;
+						default:
+							return;
 					}
+				factor /= 1024;
+			}
+			return;
 		case bit:
-			return "Bit";
 		case byte:
-			return "Byte";
+			return;
 		case kilobit:
-			return "kBit";
 		case kilobyte:
-			return "kByte";
+			factor *= 1024;
+			description = 'k' + description;
+			return;
 		case megabit:
-			return "MBit";
 		case megabyte:
-			return "MByte";
+			factor *= 1024 * 1024;
+			description = 'M' + description;
+			return;
 		case gigabit:
-			return "GBit";
 		case gigabyte:
-			return "GByte";
+			factor *= 1024 * 1024 * 1024;
+			description = 'G' + description;
+			return;
 		default: //should never be executed
-			return "";
+			return;
 	}
-}
 
-//return the matching conversion factor between Bit and e.g. status_format::kilobit
-double Status::getUnitFactor( status_format format, long long value )
-{
-	if( format < 0 ) //human readable
-	{
-		for( int i = 3; i >= 0; i-- )
-			if ( value * ( format % 2 == 0 ? 8 : 1 ) >= pow( 1024, i ) )
-				return ( (double) ( format % 2 == 0 ? 8 : 1 ) / pow( 1024, i ) );
-		return ( (double) ( format % 2 == 0 ? 8 : 1 ) );
-	}
-	else
-	{
-		return ( (double) ( format % 2 == 0 ? 8 : 1 ) / pow( 1024, format / 2 ) );
-	}
 }
 
 //calculate min and max traffic values
-void Status::minMax( int new_value )
+void Status::minMax( unsigned long new_value )
 {
 	
 	//if this is the first time call, set min/max to current value
-	if( m_min == -1 && m_max == -1 )
+	if( m_min == 0 && m_max == 0 )
 	{
 		m_min = new_value;
 		m_max = new_value;
@@ -176,7 +179,7 @@ void Status::setAverageSmoothness( OptionInt* new_averagesmoothness )
 }
 
 //put new value into average calculation
-void Status::updateAverage( int new_value )
+void Status::updateAverage( unsigned long new_value )
 {
 	
 	/*
@@ -197,12 +200,12 @@ void Status::updateAverage( int new_value )
 }
 
 //calculate current average
-int Status::calcAverage()
+unsigned long Status::calcAverage()
 {
 	if( m_average_values.size() == 0 ) return 0;
 
-	int sum = 0;
-	for( list<int>::const_iterator i = m_average_values.begin(); i != m_average_values.end(); i++ )
+	unsigned long sum = 0;
+	for( list<unsigned long>::const_iterator i = m_average_values.begin(); i != m_average_values.end(); i++ )
 	{
 		sum += (*i);
 	}

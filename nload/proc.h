@@ -28,32 +28,30 @@ public:
 	~Proc();
 
 	void setProcDev(const char *);
-	char* procDev();
+	const char* procDev();
 	
 	bool procDevExists();
 	
-	char* ip();
+	const char* ip();
 	
-	float* readLoad();
+	void readLoad( unsigned long& in, unsigned long& out );
 
-	float totalIn();
-	float totalOut();
+	unsigned long totalIn();
+	unsigned long totalOut();
 	
-	float getElapsedTime();
+	int getElapsedTime();
 	
 private:
 
-	float m_elapsed_time;
-	
+	int m_time_last_read;
+	int m_elapsed_time;
+
 	bool m_dev_exists;
 	char m_dev[128];
 	
 	char m_ip[16];
 	
-	float m_ret[2];
-	
-	float m_total[2];
-	float m_total_new[2];
+	unsigned long m_total[2];
 
 };
 
