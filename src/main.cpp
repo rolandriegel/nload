@@ -272,7 +272,9 @@ for ( vector<string *>::size_type i = 0; i < network_device.size(); i++ )
 	m_mainwindow.devices().back() -> setHideGraphs( &show_multiple_devices );
 	m_mainwindow.devices().back() -> setTrafficWithMaxDeflectionOfGraphs( &bar_max_in, &bar_max_out );
 	m_mainwindow.devices().back() -> setAverageSmoothness( &average_smoothness );
+	delete network_device[i];
 }
+network_device.clear();
 
 m_mainwindow.setShowMultipleDevices( &show_multiple_devices );
 
@@ -379,6 +381,12 @@ void finish()
 void end( int signal )
 {
 	finish();
+	
+	vector<Dev *>& devs = m_mainwindow.devices();
+	for( vector<Dev *>::const_iterator i = devs.begin(); i != devs.end(); i++ )
+		delete *i;
+	devs.clear();
+	
 	exit(0);
 }
 
