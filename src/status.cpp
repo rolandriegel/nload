@@ -137,4 +137,3 @@ void Status::average( int new_value )
 	m_average = (int) ( new_value * ( 1.0 - m_averagesmoothness / 10.0 ) + m_average * ( m_averagesmoothness / 10.0 ) );
 	
 }
-	
