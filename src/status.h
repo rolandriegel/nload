@@ -40,10 +40,11 @@ public:
 	};
 	
 	void update( int, unsigned int );
-	void setWindow( WINDOW * );
 	void print( int, int, status_format, status_format );
+	void resetTrafficData();
 	
 	void setAverageSmoothness( int );
+	void setWindow( WINDOW * );
 	
 private:
 	void minMax( int );

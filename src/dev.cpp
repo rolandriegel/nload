@@ -70,22 +70,6 @@ void Dev::update( bool print )
 	float *currentio = readLoad();
 	getmaxyx( m_window, y, x );
 	
-	//if device does not exist
-	if ( ! ProcDevExists() )
-	{
-		if( print )
-		{
-			//... print warning message ...
-			sprintf( fText, "Device %s (%i/%i): does not exist\n", ProcDev(), m_devicenumber, m_totalnumberofdevices );
-			addstr( fText );
-			for( int i = 0; i < x; i++ )
-				addch( '=' );
-			addch( '\n' );
-		}
-		//... and exit
-		return;
-	}
-	
 	//calculate the traffic (Bytes/s)
 	currentio[0] = currentio[0] / ( getElapsedTime() / 1000 );
 	currentio[1] = currentio[1] / ( getElapsedTime() / 1000 );
@@ -93,12 +77,34 @@ void Dev::update( bool print )
 	//update graphs and statistics
 	for( int i = 0; i < 2; i++ )
 	{
-		device_status[i] -> update( (int) currentio[i], (unsigned int) (i == 0 ? totalIn() : totalOut()) );
-		traffic_graph[i] -> update( (int) currentio[i] );
+		if( ProcDevExists() )
+		{
+			device_status[i] -> update( (int) currentio[i], (unsigned int) ( i == 0 ? totalIn() : totalOut() ) );
+			traffic_graph[i] -> update( (int) currentio[i] );
+		}
+		else
+		{
+			device_status[i] -> resetTrafficData();
+			traffic_graph[i] -> resetTrafficData();
+		}
 	}
 	
 	//if this device is currently not visible on the screen, exit here
 	if( ! print ) return;
+	
+	//if device does not exist
+	if ( ! ProcDevExists() )
+	{
+		//... print warning message ...
+		sprintf( fText, "Device %s (%i/%i): does not exist\n", ProcDev(), m_devicenumber, m_totalnumberofdevices );
+		addstr( fText );
+		for( int i = 0; i < x; i++ )
+			addch( '=' );
+		addch( '\n' );
+		
+		//... and exit
+		return;
+	}
 	
 	//print header
 	sprintf( fText, "Device %s (%i/%i):\n", ProcDev(), m_devicenumber, m_totalnumberofdevices );

@@ -18,11 +18,6 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
-
-/**
-  *@author Roland Riegel
-  */
-
 #include <iostream.h>
 #include <curses.h>
 #include <list>
@@ -38,9 +33,11 @@ public:
 	void setHeightOfBars( int );
 	void setTrafficWithMaxDeflectionOfBars( int );
 	
-	void update( int );
 	void setWindow( WINDOW * );
+	
+	void update( int );
 	void print( int, int );
+	void resetTrafficData();
 
 private:
 	int m_heightofbars;

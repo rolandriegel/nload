@@ -95,6 +95,12 @@ void Status::print( int x, int y, status_format traff_format, status_format data
 	
 }
 
+//reset all displayed values to zero
+void Status::resetTrafficData()
+{
+	m_cur = m_min = m_average = m_max = m_total = 0;
+}
+
 //return the matching unit string, e.g. "kBit" for status_format::kilobit
 const char* Status::getUnitString( status_format format, long long value, bool bytes )
 {

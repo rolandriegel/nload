@@ -96,3 +96,10 @@ void Graph::print( int x, int y )
 	
 }
 
+//reset all traffic values in the graph to zero
+void Graph::resetTrafficData()
+{
+	int size = m_values.size();
+	m_values.clear();
+	m_values.resize( size );
+}
