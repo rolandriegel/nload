@@ -1,8 +1,8 @@
 .\"
 .\" Man page for nload
-.\" Copyright (C) 2001, 2002 by Roland Riegel <support@roland.riegel.de>
+.\" Copyright (C) 2001, 2002 by Roland Riegel <feedback@roland.riegel.de>
 .\"
-.TH nload 1 "April 04, 2002" nload "Network monitoring tools"
+.TH nload 1 "July 31, 2002" nload "Network monitoring tools"
 .SH NAME
 nload \- displays the current network usage
 
@@ -63,7 +63,7 @@ means high smoothness (average over a long period of time). The default is 9.
 .TP
 .B \-t interval
 Determines the refresh interval of the display in milliseconds.
-If interval is 0 print net load only one time and exit.
+If interval is 0 print net load once and exit.
 The default value of interval is 500.
 
 PLEASE NOTE:
@@ -90,6 +90,29 @@ Network devices to use. The default device is "eth0".
 .B \-h, \-\-help
 Show a short summary of these command line options.
 
+.SH OPTION WINDOW
+The parameters given to
+.B nload
+on the command line can be adjusted during run time by pressing the 'o' key. A
+small window appears on the top of the screen, listing the available settings.
+
+.TP
+.B 'o'
+Show/hide the option window.
+
+.TP
+.B arrow keys (left, right, up, down), tab
+Step through the options to manipulate them. Changes will apply directly after
+leaving the corresponding field.
+
+.TP
+.B 'PageDown', 'PageUp'
+Step through the presets of some settings not being editable freely.
+
+.TP
+.B '+', '-'
+Scroll the option window.
+
 .SH FILES
 .I /proc/net/dev
 is read by nload to get the network traffic data.
@@ -98,5 +121,12 @@ is read by nload to get the network traffic data.
 This is version @VERSION@ of nload.
 For updates, look at http://www.roland-riegel.de/nload/index_en.html.
 
+.SH HELP
+If you need help, either contact me directly (see below) or write to the
+nload-user mailing list at
+.B nload-user@lists.sourceforge.net
+after having subscribed at
+.B https://lists.sourceforge.net/lists/listinfo/nload-user
+
 .SH AUTHOR
-Roland Riegel <support@roland-riegel.de>
+Roland Riegel <feedback@roland-riegel.de>
