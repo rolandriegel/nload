@@ -55,6 +55,8 @@
 
 Proc::Proc()
 {
+	m_total[0] = m_total[1] =
+	m_total_new[0] = m_total_new[1] = 0.0;
 }
 
 Proc::~Proc()
