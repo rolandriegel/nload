@@ -65,32 +65,32 @@ void Status::print( int x, int y, status_format traff_format, status_format data
 	
 	//print current traffic
 	wmove( m_window, y, x );
-	value = (double) m_cur * 8 / getUnitFactor( traff_format, m_cur * 8 );
-	sprintf( fText, "Curr: %.2f %s/s\n", value, getUnitString( traff_format, m_cur * 8, false ) );
+	value = m_cur * getUnitFactor( traff_format, m_cur );
+	sprintf( fText, "Curr: %.2f %s/s\n", value, getUnitString( traff_format, m_cur ) );
 	waddstr( m_window, fText );
 	//print average traffic since nload start
 	getyx( m_window, cury, curx );
 	wmove( m_window, cury, x );
-	value = (double) m_average * 8 / getUnitFactor( traff_format, m_average * 8 );
-	sprintf( fText, "Avg: %.2f %s/s\n", value, getUnitString( traff_format, m_average * 8, false ) );
+	value = m_average * getUnitFactor( traff_format, m_average );
+	sprintf( fText, "Avg: %.2f %s/s\n", value, getUnitString( traff_format, m_average ) );
 	waddstr( m_window, fText );
 	//print min traffic since nload start
 	getyx( m_window, cury, curx );
 	wmove( m_window, cury, x );
-	value = (double) m_min * 8 / getUnitFactor( traff_format, m_min * 8 );
-	sprintf( fText, "Min: %.2f %s/s\n", value, getUnitString( traff_format, m_min * 8, false ) );
+	value = m_min * getUnitFactor( traff_format, m_min );
+	sprintf( fText, "Min: %.2f %s/s\n", value, getUnitString( traff_format, m_min ) );
 	waddstr( m_window, fText );
 	//print max traffic since nload start
 	getyx( m_window, cury, curx );
 	wmove( m_window, cury, x );
-	value = (double) m_max * 8 / getUnitFactor( traff_format, m_max * 8 );
-	sprintf( fText, "Max: %.2f %s/s\n", value, getUnitString( traff_format, m_max * 8, false ) );
+	value = m_max * getUnitFactor( traff_format, m_max );
+	sprintf( fText, "Max: %.2f %s/s\n", value, getUnitString( traff_format, m_max ) );
 	waddstr( m_window, fText );
 	//print total traffic since last system reboot
 	getyx( m_window, cury, curx );
 	wmove( m_window, cury, x );
-	value = (double) m_total / getUnitFactor( data_format, m_total );
-	sprintf( fText, "Ttl: %.2f %s\n", value,  getUnitString( data_format, m_total, true ) );
+	value = m_total * getUnitFactor( data_format, m_total );
+	sprintf( fText, "Ttl: %.2f %s\n", value,  getUnitString( data_format, m_total ) );
 	waddstr( m_window, fText );
 	
 }
@@ -102,50 +102,59 @@ void Status::resetTrafficData()
 }
 
 //return the matching unit string, e.g. "kBit" for status_format::kilobit
-const char* Status::getUnitString( status_format format, long long value, bool bytes )
+const char* Status::getUnitString( status_format format, long long value )
 {
 	switch( format )
 	{
-		case human_readable:
+		case human_readable_bit:
+		case human_readable_byte:
 			for( int i = 3; i >= 0; i-- )
-				if ( value >= pow( 1024, i ) )
+				if ( value * ( format % 2 == 0 ? 8 : 1 ) >= pow( 1024, i ) )
 					switch(i)
 					{
 						case 3:
-							return bytes ? "GByte" : "GBit";
+							return format % 2 == 0 ? "GBit" : "GByte";
 						case 2:
-							return bytes ? "MByte" : "MBit";
+							return format % 2 == 0 ? "MBit" : "MByte";
 						case 1:
-							return bytes ? "kByte" : "kBit";
+							return format % 2 == 0 ? "kBit" : "kByte";
 						case 0:
-							return bytes ? "Byte" : "Bit";
+							return format % 2 == 0 ? "Bit" : "Byte";
 					}
 		case bit:
-			return bytes ? "Byte" : "Bit";
+			return "Bit";
+		case byte:
+			return "Byte";
 		case kilobit:
-			return bytes ? "kByte" : "kBit";
+			return "kBit";
+		case kilobyte:
+			return "kByte";
 		case megabit:
-			return bytes ? "MByte" : "MBit";
+			return "MBit";
+		case megabyte:
+			return "MByte";
 		case gigabit:
-			return bytes ? "GByte" : "GBit";
+			return "GBit";
+		case gigabyte:
+			return "GByte";
 		default: //should never be executed
 			return "";
 	}
 }
 
 //return the matching conversion factor between Bit and e.g. status_format::kilobit
-int Status::getUnitFactor( status_format format, long long value )
+double Status::getUnitFactor( status_format format, long long value )
 {
-	if( format == human_readable )
+	if( format < 0 ) //human readable
 	{
 		for( int i = 3; i >= 0; i-- )
-			if ( value >= pow( 1024, i ) )
-				return int( pow( 1024, i ) );
-		return 1;
+			if ( value * ( format % 2 == 0 ? 8 : 1 ) >= pow( 1024, i ) )
+				return ( (double) ( format % 2 == 0 ? 8 : 1 ) / pow( 1024, i ) );
+		return ( (double) ( format % 2 == 0 ? 8 : 1 ) );
 	}
 	else
 	{
-		return int( pow( 1024, format ) );
+		return ( (double) ( format % 2 == 0 ? 8 : 1 ) / pow( 1024, format / 2 ) );
 	}
 }
 

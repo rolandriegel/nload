@@ -147,22 +147,32 @@ for ( int i = 1; i < argc; i++ )
 			switch( argv[ i + 1 ][0] )
 			{
 				case 'H':
+					traffic_format = Status::human_readable_byte;
+					break;
 				case 'h':
-					traffic_format = Status::human_readable;
+					traffic_format = Status::human_readable_bit;
 					break;
 				case 'B':
+					traffic_format = Status::byte;
+					break;
 				case 'b':
 					traffic_format = Status::bit;
 					break;
 				case 'K':
+					traffic_format = Status::kilobyte;
+					break;
 				case 'k':
 					traffic_format = Status::kilobit;
 					break;
 				case 'M':
+					traffic_format = Status::megabyte;
+					break;
 				case 'm':
 					traffic_format = Status::megabit;
 					break;
 				case 'G':
+					traffic_format = Status::gigabyte;
+					break;
 				case 'g':
 					traffic_format = Status::gigabit;
 					break;
@@ -188,22 +198,32 @@ for ( int i = 1; i < argc; i++ )
 			switch( argv[ i + 1 ][0] )
 			{
 				case 'H':
+					data_format = Status::human_readable_byte;
+					break;
 				case 'h':
-					data_format = Status::human_readable;
+					data_format = Status::human_readable_bit;
 					break;
 				case 'B':
+					data_format = Status::byte;
+					break;
 				case 'b':
 					data_format = Status::bit;
 					break;
 				case 'K':
+					data_format = Status::kilobyte;
+					break;
 				case 'k':
 					data_format = Status::kilobit;
 					break;
 				case 'M':
+					data_format = Status::megabyte;
+					break;
 				case 'm':
 					data_format = Status::megabit;
 					break;
 				case 'G':
+					data_format = Status::gigabyte;
+					break;
 				case 'g':
 					data_format = Status::gigabit;
 					break;
@@ -401,11 +421,11 @@ fprintf( stderr,
 	"		if 0 print net load only one time and exit\n"
 	"		default is %d\n"
 	"-u h|b|k|m|g	sets the type of unit used for the display of traffic numbers\n"
-	"		h: human readable (auto), b: byte/s, k: kbyte/s, m: mbyte/s,\n"
-	"		g: gbyte/s\n"
+	"   H|B|K|M|G	h: human readable (auto), b: Bit/s, k: kBit/s, m: MBit/s etc.\n"
+	"		H: human readable (auto), B: Byte/s, K: kByte/s, M: MByte/s etc.\n"
 	"		default is k\n"
-	"-U h|b|k|m|g	same as -u, but for an amount of data, e.g. byte, kbyte etc.\n"
-	"		default is k\n"
+	"-U h|b|k|m|g	same as -u, but for a total amount of data (without \"/s\")\n"
+	"   H|B|K|M|G	default is M\n"
 	"devices		network devices to use\n"
 	"		default is \"%s\"\n"
 	"--help\n"

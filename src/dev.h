@@ -31,7 +31,7 @@ const bool STANDARD_SHOW_GRAPHS = true;
 const int STANDARD_SLEEP_INTERVAL = 500;
 const int STANDARD_AVERAGE_SMOOTHNESS = 9;
 const Status::status_format STANDARD_TRAFFIC_FORMAT = Status::kilobit;
-const Status::status_format STANDARD_DATA_FORMAT = Status::megabit;
+const Status::status_format STANDARD_DATA_FORMAT = Status::megabyte;
 
 #ifdef HAVE_LINUX
 char* const STANDARD_NETWORK_DEVICE = "eth0";

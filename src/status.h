@@ -32,11 +32,16 @@ public:
 	
 	enum status_format
 	{
-		human_readable = -1,
+		human_readable_bit = -2,
+		human_readable_byte = -1,
 		bit = 0,
-		kilobit = 1,
-		megabit = 2,
-		gigabit = 3
+		byte = 1,
+		kilobit = 2,
+		kilobyte = 3,
+		megabit = 4,
+		megabyte = 5,
+		gigabit = 6,
+		gigabyte = 7
 	};
 	
 	void update( int, unsigned int );
@@ -50,8 +55,8 @@ private:
 	void minMax( int );
 	void average( int );
 	
-	const char* getUnitString( status_format, long long, bool );
-	int getUnitFactor( status_format, long long );
+	const char* getUnitString( status_format, long long );
+	double getUnitFactor( status_format, long long );
 	
 	int m_min, m_max, m_average, m_cur;
 	long long m_total;
