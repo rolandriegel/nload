@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Jul 25 2001
     copyright            : (C) 2001, 2002 by Roland Riegel
-    email                : support@roland-riegel.de
+    email                : feedback@roland-riegel.de
  ***************************************************************************/
 
 /***************************************************************************
@@ -29,7 +29,9 @@
 #include <vector>
 #include "dev.h"
 #include "options.h"
+#include "traffic_window.h"
 #include "opt_window.h"
+#include "screen.h"
 
 using std::string;
 using std::vector;
@@ -38,13 +40,13 @@ int main( int, char ** );
 
 void optwindow_fieldChanged( FORM * );
 
+void init();
 void finish( int );
 void terminal_resized( int );
 
 void printhelp();
 
-WINDOW* m_window;
-
 OptWindow m_optwindow;
+TrafficWindow m_mainwindow;
 
 #endif

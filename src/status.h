@@ -2,8 +2,8 @@
                           status.h  -  description
                              -------------------
     begin                : Sat Sep 29 2001
-    copyright            : (C) 2001 by Roland Riegel
-    email                : support@roland-riegel.de
+    copyright            : (C) 2001, 2002 by Roland Riegel
+    email                : feedback@roland-riegel.de
  ***************************************************************************/
 
 /***************************************************************************
@@ -44,11 +44,10 @@ public:
 	};
 	
 	void update( int, unsigned int );
-	void print( int, int, status_format, status_format );
+	void print( WINDOW*, int, int, status_format, status_format );
 	void resetTrafficData();
 	
 	void setAverageSmoothness( int );
-	void setWindow( WINDOW * );
 	
 private:
 	void minMax( int );
@@ -61,8 +60,6 @@ private:
 	long long m_total;
 	int m_averagesmoothness;
 	
-	WINDOW *m_window;
-
 };
 
 #endif

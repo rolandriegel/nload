@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Jan 17 2002
     copyright            : (C) 2002 by Roland Riegel
-    email                : support@roland-riegel.de
+    email                : feedback@roland-riegel.de
  ***************************************************************************/
 
 /***************************************************************************
@@ -23,14 +23,12 @@ const int BORDER_TOP = 2;
 const int BORDER_BOTTOM = 1;
 
 OptWindow::OptWindow()
+    : Window()
 {
-	m_visible = false;
 }
 
 OptWindow::~OptWindow()
 {
-	if( m_visible )
-		hide();
 }
 
 void OptWindow::setFieldChangedFunc( void ( *fieldchangedfunc )( FORM * ) )
@@ -120,8 +118,6 @@ void OptWindow::show( int x, int y, int width, int height )
 	
 	post_form( m_form );
 	
-	refresh();
-	
 	setFieldChangedFunc( m_fieldchangedfunc );
 	
 	m_visible = true;
@@ -148,12 +144,6 @@ void OptWindow::hide()
 	deleteWindow();
 	
 	m_visible = false;
-}
-
-//is the window currently visible?
-bool OptWindow::visible()
-{
-	return m_visible;
 }
 
 //process key presses
@@ -215,37 +205,34 @@ vector<OptionBase *>& OptWindow::options()
 
 void OptWindow::refresh()
 {
-	int width, height;
-	getmaxyx( m_window, height, width );
-	
 	mvwaddstr( m_window, 0, 0, "Options:\n" );
-	for( int x = 0; x < width; x++ )
+	for( int x = 0; x < width(); x++ )
 		waddch( m_window, '=' );
-	mvwaddstr( m_window, 1, width - 18, " <-- (-) (+) --> " );
+	
+	char fText[40] = "";
+	sprintf( fText, " <-- (-) page %i/%i (+) --> ", page(), countPages() );
+	mvwaddstr( m_window, 1, width() - strlen( fText ) - 1, fText );
 	wrefresh( m_window );
 	wrefresh( m_sub_window );
 }
 
-void OptWindow::resize( int x, int y, int width, int height )
+int OptWindow::page()
 {
-	setFieldChangedFunc(0);
+	if( ! m_form ) return 0;
+	return form_page( m_form ) + 1;	
+}
+
+int OptWindow::countPages()
+{
+	if( ! m_fields ) return 0;
 	
-	unpost_form( m_form );
-	deleteForm();
-	deleteSubWindow();
-	
-	wresize( m_window, height, width );
-	mvwin( m_window, y, x );
-	
-	createForm( width, height );
-	createSubWindow( x, y, width, height );
-	
-//	wclear( m_window );
-//	wclear( m_sub_window );
-	
-	post_form( m_form );
-	
-	refresh();
-	
-	setFieldChangedFunc( m_fieldchangedfunc );
+	int pages = 0;
+	int i = 0;
+	while( m_fields[i] )
+	{
+		if( new_page( m_fields[i] ) )
+			pages++;
+		i++;
+	}
+	return pages;
 }

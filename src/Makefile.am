@@ -6,6 +6,7 @@ nload_SOURCES =		\
 dev.cpp dev.h		\
 graph.cpp graph.h 	\
 main.cpp main.h		\
+traffic_window.cpp traffic_window.h \
 optionbase.cpp optionbase.h \
 options.cpp options.h 	\
 opt_window.cpp opt_window.h \

@@ -1,8 +1,8 @@
 /***************************************************************************
-                          graph.h  -  description
+                              traffic_window.h
                              -------------------
-    begin                : Sat Sep 29 2001
-    copyright            : (C) 2001, 2002 by Roland Riegel
+    begin                : Thu Jul 04 2002
+    copyright            : (C) 2002 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -15,33 +15,38 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GRAPH_H
-#define GRAPH_H
+#ifndef TRAFFIC_WINDOW_H
+#define TRAFFIC_WINDOW_H
 
-#include <curses.h>
-#include <list>
-using std::list;
+#include "screen.h"
+#include "window.h"
+#include "dev.h"
 
-class Graph
+#include <vector>
+using std::vector;
+
+class TrafficWindow : public Window
 {
-
 public:
-	Graph();
-	~Graph();
 	
-	void setNumOfBars( int );
-	void setHeightOfBars( int );
-	void setTrafficWithMaxDeflectionOfBars( int );
+	TrafficWindow();
+	~TrafficWindow();
 	
-	void update( int );
-	void print( WINDOW*, int, int );
-	void resetTrafficData();
-
+	void processKey( int key );
+	void print();
+	
+	vector<Dev *>& devices();
+	void setDevices( vector<Dev *>& );
+	
+	void setShowMultipleDevices( bool );
+	bool showMultipleDevices();
+	
 private:
-	int m_heightofbars;
-	int m_trafficwithmaxdeflectionofbars;
 	
-	list<int> m_values;
+	vector<Dev *> m_devs;
+	
+	int m_cur_dev;
+	bool m_show_multiple_devices;
 	
 };
 

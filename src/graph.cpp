@@ -65,18 +65,12 @@ void Graph::update(int new_value)
 	
 }
 
-//set the curses window where to write to
-void Graph::setWindow(WINDOW *new_window)
-{
-	m_window = new_window;
-}
-
 //print the graph with the upper left corner at the coordinates (x, y)
-void Graph::print( int x, int y )
+void Graph::print( WINDOW* window, int x, int y )
 {
 	int curx, cury;
 	
-	wmove( m_window, y, x );
+	wmove( window, y, x );
 	
 	//cycle through through the lines
 	for( int l = 0; l < m_heightofbars; l++ )
@@ -87,17 +81,17 @@ void Graph::print( int x, int y )
 			int trafficperline = m_trafficwithmaxdeflectionofbars / m_heightofbars;
 			int restoftraffic = ( (*r) - ( m_heightofbars - l - 1 ) * trafficperline ) % trafficperline;
 			if( (float) (*r) / m_trafficwithmaxdeflectionofbars >= (float) ( m_heightofbars - l ) / m_heightofbars )
-				waddch( m_window, '#' );
+				waddch( window, '#' );
 			else if( restoftraffic >= 0.7 * trafficperline )
-				waddch( m_window, '|' );
+				waddch( window, '|' );
 			else if( restoftraffic >= 0.3 * trafficperline )
-				waddch( m_window, '.' );
+				waddch( window, '.' );
 			else
-				waddch( m_window, ' ' );
+				waddch( window, ' ' );
 		}
-		waddch( m_window, '\n' );
-		getyx( m_window, cury, curx );
-		wmove( m_window, cury, x );
+		waddch( window, '\n' );
+		getyx( window, cury, curx );
+		wmove( window, cury, x );
 	}
 	
 }

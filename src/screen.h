@@ -1,8 +1,8 @@
 /***************************************************************************
-                          graph.h  -  description
+                                  screen.h
                              -------------------
-    begin                : Sat Sep 29 2001
-    copyright            : (C) 2001, 2002 by Roland Riegel
+    begin                : Thu Jul 04 2002
+    copyright            : (C) 2002 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -15,33 +15,20 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GRAPH_H
-#define GRAPH_H
+#ifndef SCREEN_H
+#define SCREEN_H
 
 #include <curses.h>
-#include <list>
-using std::list;
 
-class Graph
+class Screen
 {
-
 public:
-	Graph();
-	~Graph();
 	
-	void setNumOfBars( int );
-	void setHeightOfBars( int );
-	void setTrafficWithMaxDeflectionOfBars( int );
+	static int width() { int width, height; getmaxyx( stdscr, height, width ); return width; }
+	static int height() { int width, height; getmaxyx( stdscr, height, width ); return height; }
 	
-	void update( int );
-	void print( WINDOW*, int, int );
-	void resetTrafficData();
-
-private:
-	int m_heightofbars;
-	int m_trafficwithmaxdeflectionofbars;
-	
-	list<int> m_values;
+	static int curr_x() { int x, y; getyx( stdscr, y, x ); return x; }
+	static int curr_y() { int x, y; getyx( stdscr, y, x ); return y; }
 	
 };
 

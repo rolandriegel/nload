@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Jan 17 2002
     copyright            : (C) 2002 by Roland Riegel
-    email                : support@roland-riegel.de
+    email                : feedback@roland-riegel.de
  ***************************************************************************/
 
 /***************************************************************************
@@ -28,8 +28,9 @@ using std::vector;
 
 #include "status.h"
 #include "options.h"
+#include "window.h"
 
-class OptWindow
+class OptWindow : public Window
 {
 public:
 	
@@ -40,10 +41,8 @@ public:
 	
 	void show( int, int, int, int );
 	void hide();
-	bool visible();
 	
 	void refresh();
-	void resize( int, int, int, int );
 	
 	void processRequest( int );
 	void fieldChanged( FORM * );
@@ -61,7 +60,9 @@ private:
 	void createSubWindow( int, int, int, int );
 	void deleteSubWindow();
 	
-	bool m_visible;
+	int page();
+	int countPages();
+	
 	vector<OptionBase *> m_options;
 	
 	WINDOW *m_window;

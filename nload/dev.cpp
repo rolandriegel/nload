@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Aug 1 2001
     copyright            : (C) 2001, 2002 by Roland Riegel
-    email                : support@roland-riegel.de
+    email                : feedback@roland-riegel.de
  ***************************************************************************/
 
 /***************************************************************************
@@ -36,13 +36,9 @@ Dev::Dev() : Proc::Proc()
 				break;
 		}
 		
-		traffic_graph[i] -> setWindow( NULL );
-		device_status[i] -> setWindow( NULL );
 		device_status[i] -> setAverageSmoothness( STANDARD_AVERAGE_SMOOTHNESS );
 		
 	}
-	
-	setWindow( NULL );
 	
 	setShowGraphs( STANDARD_SHOW_GRAPHS );
 	
@@ -59,16 +55,11 @@ Dev::~Dev()
 {
 }
 
-//update and eventually print the device's data
-void Dev::update( bool print )
+//update the device's data
+void Dev::update()
 {
-
-	char fText[100] = "";
-	int x = 0, y = 0, curx = 0, cury = 0;
-	
 	//read current traffic
 	float *currentio = readLoad();
-	getmaxyx( m_window, y, x );
 	
 	//calculate the traffic (Bytes/s)
 	currentio[0] = currentio[0] / ( getElapsedTime() / 1000 );
@@ -88,19 +79,25 @@ void Dev::update( bool print )
 			traffic_graph[i] -> resetTrafficData();
 		}
 	}
+}
+
+//print the device's data
+void Dev::print( WINDOW* window )
+{
+	char fText[100] = "";
+	int x = 0, y = 0, curx = 0, cury = 0;
 	
-	//if this device is currently not visible on the screen, exit here
-	if( ! print ) return;
+	getmaxyx( window, y, x );
 	
 	//if device does not exist
 	if ( ! ProcDevExists() )
 	{
 		//... print warning message ...
 		sprintf( fText, "Device %s (%i/%i): does not exist\n", ProcDev(), m_devicenumber, m_totalnumberofdevices );
-		waddstr( m_window, fText );
+		waddstr( window, fText );
 		for( int i = 0; i < x; i++ )
-			waddch( m_window, '=' );
-		waddch( m_window, '\n' );
+			waddch( window, '=' );
+		waddch( window, '\n' );
 		
 		//... and exit
 		return;
@@ -108,62 +105,50 @@ void Dev::update( bool print )
 	
 	//print header
 	sprintf( fText, "Device %s (%i/%i):\n", ProcDev(), m_devicenumber, m_totalnumberofdevices );
-	waddstr( m_window, fText );
+	waddstr( window, fText );
 	for( int i = 0; i < x; i++ )
-		waddch( m_window, '=' );
+		waddch( window, '=' );
 	
 	//if graphs should be shown ...
 	if( m_showgraphs )
 	{
 		//incoming traffic
-		waddstr( m_window, "Incoming:\n" );
+		waddstr( window, "Incoming:\n" );
 		
-		getyx( m_window, cury, curx );
+		getyx( window, cury, curx );
 		
 		traffic_graph[0] -> setNumOfBars( x * 2 / 3 );
 		traffic_graph[0] -> setHeightOfBars( ( y - cury - 1 ) / 2 );
-		traffic_graph[0] -> print( 0, cury );
+		traffic_graph[0] -> print( window, 0, cury );
 		
-		getyx( m_window, cury, curx );
-		device_status[0] -> print( x * 2 / 3 + 2, cury - 5, m_trafficformat, m_dataformat );
+		getyx( window, cury, curx );
+		device_status[0] -> print( window, x * 2 / 3 + 2, cury - 5, m_trafficformat, m_dataformat );
 		
 		//outgoing traffic
-		waddstr( m_window, "Outgoing:\n" );
+		waddstr( window, "Outgoing:\n" );
 		
-		getyx( m_window, cury, curx );
+		getyx( window, cury, curx );
 		traffic_graph[1] -> setNumOfBars( x * 2 / 3 );
 		traffic_graph[1] -> setHeightOfBars( y - cury );
-		traffic_graph[1] -> print( 0, cury );
+		traffic_graph[1] -> print( window, 0, cury );
 		
-		getyx( m_window, cury, curx );
-		device_status[1] -> print( x * 2 / 3 + 2, cury - 4, m_trafficformat, m_dataformat );
+		getyx( window, cury, curx );
+		device_status[1] -> print( window, x * 2 / 3 + 2, cury - 4, m_trafficformat, m_dataformat );
 	}
 	//... or not
 	else
 	{
-		waddstr( m_window, "Incoming:" );
-		getyx( m_window, cury, curx );
-		wmove( m_window, cury, x / 2 );
-		waddstr( m_window, "Outgoing:\n" );
+		waddstr( window, "Incoming:" );
+		getyx( window, cury, curx );
+		wmove( window, cury, x / 2 );
+		waddstr( window, "Outgoing:\n" );
 		
-		getyx( m_window, cury, curx );
+		getyx( window, cury, curx );
 		
-		device_status[0] -> print( 0, cury, m_trafficformat, m_dataformat ); //incoming traffic
-		device_status[1] -> print( x / 2, cury, m_trafficformat, m_dataformat ); //outgoing traffic
+		device_status[0] -> print( window, 0, cury, m_trafficformat, m_dataformat ); //incoming traffic
+		device_status[1] -> print( window, x / 2, cury, m_trafficformat, m_dataformat ); //outgoing traffic
 		
-		waddch( m_window, '\n' );
-	}
-	
-}
-
-//set the curses window where to print to
-void Dev::setWindow( WINDOW *new_window )
-{
-	m_window = new_window;
-	for( int i = 0; i < 2; i++ )
-	{
-		traffic_graph[i] -> setWindow( new_window );
-		device_status[i] -> setWindow( new_window );
+		waddch( window, '\n' );
 	}
 }
 

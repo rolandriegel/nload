@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sat Sep 29 2001
     copyright            : (C) 2001, 2002 by Roland Riegel
-    email                : support@roland-riegel.de
+    email                : feedback@roland-riegel.de
  ***************************************************************************/
 
 /***************************************************************************
@@ -49,14 +49,8 @@ void Status::update( int new_value, unsigned int new_total )
 	
 }
 
-//set the curses window where to print to
-void Status::setWindow( WINDOW *new_window )
-{
-	m_window = new_window;
-}
-
 //print statistics
-void Status::print( int x, int y, status_format traff_format, status_format data_format )
+void Status::print( WINDOW* window, int x, int y, status_format traff_format, status_format data_format )
 {
 	
 	int curx, cury;
@@ -64,34 +58,34 @@ void Status::print( int x, int y, status_format traff_format, status_format data
 	char fText[100] = "";
 	
 	//print current traffic
-	wmove( m_window, y, x );
+	wmove( window, y, x );
 	value = m_cur * getUnitFactor( traff_format, m_cur );
 	sprintf( fText, "Curr: %.2f %s/s\n", value, getUnitString( traff_format, m_cur ) );
-	waddstr( m_window, fText );
+	waddstr( window, fText );
 	//print average traffic since nload start
-	getyx( m_window, cury, curx );
-	wmove( m_window, cury, x );
+	getyx( window, cury, curx );
+	wmove( window, cury, x );
 	value = m_average * getUnitFactor( traff_format, m_average );
 	sprintf( fText, "Avg: %.2f %s/s\n", value, getUnitString( traff_format, m_average ) );
-	waddstr( m_window, fText );
+	waddstr( window, fText );
 	//print min traffic since nload start
-	getyx( m_window, cury, curx );
-	wmove( m_window, cury, x );
+	getyx( window, cury, curx );
+	wmove( window, cury, x );
 	value = m_min * getUnitFactor( traff_format, m_min );
 	sprintf( fText, "Min: %.2f %s/s\n", value, getUnitString( traff_format, m_min ) );
-	waddstr( m_window, fText );
+	waddstr( window, fText );
 	//print max traffic since nload start
-	getyx( m_window, cury, curx );
-	wmove( m_window, cury, x );
+	getyx( window, cury, curx );
+	wmove( window, cury, x );
 	value = m_max * getUnitFactor( traff_format, m_max );
 	sprintf( fText, "Max: %.2f %s/s\n", value, getUnitString( traff_format, m_max ) );
-	waddstr( m_window, fText );
+	waddstr( window, fText );
 	//print total traffic since last system reboot
-	getyx( m_window, cury, curx );
-	wmove( m_window, cury, x );
+	getyx( window, cury, curx );
+	wmove( window, cury, x );
 	value = m_total * getUnitFactor( data_format, m_total );
 	sprintf( fText, "Ttl: %.2f %s\n", value,  getUnitString( data_format, m_total ) );
-	waddstr( m_window, fText );
+	waddstr( window, fText );
 	
 }
 

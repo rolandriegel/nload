@@ -35,7 +35,6 @@ int main (int argc, char *argv[])
 {
 
 vector<string *> network_device;
-vector<Dev *> devs;
 
 OptionInt sleep_interval( STANDARD_SLEEP_INTERVAL, "Refresh interval (ms)" );
 OptionBool show_multiple_devices( ! STANDARD_SHOW_GRAPHS, "Show multiple devices" );
@@ -260,44 +259,19 @@ for ( int i = 1; i < argc; i++ )
 if ( network_device.size() == 0 )
 	network_device.push_back( new string( STANDARD_NETWORK_DEVICE ) );
 
-//handle interrrupt signal
-signal( SIGINT, finish );
-signal( SIGTERM, finish );
-signal( SIGWINCH, terminal_resized );
-
-//initialize ncurses
-initscr();
-keypad( stdscr, true );
-nodelay( stdscr, true );
-noecho();
-nonl();
-cbreak();
-
-//create main window
-m_window = newwin( 0, 0, 0, 0 );
+init();
 
 //create one instance of the Dev class per device
 for ( vector<string *>::size_type i = 0; i < network_device.size(); i++ )
 {
-	devs.push_back( new Dev() );
-	devs.back() -> setProcDev( network_device[i] -> c_str() );
-	devs.back() -> setWindow( m_window );
-	devs.back() -> setDeviceNumber( i + 1 );
-	devs.back() -> setTotalNumberOfDevices( network_device.size() );
+	m_mainwindow.devices().push_back( new Dev() );
+	m_mainwindow.devices().back() -> setProcDev( network_device[i] -> c_str() );
+	m_mainwindow.devices().back() -> setDeviceNumber( i + 1 );
+	m_mainwindow.devices().back() -> setTotalNumberOfDevices( network_device.size() );
 }
 
 do
 {
-	
-	static int cur_dev = 0;
-
-	//get the number of devices
-	long size = devs.size();
-	
-	//get screen dimensions
-	int x, y, x_main, y_main;
-	getmaxyx( stdscr, y, x );
-	getmaxyx( m_window, y_main, x_main );
 	
 	//wait sleep_interval milliseconds (in steps of 100 ms)
 	struct timespec wanted_time;
@@ -316,89 +290,64 @@ do
 		int key;
 		while( ( key = getch() ) != ERR )
 		{
-			m_optwindow.processRequest( key );
 			switch( key )
 			{
-				case KEY_RIGHT:
-					if( ! m_optwindow.visible() )
-					{
-						cur_dev += show_multiple_devices ? ( y_main / 9 >= size ? 0 : y_main / 9 ) : 1;
-						if( cur_dev >= size )
-							cur_dev = 0;
-					}
-					break;
-				case KEY_LEFT:
-					if( ! m_optwindow.visible() )
-					{
-						cur_dev -= show_multiple_devices ? ( y_main / 9 >= size ? 0 : y_main / 9 ) : 1;
-						if( cur_dev < 0 )
-							cur_dev = size - 1;
-					}
-					break;
 				case 'o':
 				case 'O':
 					if( m_optwindow.visible() )
 					{
 						m_optwindow.hide();
-						mvwin( m_window, 0, 0 );
-						wresize( m_window, y, x );
+						m_mainwindow.resize( 0, 0, Screen::width(), Screen::height() );
 					}
 					else
 					{
-						wresize( m_window, y - y / 4, x );
-						mvwin( m_window, y / 4, 0 );
+						m_mainwindow.resize( 0, Screen::height() / 4, Screen::width(), Screen::height() - Screen::height() / 4 );
 						m_optwindow.setFieldChangedFunc( optwindow_fieldChanged );
-						m_optwindow.show( 0, 0, x, y / 4 );
+						m_optwindow.show( 0, 0, Screen::width(), Screen::height() / 4 );
 					}
 					rest_of_sleep_interval = 0; //update the screen
 					break;
 				case 'q':
 				case 'Q':
 					if( ! m_optwindow.visible() )
+					{
 						finish (0);
+						return 0;
+					}
 					break;
 			}
+			if( m_optwindow.visible() )
+				m_optwindow.processRequest( key );
+			else
+				m_mainwindow.processKey( key );
 		}
 	}
 	
-	if( show_multiple_devices && y_main / 9 >= size )
-		cur_dev = 0;
-	
-	//pipe through new settings
-	for ( vector<Dev *>::const_iterator r = devs.begin(); r != devs.end(); r++ )
+	//pipe through new settings (could be done in a cleaner way)
+	m_mainwindow.setShowMultipleDevices( show_multiple_devices );
+	for ( vector<Dev *>::const_iterator r = m_mainwindow.devices().begin(); r != m_mainwindow.devices().end(); r++ )
 	{
-		(*r) -> setShowGraphs( ! show_multiple_devices );
 		(*r) -> setTrafficWithMaxDeflectionOfGraphs( bar_max_in * 1024 / 8, bar_max_out * 1024 / 8 );
 		(*r) -> setAverageSmoothness( average_smoothness );
 		(*r) -> setStatusFormat( traffic_format, data_format );
 	}
 	
 	//clear the screen
-	wclear( m_window );
+	m_mainwindow.clear();
 	
-	//update all devices and print the data of the current one
-	for( int i = 0; i < size; i++ )
-	{
-		if( ! show_multiple_devices )
-		{
-			devs[i] -> update( i == cur_dev );
-		}
-		else
-		{
-			int curx, cury;
-			getyx( m_window, cury, curx );
-			
-			devs[i] -> update( i >= cur_dev && y_main - cury >= 9 );
-		}
-	}
+	//print device data
+	m_mainwindow.print();
 	
 	//refresh the screen
-	wrefresh( m_window );
+	m_mainwindow.refresh();
+	
 	if( m_optwindow.visible() ) m_optwindow.refresh(); //always show cursor in option dialog
 	
 } while ( print_only_once != true ); //do this endless except the user said "-t 0"
 
 finish(0);
+
+return 0;
 
 }
 
@@ -407,19 +356,14 @@ void optwindow_fieldChanged( FORM * form )
 	m_optwindow.fieldChanged( form );
 }
 
-void finish( int signal )
+void init()
 {
-
-//stop ncurses
-endwin();
-
-exit( EXIT_SUCCESS );
-
-}
-
-void terminal_resized( int signal )
-{
-	endwin();
+	//handle interrrupt signal
+	signal( SIGINT, finish );
+	signal( SIGTERM, finish );
+	signal( SIGWINCH, terminal_resized );
+	
+	//initialize ncurses
 	initscr();
 	keypad( stdscr, true );
 	nodelay( stdscr, true );
@@ -427,20 +371,33 @@ void terminal_resized( int signal )
 	nonl();
 	cbreak();
 	
-	int width, height;
-	getmaxyx( stdscr, height, width );
+	//create main window
+	m_mainwindow.show( 0, 0, 0, 0 );
+}
+
+void finish( int signal )
+{
+	//destroy main window
+	m_mainwindow.hide();
 	
-	if( m_optwindow.visible() )
+	//stop ncurses
+	endwin();
+}
+
+void terminal_resized( int signal )
+{
+	bool optwindow_was_visible = m_optwindow.visible();
+
+	m_optwindow.hide();
+
+	finish(0);	
+	init();
+	
+	if( optwindow_was_visible )
 	{
-		wresize( m_window, height - height / 4, width );
-		mvwin( m_window, height / 4, 0 );
-		
-		m_optwindow.resize( 0, 0, width, height / 4 );
-	}
-	else
-	{
-		wresize( m_window, height, width );
-		mvwin( m_window, 0, 0 );
+		m_mainwindow.resize( 0, Screen::height() / 4, Screen::width(), Screen::height() - Screen::height() / 4 );
+		m_optwindow.setFieldChangedFunc( optwindow_fieldChanged );
+		m_optwindow.show( 0, 0, Screen::width(), Screen::height() / 4 );
 	}
 }
 
@@ -450,7 +407,7 @@ void printhelp()
 //print disclaimer
 fprintf( stderr,
 	"\n%s version %s\n"
-	"Copyright (C) 2001, 2002 by Roland Riegel <support@roland-riegel.de>\n"
+	"Copyright (C) 2001, 2002 by Roland Riegel <feedback@roland-riegel.de>\n"
 	"%s comes with ABSOLUTELY NO WARRANTY. This is free software, and you are\n"
 	"welcome to redistribute it under certain conditions. For more details see the\n"
 	"GNU General Public License Version 2 (http://www.gnu.org/copyleft/gpl.html).\n\n"

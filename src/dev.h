@@ -2,8 +2,8 @@
                           dev.h  -  description
                              -------------------
     begin                : Wed Aug 1 2001
-    copyright            : (C) 2001 by Roland Riegel
-    email                : support@roland-riegel.de
+    copyright            : (C) 2001, 20002 by Roland Riegel
+    email                : feedback@roland-riegel.de
  ***************************************************************************/
 
 /***************************************************************************
@@ -52,15 +52,14 @@ public:
 	Dev();
 	~Dev();
 
-	void update( bool );
+	void update();
+	void print( WINDOW* );
 	void setDeviceNumber( int );
 	void setTotalNumberOfDevices( int );
 	void setAverageSmoothness( int );
 	void setShowGraphs( bool );
 	void setTrafficWithMaxDeflectionOfGraphs( int, int );
 	void setStatusFormat( Status::status_format, Status::status_format );
-	
-	void setWindow( WINDOW * );
 	
 private:
 	int m_devicenumber;
@@ -71,8 +70,6 @@ private:
 	
 	Status *device_status[2];
 	Graph *traffic_graph[2];
-	
-	WINDOW *m_window;
 	
 };
 
