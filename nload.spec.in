@@ -17,6 +17,7 @@ usage in real time. It visualizes the in- and outgoing traffic using two graphs
 and provides additionally info like total amount of transfered data and min/max
 network usage.
 
+
 %prep
 
 
@@ -36,17 +37,21 @@ make -j$numprocs
 
 %install
 make install DESTDIR=$RPM_BUILD_ROOT
-
-cd $RPM_BUILD_ROOT
-find . -type d | sed '1,2d;s,^\.,\%attr(-\,root\,root) \%dir ,' > $RPM_BUILD_DIR/file.list.%{name}-%{version}
-find . -type f | sed 's,^\.,\%attr(-\,root\,root) ,' >> $RPM_BUILD_DIR/file.list.%{name}-%{version}
-find . -type l | sed 's,^\.,\%attr(-\,root\,root) ,' >> $RPM_BUILD_DIR/file.list.%{name}-%{version}
+gzip $RPM_BUILD_ROOT/%{prefix}/man/man1/nload.1
 
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 rm -rf $RPM_BUILD_DIR/%{name}-%{version}
-rm -rf ../file.list.%{name}-%{version}
 
 
-%files -f ../file.list.%{name}-%{version}
+%files
+%attr(-,root,root)
+%{prefix}/bin/nload
+%{prefix}/man/man1/nload.1.gz
+
+
+%changelog
+
+* Sat Nov 10 2001 Helder Correia <helder.correia@netcabo.pt>
+- Spec file first stable version
