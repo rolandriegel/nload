@@ -35,9 +35,7 @@ public:
 	string asString() const;
 	void assignString( const string new_value );
 	
-	FIELD* createCursesEditField( int x, int y, int width, int height );
-	FIELD* cursesEditField() const;
-	void deleteCursesEditField();
+	Field* editField( int x = -1, int y = -1, int width = -1, int height = -1 );
 	
 	operator bool() const;
 	
@@ -46,7 +44,7 @@ public:
 private:
 	
 	bool m_value;
-	FIELD* m_curses_edit_field;
+	Field* m_edit_field;
 	
 };
 
@@ -60,9 +58,7 @@ public:
 	string asString() const;
 	void assignString( const string new_value );
 	
-	FIELD* createCursesEditField( int x, int y, int width, int height );
-	FIELD* cursesEditField() const;
-	void deleteCursesEditField();
+	Field* editField( int x = -1, int y = -1, int width = -1, int height = -1 );
 	
 	void min( int new_min );
 	void max( int new_max );
@@ -74,7 +70,7 @@ public:
 private:
 	
 	int m_value;
-	FIELD* m_curses_edit_field;
+	Field* m_edit_field;
 	int m_min;
 	int m_max;
 	
@@ -90,9 +86,7 @@ public:
 	string asString() const;
 	void assignString( const string new_value );
 	
-	FIELD* createCursesEditField( int x, int y, int width, int height );
-	FIELD* cursesEditField() const;
-	void deleteCursesEditField();
+	Field* editField( int x = -1, int y = -1, int width = -1, int height = -1 );
 	
 	void min( int new_min );
 	void max( int new_max );
@@ -104,7 +98,7 @@ public:
 private:
 	
 	long m_value;
-	FIELD* m_curses_edit_field;
+	Field* m_edit_field;
 	int m_min;
 	int m_max;
 	
@@ -120,9 +114,7 @@ public:
 	string asString() const;
 	void assignString( const string new_value );
 	
-	FIELD* createCursesEditField( int x, int y, int width, int height );
-	FIELD* cursesEditField() const;
-	void deleteCursesEditField();
+	Field* editField( int x = -1, int y = -1, int width = -1, int height = -1 );
 	
 	operator Status::status_format() const;
 	
@@ -131,7 +123,7 @@ public:
 private:
 	
 	Status::status_format m_value;
-	FIELD* m_curses_edit_field;
+	Field* m_edit_field;
 	
 };
 

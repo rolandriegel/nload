@@ -20,6 +20,8 @@
 
 #include <curses.h>
 
+class Form;
+
 class Window
 {
 public:
@@ -33,9 +35,9 @@ public:
 	//create window and display it
 	virtual void show( int x, int y, int width, int height )
 	{
-		hide();
+		if( m_window ) return;
 		
-		m_window = newwin( y, x, height, width );
+		m_window = newwin( height, width, y, x );
 		clear();
 		refresh();
 		
@@ -182,9 +184,43 @@ public:
 	}
 	
 protected:
-	
+	friend class SubWindow;
+	friend class Form;
 	bool m_visible;
 	WINDOW* m_window;
+	
+};
+
+class SubWindow : public Window
+{
+public:
+	SubWindow( Window* parent ) : Window(), m_parent( parent ) {}
+	~SubWindow()
+	{
+		hide();
+	}
+	
+	//return parent window
+	Window* parent()
+	{
+		return m_parent;
+	}
+	
+	//create window and display it
+	virtual void show( int x, int y, int width, int height )
+	{
+		if( m_window ) return;
+		
+		m_window = derwin( m_parent -> m_window, height, width, y, x );
+		clear();
+		refresh();
+		
+		m_visible = true;
+	}
+	
+private:
+	friend class Form;
+	Window* m_parent;
 	
 };
 

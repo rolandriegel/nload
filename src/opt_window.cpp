@@ -23,7 +23,7 @@ const int BORDER_TOP = 2;
 const int BORDER_BOTTOM = 1;
 
 OptWindow::OptWindow()
-    : Window()
+    : Window(), m_sub_window( this )
 {
 }
 
@@ -34,76 +34,8 @@ OptWindow::~OptWindow()
 void OptWindow::setFieldChangedFunc( void ( *fieldchangedfunc )( FORM * ) )
 {
 	m_fieldchangedfunc = fieldchangedfunc;
-	if( m_form )
-		set_field_term( m_form, m_fieldchangedfunc );
-}
-
-void OptWindow::createForm( int width, int height )
-{
-	const int value_field_width = ( width - BORDER_LEFT - BORDER_RIGHT ) / 2;
-	
-	m_fields = new FIELD* [ 2 * m_options.size() + 1 ];
-	vector<OptionBase *>::const_iterator r = m_options.begin(); 
-	int i = 0, line = 0;
-	while( r != m_options.end() )
-	{
-		line %= height - BORDER_TOP - BORDER_BOTTOM;
-		
-		m_fields[i] = (*r) -> createCursesLabelField( 0, line, width - value_field_width, 1 );
-		m_fields[ i + 1 ] = (*r) -> createCursesEditField( value_field_width, line, value_field_width, 1 );
-		
-		if( line == 0 )
-			set_new_page( m_fields[i], true );
-		
-		r++; i += 2; line++;
-	}
-	
-	m_fields[ 2 * m_options.size() ] = 0;
-	m_form = new_form( m_fields );
-}
-
-void OptWindow::createWindow( int x, int y, int width, int height )
-{
-	m_window = newwin( height, width, y, x );
-}
-
-void OptWindow::createSubWindow( int x, int y, int width, int height )
-{
-	if( m_window && m_form )
-	{
-		int sub_width = 0, sub_height = 0;
-		scale_form( m_form, &sub_height, &sub_width );
-		m_sub_window = derwin( m_window, sub_height, sub_width, BORDER_TOP, BORDER_BOTTOM );
-		set_form_win( m_form, m_window );
-		set_form_sub( m_form, m_sub_window );
-	}
-}
-
-void OptWindow::deleteForm()
-{
-	free_form( m_form );
-	m_form = 0;
-	
-	for( vector<OptionBase *>::const_iterator r = m_options.begin(); r != m_options.end(); r++ )
-	{
-		(*r) -> deleteCursesEditField();
-		(*r) -> deleteCursesLabelField();
-	}
-	
-	delete[] m_fields;
-	m_fields = 0;
-}
-
-void OptWindow::deleteWindow()
-{
-	delwin( m_window );
-	m_window = 0;
-}
-
-void OptWindow::deleteSubWindow()
-{
-	delwin( m_sub_window );
-	m_sub_window = 0;
+	if( m_form.visible() )
+		set_field_term( m_form.handle(), m_fieldchangedfunc );
 }
 
 //create option window and display the current settings
@@ -112,11 +44,25 @@ void OptWindow::show( int x, int y, int width, int height )
 	if( m_visible )
 		hide();
 	
-	createForm( width, height );
-	createWindow( x, y, width, height );
-	createSubWindow( x, y, width, height );
+	Window::show( x, y, width, height );
+	m_sub_window.show( BORDER_LEFT, BORDER_TOP, width - BORDER_LEFT - BORDER_RIGHT, height - BORDER_TOP - BORDER_BOTTOM );
 	
-	post_form( m_form );
+	const int field_width = m_sub_window.width() / 2;
+	int line = 0;
+	for( vector<OptionBase *>::iterator i = m_options.begin(); i != m_options.end(); i++ )
+	{
+		line %= m_sub_window.height();
+		
+		m_form.fields().push_back( (*i) -> labelField( 0, line, field_width, 1 ) );
+		m_form.fields().push_back( (*i) -> editField( field_width, line, field_width, 1 ) );
+		
+		if( line == 0 )
+			(*i) -> labelField() -> setNewPage( true );
+		
+		line++;
+	}
+	
+	m_form.show( this, &m_sub_window );
 	
 	setFieldChangedFunc( m_fieldchangedfunc );
 	
@@ -130,18 +76,17 @@ void OptWindow::fieldChanged( FORM *changedform )
 {
 	for( vector<OptionBase *>::const_iterator r = m_options.begin(); r != m_options.end(); r++ )
 	{
-		if( (*r) -> cursesEditField() == current_field( m_form ) )
-			(*r) -> assignString( field_buffer( (*r) -> cursesEditField(), 0 ) );
+		if( *(*r) -> editField() == current_field( m_form.handle() ) )
+			(*r) -> assignString( (*r) -> editField() -> buffer() );
 	}
 }
 
 //hide window and destroy it
 void OptWindow::hide()
 {
-	unpost_form( m_form );
-	deleteForm();
-	deleteSubWindow();
-	deleteWindow();
+	m_form.hide();
+	m_sub_window.hide();
+	Window::hide();
 	
 	m_visible = false;
 }
@@ -191,8 +136,8 @@ void OptWindow::processKey( int request )
 				request = REQ_PREV_PAGE;
 				break;
 		}
-		form_driver( m_form, request );
-		wrefresh( m_sub_window );
+		m_form.processKey( request );
+		refresh();
 	}
 }
 
@@ -214,26 +159,15 @@ void OptWindow::refresh()
 	print( fText, width() - strlen( fText ) - 1, 1 );
 	
 	wrefresh( m_window );
-	wrefresh( m_sub_window );
+	m_sub_window.refresh();
 }
 
 int OptWindow::page()
 {
-	if( ! m_form ) return 0;
-	return form_page( m_form ) + 1;	
+	return m_form.page();
 }
 
 int OptWindow::countPages()
 {
-	if( ! m_fields ) return 0;
-	
-	int pages = 0;
-	int i = 0;
-	while( m_fields[i] )
-	{
-		if( new_page( m_fields[i] ) )
-			pages++;
-		i++;
-	}
-	return pages;
+	return m_form.countPages();
 }

@@ -21,19 +21,19 @@ const char* status_format_strings[] = { "Human Readable (Bit)", "Human Readable 
                           "Bit", "Byte",
                           "kBit", "kByte",
                           "MBit", "MByte",
-                          "GBit", "GByte" };
-const char* bool_strings[] = { "[X]", "[ ]" };
+                          "GBit", "GByte", 0 };
+const char* bool_strings[] = { "[X]", "[ ]", 0 };
 
 OptionBool::OptionBool( bool new_value, string new_description )
- : OptionBase( new_description ), m_curses_edit_field(0)
+ : OptionBase( new_description ), m_edit_field(0)
 {
 	m_value = new_value;
 }
 
 OptionBool::~OptionBool()
 {
-	deleteCursesEditField();
-	deleteCursesLabelField();
+	if( m_edit_field )
+		delete m_edit_field;
 }
 
 string OptionBool::asString() const
@@ -46,27 +46,19 @@ void OptionBool::assignString( const string new_value )
 	m_value = ( new_value.substr(0, 3) == "[X]" );
 }
 
-FIELD* OptionBool::createCursesEditField( int x, int y, int width, int height )
+Field* OptionBool::editField( int x, int y, int width, int height )
 {
-	if( ! m_curses_edit_field )
+	if( ! m_edit_field )
 	{
-		m_curses_edit_field = new_field( height, width, y, x, 0, 0 );
-		set_field_opts( m_curses_edit_field, field_opts( m_curses_edit_field ) & ~O_BLANK & ~O_AUTOSKIP );
-		set_field_buffer( m_curses_edit_field, 0, asString().c_str() );
-		set_field_type( m_curses_edit_field, TYPE_ENUM, bool_strings, false, false );
+		m_edit_field = new Field( x, y, width, height );
+		m_edit_field -> setFixed( true );
+		m_edit_field -> setBlankWithFirstChar( false );
+		m_edit_field -> setAutoSkip( false );
+		m_edit_field -> setValidateBlank( true );
+		m_edit_field -> setBuffer( asString().c_str() );
+		m_edit_field -> setEnumField( bool_strings );
 	}
-	return m_curses_edit_field;
-}
-
-FIELD* OptionBool::cursesEditField() const
-{
-	return m_curses_edit_field;
-}
-
-void OptionBool::deleteCursesEditField()
-{
-	free_field( m_curses_edit_field );
-	m_curses_edit_field = 0;
+	return m_edit_field;
 }
 
 OptionBool::operator bool() const
@@ -83,15 +75,15 @@ OptionBool OptionBool::operator= ( bool new_value )
 
 OptionInt::OptionInt( int new_value, string new_description )
  : OptionBase( new_description ),
-   m_curses_edit_field(0), m_min(0), m_max(0)
+   m_edit_field(0), m_min(0), m_max(0)
 {
 	m_value = new_value;
 }
 
 OptionInt::~OptionInt()
 {
-	deleteCursesEditField();
-	deleteCursesLabelField();
+	if( m_edit_field )
+		delete m_edit_field;
 }
 
 string OptionInt::asString() const
@@ -108,27 +100,18 @@ void OptionInt::assignString( const string new_value )
 	ss >> m_value;
 }
 
-FIELD* OptionInt::createCursesEditField( int x, int y, int width, int height )
+Field* OptionInt::editField( int x, int y, int width, int height )
 {
-	if( ! m_curses_edit_field )
+	if( ! m_edit_field )
 	{
-		m_curses_edit_field = new_field( height, width, y, x, 0, 0 );
-		set_field_opts( m_curses_edit_field, field_opts( m_curses_edit_field ) & ~O_BLANK & ~O_AUTOSKIP );
-		set_field_buffer( m_curses_edit_field, 0, asString().c_str() );
-		set_field_type( m_curses_edit_field, TYPE_INTEGER, 0, m_min, m_max );
+		m_edit_field = new Field( x, y, width, height );
+		m_edit_field -> setBlankWithFirstChar( false );
+		m_edit_field -> setAutoSkip( false );
+		m_edit_field -> setValidateBlank( true );
+		m_edit_field -> setBuffer( asString().c_str() );
+		m_edit_field -> setIntegerField( m_min, m_max );
 	}
-	return m_curses_edit_field;
-}
-
-FIELD* OptionInt::cursesEditField() const
-{
-	return m_curses_edit_field;
-}
-
-void OptionInt::deleteCursesEditField()
-{
-	free_field( m_curses_edit_field );
-	m_curses_edit_field = 0;
+	return m_edit_field;
 }
 
 void OptionInt::min( int new_min )
@@ -155,15 +138,15 @@ OptionInt OptionInt::operator= ( int new_value )
 
 OptionLong::OptionLong( long new_value, string new_description )
  : OptionBase( new_description ),
-   m_curses_edit_field(0), m_min(0), m_max(0)
+   m_edit_field(0), m_min(0), m_max(0)
 {
 	m_value = new_value;
 }
 
 OptionLong::~OptionLong()
 {
-	deleteCursesEditField();
-	deleteCursesLabelField();
+	if( m_edit_field )
+		delete m_edit_field;
 }
 
 string OptionLong::asString() const
@@ -180,27 +163,18 @@ void OptionLong::assignString( const string new_value )
 	ss >> m_value;
 }
 
-FIELD* OptionLong::createCursesEditField( int x, int y, int width, int height )
+Field* OptionLong::editField( int x, int y, int width, int height )
 {
-	if( ! m_curses_edit_field )
+	if( ! m_edit_field )
 	{
-		m_curses_edit_field = new_field( height, width, y, x, 0, 0 );
-		set_field_opts( m_curses_edit_field, field_opts( m_curses_edit_field ) & ~O_BLANK & ~O_AUTOSKIP );
-		set_field_buffer( m_curses_edit_field, 0, asString().c_str() );
-		set_field_type( m_curses_edit_field, TYPE_INTEGER, 0, m_min, m_max );
+		m_edit_field = new Field( x, y, width, height );
+		m_edit_field -> setBlankWithFirstChar( false );
+		m_edit_field -> setAutoSkip( false );
+		m_edit_field -> setValidateBlank( true );
+		m_edit_field -> setBuffer( asString().c_str() );
+		m_edit_field -> setIntegerField( m_min, m_max );
 	}
-	return m_curses_edit_field;
-}
-
-FIELD* OptionLong::cursesEditField() const
-{
-	return m_curses_edit_field;
-}
-
-void OptionLong::deleteCursesEditField()
-{
-	free_field( m_curses_edit_field );
-	m_curses_edit_field = 0;
+	return m_edit_field;
 }
 
 void OptionLong::min( int new_min )
@@ -226,15 +200,15 @@ OptionLong OptionLong::operator= ( long new_value )
 }
 
 OptionStatusFormat::OptionStatusFormat( Status::status_format new_value, string new_description )
- : OptionBase( new_description ), m_curses_edit_field(0)
+ : OptionBase( new_description ), m_edit_field(0)
 {
 	m_value = new_value;
 }
 
 OptionStatusFormat::~OptionStatusFormat()
 {
-	deleteCursesEditField();
-	deleteCursesLabelField();
+	if( m_edit_field )
+		delete m_edit_field;
 }
 
 string OptionStatusFormat::asString() const
@@ -254,27 +228,19 @@ void OptionStatusFormat::assignString( const string new_value )
 	}
 }
 
-FIELD* OptionStatusFormat::createCursesEditField( int x, int y, int width, int height )
+Field* OptionStatusFormat::editField( int x, int y, int width, int height )
 {
-	if( ! m_curses_edit_field )
+	if( ! m_edit_field )
 	{
-		m_curses_edit_field = new_field( height, width, y, x, 0, 0 );
-		set_field_opts( m_curses_edit_field, field_opts( m_curses_edit_field ) & ~O_BLANK & ~O_AUTOSKIP );
-		set_field_buffer( m_curses_edit_field, 0, asString().c_str() );
-		set_field_type( m_curses_edit_field, TYPE_ENUM, status_format_strings, false, false );
+		m_edit_field = new Field( x, y, width, height );
+		m_edit_field -> setBlankWithFirstChar( false );
+		m_edit_field -> setAutoSkip( false );
+		m_edit_field -> setValidateBlank( true );
+		m_edit_field -> setFixed( true );
+		m_edit_field -> setBuffer( asString().c_str() );
+		m_edit_field -> setEnumField( status_format_strings );
 	}
-	return m_curses_edit_field;
-}
-
-FIELD* OptionStatusFormat::cursesEditField() const
-{
-	return m_curses_edit_field;
-}
-
-void OptionStatusFormat::deleteCursesEditField()
-{
-	free_field( m_curses_edit_field );
-	m_curses_edit_field = 0;
+	return m_edit_field;
 }
 
 OptionStatusFormat::operator Status::status_format() const

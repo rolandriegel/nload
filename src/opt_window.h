@@ -29,6 +29,7 @@ using std::vector;
 #include "status.h"
 #include "options.h"
 #include "window.h"
+#include "form_field.h"
 
 class OptWindow : public Window
 {
@@ -51,23 +52,13 @@ public:
 	
 private:
 	
-	void createForm( int, int );
-	void deleteForm();
-	
-	void createWindow( int, int, int, int );
-	void deleteWindow();
-	
-	void createSubWindow( int, int, int, int );
-	void deleteSubWindow();
-	
 	int page();
 	int countPages();
 	
 	vector<OptionBase *> m_options;
 	
-	WINDOW *m_sub_window;
-	FORM *m_form;
-	FIELD **m_fields;
+	SubWindow m_sub_window;
+	Form m_form;
 	
 	void ( *m_fieldchangedfunc )( FORM* );
 	

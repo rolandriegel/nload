@@ -19,16 +19,17 @@
 #define OPTIONBASE_H
 
 #include <form.h>
-
 #include <string>
 using std::string;
+
+#include "form_field.h"
 
 class OptionBase
 {
 
 public:
 	OptionBase( string new_description = "" );
-	virtual ~OptionBase(){};
+	virtual ~OptionBase();
 	
 	void setDescription( string );
 	string description() const;
@@ -36,18 +37,14 @@ public:
 	virtual string asString() const = 0;
 	virtual void assignString( const string new_value ) = 0;
 	
-	virtual FIELD* createCursesEditField( int x, int y, int width, int height ) = 0;
-	virtual FIELD* cursesEditField() const = 0;
-	virtual void deleteCursesEditField() = 0;
+	virtual Field* editField( int x = -1, int y = -1, int width = -1, int height = -1 ) = 0;
 	
-	FIELD* createCursesLabelField( int x, int y, int width, int height );
-	FIELD* cursesLabelField() const;
-	void deleteCursesLabelField();
+	Field* labelField( int x = -1, int y = -1, int width = -1, int height = -1 );
 	
 private:
 	
 	string m_description;
-	FIELD* m_curses_label_field;
+	Field* m_label_field;
 	
 };
 
