@@ -11,7 +11,6 @@ AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_INSTALL
-AC_PROG_LN_S
 
 dnl Checks for libraries.
 AC_CHECK_LIB(ncurses, initscr)
@@ -19,24 +18,20 @@ AC_CHECK_LIB(form, new_form)
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(limits.h sys/time.h)
-
-dnl Use some gcc specific options.
-if test "$GCC" = "yes" ; then
-        CFLAGS="$CFLAGS -Wall"
-        CXXFLAGS="$CXXFLAGS -Wall"
-fi
+AC_CHECK_HEADERS([limits.h stdlib.h sys/param.h sys/socket.h sys/time.h])
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
 
-dnl Checks for library functions.
-AC_CHECK_FUNCS(gettimeofday)
+dnl Use some gcc specific options.
+if test "$GCC" = "yes" ; then
+     CFLAGS="$CFLAGS -Wall"
+     CXXFLAGS="$CXXFLAGS -Wall"
+fi
 
 dnl System dependant jobs
-dnl AC_MSG_CHECKING(for operating system type)
 case $target in
     *linux*)
          AC_DEFINE(HAVE_LINUX, 1)
@@ -52,9 +47,12 @@ case $target in
 esac
 
 dnl Adds extra arguments to configure script.
-AC_ARG_ENABLE(debug,[  --enable-debug          enable runtime debugging [no]],
-              [],  
-               LDFLAGS="$LDFLAGS -s")
+AC_ARG_ENABLE(debug,[  --enable-debug          enable runtime debugging [no]], [], LDFLAGS="$LDFLAGS -s")
+
+dnl Checks for library functions.
+AC_FUNC_MALLOC
+AC_TYPE_SIGNAL
+AC_CHECK_FUNCS([gettimeofday memset pow])
 
 AC_OUTPUT([
 Makefile
@@ -63,3 +61,4 @@ docs/nload.1
 nload.spec
 src/Makefile
 ])
+
