@@ -33,7 +33,7 @@ execute_args=-b -t 200 -o 64 -i 128 eth0 eth1
 kdevprj_version=1.3
 lfv_open_groups=Andere,GNU,Header,Quellen
 make_options=\s-j1
-makefiles=Makefile.am,nload/Makefile.am,nload/docs/Makefile.am,nload/docs/en/Makefile.am
+makefiles=Makefile.am,nload/Makefile.am
 modifyMakefiles=true
 project_name=nload
 project_type=normal_cpp
@@ -99,14 +99,6 @@ dist=true
 install=false
 install_location=
 type=HEADER
-
-[nload/docs/Makefile.am]
-sub_dirs=
-type=normal
-
-[nload/docs/en/Makefile.am]
-sub_dirs=
-type=normal
 
 [nload/main.cpp]
 dist=true

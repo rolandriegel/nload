@@ -62,4 +62,4 @@ dnl perform program name transformation
 AC_ARG_PROGRAM
 
 dnl add here all your Makefiles. These will be created by configure
-AC_OUTPUT(Makefile nload/Makefile nload/docs/Makefile nload/docs/en/Makefile )
+AC_OUTPUT(Makefile nload/Makefile )
