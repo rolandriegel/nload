@@ -31,14 +31,12 @@ using std::vector;
 #include "window.h"
 #include "form_field.h"
 
-class OptWindow : public Window
+class OptWindow : public Window, public Form::Slots
 {
 public:
 	
 	OptWindow();
 	~OptWindow();
-	
-	void setFieldChangedFunc( void (*)( FORM * ) );
 	
 	void show( int, int, int, int );
 	void hide();
@@ -46,7 +44,7 @@ public:
 	void refresh();
 	
 	void processKey( int );
-	void fieldChanged( FORM * );
+	void slot_fieldChanged( Field* );
 	
 	vector<OptionBase *>& options();
 	
@@ -59,8 +57,6 @@ private:
 	
 	SubWindow m_sub_window;
 	Form m_form;
-	
-	void ( *m_fieldchangedfunc )( FORM* );
 	
 };
 

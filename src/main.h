@@ -38,8 +38,6 @@ using std::vector;
 
 int main( int argc, char *argv[] );
 
-void optwindow_fieldChanged( FORM* form );
-
 void init();
 void finish();
 void end( int signal = 0 );

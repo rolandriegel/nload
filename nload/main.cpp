@@ -310,7 +310,6 @@ do
 					else
 					{
 						m_mainwindow.resize( 0, Screen::height() / 4, Screen::width(), Screen::height() - Screen::height() / 4 );
-						m_optwindow.setFieldChangedFunc( optwindow_fieldChanged );
 						m_optwindow.show( 0, 0, Screen::width(), Screen::height() / 4 );
 					}
 					rest_of_sleep_interval = 0; //update the screen
@@ -343,11 +342,6 @@ do
 
 end();
 
-}
-
-void optwindow_fieldChanged( FORM * form )
-{
-	m_optwindow.fieldChanged( form );
 }
 
 void init()
@@ -402,7 +396,6 @@ void terminal_resized( int signal )
 	if( optwindow_was_visible )
 	{
 		m_mainwindow.resize( 0, Screen::height() / 4, Screen::width(), Screen::height() - Screen::height() / 4 );
-		m_optwindow.setFieldChangedFunc( optwindow_fieldChanged );
 		m_optwindow.show( 0, 0, Screen::width(), Screen::height() / 4 );
 	}
 }

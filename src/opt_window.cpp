@@ -23,19 +23,12 @@ const int BORDER_TOP = 2;
 const int BORDER_BOTTOM = 1;
 
 OptWindow::OptWindow()
-    : Window(), m_sub_window( this )
+    : Window(), Form::Slots(), m_sub_window( this ), m_form( this )
 {
 }
 
 OptWindow::~OptWindow()
 {
-}
-
-void OptWindow::setFieldChangedFunc( void ( *fieldchangedfunc )( FORM * ) )
-{
-	m_fieldchangedfunc = fieldchangedfunc;
-	if( m_form.visible() )
-		set_field_term( m_form.handle(), m_fieldchangedfunc );
 }
 
 //create option window and display the current settings
@@ -64,20 +57,16 @@ void OptWindow::show( int x, int y, int width, int height )
 	
 	m_form.show( this, &m_sub_window );
 	
-	setFieldChangedFunc( m_fieldchangedfunc );
-	
 	m_visible = true;
 }
 
 //this function is called when a form field changes
-//it is called by the function m_fieldchangedfunc
-//this can not be done in a nicer way as ncurses does not accept pointers to member functions
-void OptWindow::fieldChanged( FORM *changedform )
+void OptWindow::slot_fieldChanged( Field* field )
 {
 	for( vector<OptionBase *>::const_iterator r = m_options.begin(); r != m_options.end(); r++ )
 	{
-		if( *(*r) -> editField() == current_field( m_form.handle() ) )
-			(*r) -> assignString( (*r) -> editField() -> buffer() );
+		if( *(*r) -> editField() == *field )
+			(*r) -> assignString( field -> buffer() );
 	}
 }
 

@@ -11,4 +11,5 @@ optionbase.cpp optionbase.h \
 options.cpp options.h 	\
 opt_window.cpp opt_window.h \
 proc.cpp proc.h		\
-status.cpp status.h
+status.cpp status.h 	\
+form_field.cpp form_field.h
