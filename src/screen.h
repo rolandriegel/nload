@@ -2,7 +2,7 @@
                                   screen.h
                              -------------------
     begin                : Thu Jul 04 2002
-    copyright            : (C) 2002 by Roland Riegel
+    copyright            : (C) 2002 - 2003 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -18,17 +18,15 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
-#include <curses.h>
-
 class Screen
 {
 public:
 	
-	static int width() { int width, height; getmaxyx( stdscr, height, width ); return width; }
-	static int height() { int width, height; getmaxyx( stdscr, height, width ); return height; }
+	static int width();
+	static int height();
 	
-	static int x() { int x, y; getyx( stdscr, y, x ); return x; }
-	static int y() { int x, y; getyx( stdscr, y, x ); return y; }
+	static int x();
+	static int y();
 	
 };
 

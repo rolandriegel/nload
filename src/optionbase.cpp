@@ -2,7 +2,7 @@
                                optionbase.cpp
                              -------------------
     begin                : Sun Jan 20 2002
-    copyright            : (C) 2002 by Roland Riegel
+    copyright            : (C) 2002 - 2003 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "optionbase.h"
+#include "form_field.h"
 
 OptionBase::OptionBase( string new_description )
  : m_label_field(0)

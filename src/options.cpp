@@ -2,7 +2,7 @@
                                  options.cpp
                              -------------------
     begin                : Sun Dec 23 2001
-    copyright            : (C) 2001, 2002 by Roland Riegel
+    copyright            : (C) 2001 - 2003 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -16,6 +16,11 @@
  ***************************************************************************/
 
 #include "options.h"
+
+#include <sstream>
+using std::stringstream;
+using std::ostringstream;
+#include "form_field.h"
 
 const char* status_format_strings[] = { "Human Readable (Bit)", "Human Readable (Byte)",
                           "Bit", "Byte",

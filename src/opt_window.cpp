@@ -2,7 +2,7 @@
                                opt_window.cpp
                              -------------------
     begin                : Thu Jan 17 2002
-    copyright            : (C) 2002 by Roland Riegel
+    copyright            : (C) 2002 - 2003 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "opt_window.h"
+#include "options.h"
 
 const int BORDER_LEFT = 1;
 const int BORDER_RIGHT = 1;

@@ -2,7 +2,7 @@
                                   options.h
                              -------------------
     begin                : Sun Dec 23 2001
-    copyright            : (C) 2001, 2002 by Roland Riegel
+    copyright            : (C) 2001 - 2003 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -17,10 +17,6 @@
 
 #ifndef OPTIONS_H
 #define OPTIONS_H
-
-#include <sstream>
-using std::stringstream;
-using std::ostringstream;
 
 #include "optionbase.h"
 #include "status.h"

@@ -2,7 +2,7 @@
                              traffic_window.cpp
                              -------------------
     begin                : Thu Jul 04 2002
-    copyright            : (C) 2002 by Roland Riegel
+    copyright            : (C) 2002 - 2003 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -16,6 +16,8 @@
  ***************************************************************************/
 
 #include "traffic_window.h"
+#include "dev.h"
+#include "options.h"
 
 TrafficWindow::TrafficWindow()
     : Window(), m_cur_dev(0), m_show_multiple_devices( 0 )

@@ -2,7 +2,7 @@
                               traffic_window.h
                              -------------------
     begin                : Thu Jul 04 2002
-    copyright            : (C) 2002 by Roland Riegel
+    copyright            : (C) 2002 - 2003 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -18,13 +18,12 @@
 #ifndef TRAFFIC_WINDOW_H
 #define TRAFFIC_WINDOW_H
 
-#include "screen.h"
 #include "window.h"
-#include "dev.h"
-#include "options.h"
-
 #include <vector>
 using std::vector;
+
+class Dev;
+class OptionBool;
 
 class TrafficWindow : public Window
 {

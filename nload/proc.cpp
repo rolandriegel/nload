@@ -1,9 +1,11 @@
 /***************************************************************************
-                                 proc.cpp
-                             -------------------                                         
-    begin                : Mon Aug 9 1999                                           
+                                  proc.cpp
+                             -------------------
+    begin                : Mon Aug 9 1999
     copyright            : (C) 1999 by Markus Gustavsson
+                           (C) 2001 - 2003 by Roland Riegel
     email                : mighty@fragzone.se
+                           feedback@roland-riegel.de
  ***************************************************************************/
 
 /***************************************************************************
@@ -17,6 +19,39 @@
 
 
 #include "proc.h"
+
+#include <config.h>
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <net/if.h>
+#include <unistd.h>
+
+#ifdef HAVE_LINUX
+	#include <sys/time.h>
+	#include <string>
+	using std::string;
+#endif
+
+#ifdef HAVE_BSD
+	#include <sys/param.h>
+	#include <sys/sysctl.h>
+	#include <net/if_dl.h>
+	#include <net/route.h>
+	#include <string>
+	using std::string;
+#endif
+
+#ifdef HAVE_SOLARIS
+	#include <kstat.h>
+	#include <sys/sockio.h>
+#endif
 
 Proc::Proc()
 {
@@ -80,10 +115,13 @@ char* Proc::ip()
 
 float* Proc::readLoad()
 {
+	static struct timeval is_time;
+	static struct timeval was_time;
+	
 	//measure the ellapsed time since the last function call
-	gettimeofday( &m_is_time, NULL );
-	m_elapsed_time = labs( m_is_time.tv_sec - m_was_time.tv_sec ) * 1000 + (float) labs( m_is_time.tv_usec - m_was_time.tv_usec ) / 1000;
-	m_was_time = m_is_time;
+	gettimeofday( &is_time, NULL );
+	m_elapsed_time = labs( is_time.tv_sec - was_time.tv_sec ) * 1000 + (float) labs( is_time.tv_usec - was_time.tv_usec ) / 1000;
+	was_time = is_time;
 
 	m_ret[0] = 0;
 	m_ret[1] = 0;

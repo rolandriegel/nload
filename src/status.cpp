@@ -1,8 +1,8 @@
 /***************************************************************************
-                          status.cpp  -  description
+                                 status.cpp
                              -------------------
     begin                : Sat Sep 29 2001
-    copyright            : (C) 2001, 2002 by Roland Riegel
+    copyright            : (C) 2001 - 2003 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -16,6 +16,8 @@
  ***************************************************************************/
 
 #include "status.h"
+#include "window.h"
+#include "options.h"
 
 Status::Status()
 {

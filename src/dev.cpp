@@ -1,8 +1,8 @@
 /***************************************************************************
-                          dev.cpp  -  description
+                                  dev.cpp
                              -------------------
     begin                : Wed Aug 1 2001
-    copyright            : (C) 2001, 2002 by Roland Riegel
+    copyright            : (C) 2001 - 2003 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -16,6 +16,10 @@
  ***************************************************************************/
 
 #include "dev.h"
+
+#include "graph.h"
+#include "window.h"
+#include "options.h"
 
 Dev::Dev() : Proc::Proc()
 {

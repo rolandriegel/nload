@@ -1,8 +1,8 @@
 /***************************************************************************
-                          dev.h  -  description
+                                   dev.h
                              -------------------
     begin                : Wed Aug 1 2001
-    copyright            : (C) 2001, 20002 by Roland Riegel
+    copyright            : (C) 2001 - 20003 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -18,14 +18,18 @@
 #ifndef DEV_H
 #define DEV_H
 
-#include <iostream.h>
 #include <curses.h>
 #include <config.h>
 #include "proc.h"
-#include "graph.h"
 #include "status.h"
-#include "window.h"
-#include "options.h"
+
+class Status;
+class Graph;
+class Window;
+class OptionBool;
+class OptionInt;
+class OptionLong;
+class OptionStatusFormat;
 
 const bool STANDARD_HIDE_GRAPHS = false;
 const int STANDARD_SLEEP_INTERVAL = 500;
@@ -33,15 +37,15 @@ const Status::status_format STANDARD_TRAFFIC_FORMAT = Status::kilobit;
 const Status::status_format STANDARD_DATA_FORMAT = Status::megabyte;
 
 #ifdef HAVE_LINUX
-char* const STANDARD_NETWORK_DEVICE = "eth0";
+	char* const STANDARD_NETWORK_DEVICE = "eth0";
 #endif
 
 #ifdef HAVE_BSD
-char* const STANDARD_NETWORK_DEVICE = "fxp0";
+	char* const STANDARD_NETWORK_DEVICE = "fxp0";
 #endif
 
 #ifdef HAVE_SOLARIS
-char* const STANDARD_NETWORK_DEVICE = "hme0";
+	char* const STANDARD_NETWORK_DEVICE = "hme0";
 #endif
 
 class Dev : public Proc

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+echo "Running aclocal..."
+aclocal || exit 1
+echo "Running autoheader..."
+autoheader || exit 1
+echo "Running autoconf..."
+autoconf || exit 1
+echo "Running automake..."
+automake --add-missing --copy || exit 1
+echo "Finished."

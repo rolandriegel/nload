@@ -2,7 +2,7 @@
                                 form_field.h
                              -------------------
     begin                : Sat Jul 27 2002
-    copyright            : (C) 2002 by Roland Riegel
+    copyright            : (C) 2002 - 2003 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -25,8 +25,8 @@
 using std::vector;
 using std::list;
 
-#include "window.h"
-
+class Window;
+class SubWindow;
 class Form;
 
 class Field

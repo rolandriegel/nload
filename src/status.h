@@ -1,8 +1,8 @@
 /***************************************************************************
-                          status.h  -  description
+                                  status.h
                              -------------------
     begin                : Sat Sep 29 2001
-    copyright            : (C) 2001, 2002 by Roland Riegel
+    copyright            : (C) 2001 - 2003 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -24,11 +24,10 @@
 #include <list>
 using std::list;
 
-#include "window.h"
+class Window;
+class OptionInt;
 
 const int STANDARD_AVERAGE_SMOOTHNESS = 9;
-
-class OptionInt;
 
 class Status
 {
@@ -76,7 +75,5 @@ private:
 	OptionInt* m_averagesmoothness;
 	
 };
-
-#include "options.h"
 
 #endif

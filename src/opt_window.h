@@ -2,7 +2,7 @@
                                 opt_window.h
                              -------------------
     begin                : Thu Jan 17 2002
-    copyright            : (C) 2002 by Roland Riegel
+    copyright            : (C) 2002 - 2003 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -18,18 +18,12 @@
 #ifndef OPT_WINDOW_H
 #define OPT_WINDOW_H
 
-#include <vector>
-#include <string>
-using std::string;
-using std::vector;
-
-#include <curses.h>
-#include <form.h>
-
-#include "status.h"
-#include "options.h"
 #include "window.h"
 #include "form_field.h"
+#include <vector>
+using std::vector;
+
+class OptionBase;
 
 class OptWindow : public Window, public Form::Slots
 {

@@ -11,7 +11,7 @@ opt_window.cpp opt_window.h \
 optionbase.cpp optionbase.h \
 options.cpp options.h 	\
 proc.cpp proc.h		\
-screen.h		\
+screen.cpp screen.h		\
 status.cpp status.h 	\
 traffic_window.cpp traffic_window.h \
-window.h
+window.cpp window.h

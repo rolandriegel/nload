@@ -1,8 +1,8 @@
 /***************************************************************************
-                                  graph.h
+                                 screen.cpp
                              -------------------
-    begin                : Sat Sep 29 2001
-    copyright            : (C) 2001 - 2003 by Roland Riegel
+    begin                : Thu Nov 25 2003
+    copyright            : (C) 2003 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -15,40 +15,37 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GRAPH_H
-#define GRAPH_H
+#include "screen.h"
+#include <curses.h>
 
-#include <list>
-using std::list;
-
-class Window;
-class OptionLong;
-
-const long STANDARD_MAX_DEFLECTION = 10240; // [kBit/s]  10 MBit/s = 10240 kBit/s
-
-class Graph
+int Screen::width()
 {
+	int width;
+	int height;
+	getmaxyx( stdscr, height, width );
+	return width;
+}
 
-public:
-	Graph();
-	~Graph();
-	
-	void setNumOfBars( int );
-	void setHeightOfBars( int );
-	void setTrafficWithMaxDeflectionOfBars( OptionLong* );
-	
-	void update( int );
-	void print( Window&, int, int );
-	void resetTrafficData();
+int Screen::height()
+{
+	int width;
+	int height;
+	getmaxyx( stdscr, height, width );
+	return height;
+}
 
-private:
-	long trafficWithMaxDeflectionOfBars();
-	
-	int m_heightofbars;
-	OptionLong* m_trafficwithmaxdeflectionofbars;
-	
-	list<int> m_values;
-	
-};
+int Screen::x()
+{
+	int x;
+	int y;
+	getyx( stdscr, y, x );
+	return x;
+}
 
-#endif
+int Screen::y()
+{
+	int x;
+	int y;
+	getyx( stdscr, y, x );
+	return y;
+}

@@ -34,11 +34,11 @@ fi
 dnl System dependant jobs
 case $target in
     *linux*)
-        AC_DEFINE(HAVE_LINUX, 1)
+        AC_DEFINE(HAVE_LINUX, 1, [Define to 1 if your build target is Linux.])
         AC_CHECK_FUNCS([memset])
         ;;
     *bsd*)
-        AC_DEFINE(HAVE_BSD, 1)
+        AC_DEFINE(HAVE_BSD, 1, [Define to 1 if your build target is BSD.])
         AC_FUNC_MALLOC
         ;;
     *solaris*)
@@ -46,7 +46,7 @@ case $target in
         AC_CHECK_LIB(kstat, kstat_open)
         AC_CHECK_LIB(socket, main)
         AC_CHECK_LIB(nsl, main)
-        AC_DEFINE(HAVE_SOLARIS, 1)
+        AC_DEFINE(HAVE_SOLARIS, 1, [Define to 1 if your build target is Solaris.])
         ;;
 esac
 

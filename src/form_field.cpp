@@ -2,7 +2,7 @@
                                form_field.cpp
                              -------------------
     begin                : Tue Jul 30 2002
-    copyright            : (C) 2002 by Roland Riegel
+    copyright            : (C) 2002 - 2003 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "form_field.h"
+#include "window.h"
 
 Field::Field( int x, int y, int width, int height ) : m_field(0)
 {

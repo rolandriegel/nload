@@ -2,7 +2,7 @@
                                    main.h
                              -------------------
     begin                : Wed Jul 25 2001
-    copyright            : (C) 2001, 2002 by Roland Riegel
+    copyright            : (C) 2001 - 2003 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -18,23 +18,8 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-#include <ctype.h>
-#include <time.h>
-#include <curses.h>
-#include <signal.h>
-#include <string>
-#include <vector>
-#include "dev.h"
-#include "options.h"
 #include "traffic_window.h"
 #include "opt_window.h"
-#include "screen.h"
-
-using std::string;
-using std::vector;
 
 int main( int argc, char *argv[] );
 

@@ -2,7 +2,7 @@
                                 optionbase.h
                              -------------------
     begin                : Sun Jan 20 2002
-    copyright            : (C) 2002 by Roland Riegel
+    copyright            : (C) 2002 - 2003 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -18,11 +18,10 @@
 #ifndef OPTIONBASE_H
 #define OPTIONBASE_H
 
-#include <form.h>
 #include <string>
 using std::string;
 
-#include "form_field.h"
+class Field;
 
 class OptionBase
 {
