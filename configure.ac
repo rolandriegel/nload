@@ -1,8 +1,8 @@
 # Helder Correia <helder.correia@netcabo.pt>
 
 # Process this file with autoconf to produce a configure script.
-AC_INIT(nload, 0.3.1, support@roland-riegel.de)
-AM_INIT_AUTOMAKE(nload, 0.3.1)
+AC_INIT(nload, 0.3.2, support@roland-riegel.de)
+AM_INIT_AUTOMAKE(nload, 0.3.2)
 AM_CONFIG_HEADER([config.h])
 
 # Checks for programs.

@@ -1,3 +1,6 @@
+** version 0.3.2 ** 2001-10-20 *******************************************
+-now the 4GB workaround really works
+**************************************************************************
 ** version 0.3.1 ** 2001-10-17 *******************************************
 -parameter -m introduced: don't show graphs
 -added the nload(1) man page
