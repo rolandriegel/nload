@@ -91,8 +91,8 @@ void Dev::update( bool print )
 	//update graphs and statistics
 	for( int i = 0; i < 2; i++ )
 	{
-		device_status[i] -> update( currentio[i], i == 0 ? totalIn() : totalOut() );
-		traffic_graph[i] -> update( currentio[i] );
+		device_status[i] -> update( (int)currentio[i], (int)(i == 0 ? totalIn() : totalOut()) );
+		traffic_graph[i] -> update( (int)currentio[i] );
 	}
 	
 	//if this device is currently not visible on the screen, exit here
