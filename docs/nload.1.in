@@ -1,8 +1,8 @@
 .\"
 .\" Man page for nload
-.\" Copyright (C) 2001 by Roland Riegel <support@roland.riegel.de>
+.\" Copyright (C) 2001, 2002 by Roland Riegel <support@roland.riegel.de>
 .\"
-.TH nload 1 "October 24, 2001" nload "Network monitoring tools"
+.TH nload 1 "January 20, 2002" nload "Network monitoring tools"
 .SH NAME
 nload \- displays the current network usage
 
@@ -16,9 +16,9 @@ nload \- displays the current network usage
 .B ] [-t
 .I interval
 .B ] [-u
-.I h|b|k|m|g
+.I h|H|b|B|k|K|m|M|g|G
 .B ] [-U
-.I h|b|k|m|g
+.I h|H|b|B|k|K|m|M|g|G
 .B ] [devices]
 
 .B nload --help|-h
@@ -74,13 +74,15 @@ refresh intervals.
 tries to balance this out by doing extra time measurements, but this may
 not always succeed.
 .TP
-.B \-u h|b|k|m|g
+.B \-u h|H|b|B|k|K|m|M|g|G
 Sets the type of unit used for the display of traffic numbers.
-h means human readable (auto), b byte/s, k kbyte/s, m mbyte/s and g gbyte/s. The default
-is k.
+h means human readable (auto), b Bit/s, k kBit/s, m MBit/s and g GBit/s.
+The upper case letters mean the corresponding units in Bytes (instead of Bits).
+The default is k.
 .TP
-.B \-U h|b|k|m|g
-Same as -u, but for an amount of data, e.g. byte, kbyte etc.. The default is k.
+.B \-U h|H|b|B|k|K|m|M|g|G
+Same as -u, but for an amount of data, e.g. Bit, kByte, GBit etc. (without "/s").
+The default is M.
 .TP
 .B devices
 Network devices to use. The default device is "eth0".
