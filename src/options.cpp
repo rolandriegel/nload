@@ -21,16 +21,9 @@ Option<T>::Option()
 }
 
 template<class T>
-Option<T>::Option( T new_value )
+Option<T>::Option( OptionBase::ValueType new_valuetype, T new_value, string new_description )
+ : OptionBase( new_valuetype, new_description )
 {
-	m_value = new_value;
-}
-
-template<class T>
-Option<T>::Option( T new_value, string new_description = "" )
-{
-	setDescription( new_description );
-	
 	m_value = new_value;
 }
 
@@ -46,14 +39,9 @@ Option<T>::operator T() const
 }
 
 template<class T>
-void Option<T>::setDescription( string new_description )
+Option<T> Option<T>::operator= ( T new_value )
 {
-	m_description = new_description;
+	m_value = new_value;
+	
+	return *this;
 }
-
-template<class T>
-string Option<T>::getDescription()
-{
-	return m_description;
-}
-

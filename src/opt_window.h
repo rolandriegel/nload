@@ -19,7 +19,14 @@
 #define OPT_WINDOW_H
 
 #include <vector>
+
+#include <stdlib.h>
+#include <stdio.h>
 #include <curses.h>
+#include <form.h>
+
+#include "status.h"
+
 #include "options.h"
 
 class OptWindow
@@ -31,15 +38,19 @@ public:
 	
 	void show( int, int, int, int );
 	void hide();
-	bool getVisible();
+	bool visible();
 	
-	vector<OptionBase *>& getOptions();
+	void processRequest( int );
+	
+	vector<OptionBase *>& options();
 	
 private:
 	
 	bool m_visible;
 	vector<OptionBase *> m_options;
 	WINDOW *m_window;
+	FORM *m_form;
+	FIELD **m_fields;
 	
 };
 

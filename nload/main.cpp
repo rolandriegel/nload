@@ -39,20 +39,20 @@ OptWindow optwindow;
 vector<string *> network_device;
 vector<Dev *> devs;
 
-Option<int> sleep_interval( STANDARD_SLEEP_INTERVAL, "Display refresh interval" );
-Option<bool> show_graphs( STANDARD_SHOW_GRAPHS, "Display multiple devices" );
-Option<long> bar_max_in( STANDARD_BAR_MAX_IN, "100% mark in kBit/s of the incoming bandwidth graph" );
-Option<long> bar_max_out( STANDARD_BAR_MAX_OUT, "100% mark in kBit/s of the outgoing bandwidth graph" );
-Option<int> average_smoothness( STANDARD_AVERAGE_SMOOTHNESS, "smoothness of the average in/out values" );
-Option<Status::status_format> traffic_format = STANDARD_TRAFFIC_FORMAT;
-Option<Status::status_format> data_format = STANDARD_DATA_FORMAT;
-optwindow.getOptions().push_back( &sleep_interval );
-optwindow.getOptions().push_back( &show_graphs );
-optwindow.getOptions().push_back( &bar_max_in );
-optwindow.getOptions().push_back( &bar_max_out );
-optwindow.getOptions().push_back( &average_smoothness );
-optwindow.getOptions().push_back( &traffic_format );
-optwindow.getOptions().push_back( &data_format );
+Option<int> sleep_interval( OptionBase::Int, STANDARD_SLEEP_INTERVAL, "Refresh interval (ms)" );
+Option<bool> show_multiple_devices( OptionBase::Bool, ! STANDARD_SHOW_GRAPHS, "Show multiple devices" );
+Option<long> bar_max_in( OptionBase::Long, STANDARD_BAR_MAX_IN, "Full deflection \"Incoming\" graph (kBit/s)" );
+Option<long> bar_max_out( OptionBase::Long, STANDARD_BAR_MAX_OUT, "Full deflection \"Outgoing\" graph (kBit/s)" );
+Option<int> average_smoothness( OptionBase::Int, STANDARD_AVERAGE_SMOOTHNESS, "Smoothness of the average in/out values" );
+Option<Status::status_format> traffic_format( OptionBase::Status, STANDARD_TRAFFIC_FORMAT, "Unit for traffic numbers" );
+Option<Status::status_format> data_format( OptionBase::Status, STANDARD_DATA_FORMAT, "Unit for data numbers" );
+optwindow.options().push_back( &sleep_interval );
+optwindow.options().push_back( &show_multiple_devices );
+optwindow.options().push_back( &bar_max_in );
+optwindow.options().push_back( &bar_max_out );
+optwindow.options().push_back( &average_smoothness );
+optwindow.options().push_back( &traffic_format );
+optwindow.options().push_back( &data_format );
 
 bool print_only_once = false;
 
@@ -245,7 +245,7 @@ for ( int i = 1; i < argc; i++ )
 	//has the user chosen to display multiple devices and thus not to display graphs?
 	else if ( strcmp( argv[i], "-m" ) == 0 )
 	{
-		show_graphs = false;
+		show_multiple_devices = true;
 	}
 	//obsolete -b option
 	else if ( strcmp( argv[i], "-b" ) == 0 ) {}
@@ -269,6 +269,8 @@ initscr();
 keypad( stdscr, true );
 nodelay( stdscr, true );
 noecho();
+nonl();
+cbreak();
 
 //create main window
 WINDOW *window = newwin( 0, 0, 0, 0 );
@@ -278,7 +280,7 @@ for ( vector<string *>::size_type i = 0; i < network_device.size(); i++ )
 {
 	devs.push_back( new Dev() );
 	devs.back() -> setProcDev( network_device[i] -> c_str() );
-	devs.back() -> setShowGraphs( show_graphs );
+	devs.back() -> setShowGraphs( ! show_multiple_devices );
 	devs.back() -> setTrafficWithMaxDeflectionOfGraphs( bar_max_in * 1024 / 8, bar_max_out * 1024 / 8 );
 	devs.back() -> setAverageSmoothness( average_smoothness );
 	devs.back() -> setStatusFormat( traffic_format, data_format );
@@ -309,21 +311,29 @@ do
 	//process keyboard
 	int key;
 	while( ( key = getch() ) != ERR )
+	{
+		optwindow.processRequest( key );
 		switch( key )
 		{
 			case KEY_RIGHT:
-				cur_dev += show_graphs ? 1 : ( y_main / 9 >= size ? 0 : y_main / 9 );
-				if( cur_dev >= size )
-					cur_dev = 0;
+				if( ! optwindow.visible() )
+				{
+					cur_dev += show_multiple_devices ? ( y_main / 9 >= size ? 0 : y_main / 9 ) : 1;
+					if( cur_dev >= size )
+						cur_dev = 0;
+				}
 				break;
 			case KEY_LEFT:
-				cur_dev -= show_graphs ? 1 : ( y_main / 9 >= size ? 0 : y_main / 9 );
-				if( cur_dev < 0 )
-					cur_dev = size - 1;
+				if( ! optwindow.visible() )
+				{
+					cur_dev -= show_multiple_devices ? ( y_main / 9 >= size ? 0 : y_main / 9 ) : 1;
+					if( cur_dev < 0 )
+						cur_dev = size - 1;
+				}
 				break;
 			case 'o':
 			case 'O':
-				if( optwindow.getVisible() )
+				if( optwindow.visible() )
 				{
 					optwindow.hide();
 					mvwin( window, 0, 0 );
@@ -344,11 +354,13 @@ do
 				break;
 			case 'q':
 			case 'Q':
-				finish (0);
+				if( ! optwindow.visible() )
+					finish (0);
 				break;
 		}
+	}
 	
-	if( ! show_graphs && y_main / 9 >= size )
+	if( show_multiple_devices && y_main / 9 >= size )
 		cur_dev = 0;
 	
 	//clear the screen
@@ -357,7 +369,7 @@ do
 	//update all devices and print the data of the current one
 	for( int i = 0; i < size; i++ )
 	{
-		if( show_graphs )
+		if( ! show_multiple_devices )
 		{
 			devs[i] -> update( i == cur_dev );
 		}

@@ -1,8 +1,8 @@
 /***************************************************************************
-                                  options.h
+                                optionbase.h
                              -------------------
-    begin                : Sun Dec 23 2001
-    copyright            : (C) 2001, 2002 by Roland Riegel
+    begin                : Sun Jan 20 2002
+    copyright            : (C) 2002 by Roland Riegel
     email                : support@roland-riegel.de
  ***************************************************************************/
 
@@ -15,30 +15,44 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef OPTIONS_H
-#define OPTIONS_H
+#ifndef OPTIONBASE_H
+#define OPTIONBASE_H
 
-#include "optionbase.h"
+#include <form.h>
+#include <string>
 
-template<class T>
-class Option : public OptionBase
+using std::string;
+
+class OptionBase
 {
-	
+
 public:
-	Option();
-	Option( OptionBase::ValueType new_valuetype, T new_value, string new_description = "" );
-	~Option();
+	enum ValueType
+	{
+		Bool,
+		Int,
+		Long,
+		Status
+	};
 	
-	operator T() const;
+	OptionBase();
+	OptionBase( ValueType new_valuetype, string new_description = "" );
+	~OptionBase();
 	
-	Option operator= (T);
+	ValueType valueType();
+	
+	void setDescription( string );
+	string description();
+	
+	void setCursesField( FIELD* );
+	FIELD *cursesField();
 	
 private:
 	
-	T m_value;
+	ValueType m_valuetype;
+	string m_description;
+	FIELD *m_cursesfield;
 	
 };
-
-#include "options.cpp"
 
 #endif

@@ -1,8 +1,8 @@
 /***************************************************************************
-                                  options.h
+                               optionbase.cpp
                              -------------------
-    begin                : Sun Dec 23 2001
-    copyright            : (C) 2001, 2002 by Roland Riegel
+    begin                : Sun Jan 20 2002
+    copyright            : (C) 2002 by Roland Riegel
     email                : support@roland-riegel.de
  ***************************************************************************/
 
@@ -15,30 +15,43 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef OPTIONS_H
-#define OPTIONS_H
-
 #include "optionbase.h"
 
-template<class T>
-class Option : public OptionBase
+OptionBase::OptionBase()
 {
-	
-public:
-	Option();
-	Option( OptionBase::ValueType new_valuetype, T new_value, string new_description = "" );
-	~Option();
-	
-	operator T() const;
-	
-	Option operator= (T);
-	
-private:
-	
-	T m_value;
-	
-};
+}
 
-#include "options.cpp"
+OptionBase::OptionBase( ValueType new_valuetype, string new_description )
+{
+	m_valuetype = new_valuetype;
+	m_description = new_description;
+}
 
-#endif
+OptionBase::~OptionBase()
+{
+}
+
+OptionBase::ValueType OptionBase::valueType()
+{
+	return m_valuetype;
+}
+
+void OptionBase::setDescription( string new_description )
+{
+	m_description = new_description;
+}
+
+string OptionBase::description()
+{
+	return m_description;
+}
+
+void OptionBase::setCursesField( FIELD *new_cursesfield )
+{
+	m_cursesfield = new_cursesfield;
+}
+
+FIELD *OptionBase::cursesField()
+{
+	return m_cursesfield;
+}
