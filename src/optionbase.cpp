@@ -41,11 +41,17 @@ string OptionBase::description() const
 
 Field* OptionBase::labelField( int x, int y, int width, int height )
 {
-	if( ! m_label_field )
+	if( x < 0 || y < 0 ) return m_label_field;
+	if( width < 1 || height < 1 ) return m_label_field;
+
+	if( m_label_field )
 	{
-		m_label_field = new Field( x, y, width, height );
-		m_label_field -> setEnabled( false );
-		m_label_field -> setBuffer( ( m_description + ":" ).c_str() );
+		delete m_label_field;
 	}
+	
+	m_label_field = new Field( x, y, width, height );
+	m_label_field -> setEnabled( false );
+	m_label_field -> setBuffer( ( m_description + ":" ).c_str() );
+	
 	return m_label_field;
 }

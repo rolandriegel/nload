@@ -44,13 +44,12 @@ void OptWindow::show( int x, int y, int width, int height )
 	int line = 0;
 	for( vector<OptionBase *>::iterator i = m_options.begin(); i != m_options.end(); i++ )
 	{
-		line %= m_sub_window.height();
+		line %= m_sub_window.height() < 1 ? 1 : m_sub_window.height();
 		
 		m_form.fields().push_back( (*i) -> labelField( 0, line, field_width, 1 ) );
 		m_form.fields().push_back( (*i) -> editField( field_width, line, field_width, 1 ) );
 		
-		if( line == 0 )
-			(*i) -> labelField() -> setNewPage( true );
+		(*i) -> labelField() -> setNewPage( line == 0 );
 		
 		line++;
 	}
@@ -74,6 +73,7 @@ void OptWindow::slot_fieldChanged( Field* field )
 void OptWindow::hide()
 {
 	m_form.hide();
+	m_form.fields().clear();
 	m_sub_window.hide();
 	Window::hide();
 	

@@ -48,16 +48,23 @@ void OptionBool::assignString( const string new_value )
 
 Field* OptionBool::editField( int x, int y, int width, int height )
 {
-	if( ! m_edit_field )
+
+	if( x < 0 || y < 0 ) return m_edit_field;
+	if( width < 1 || height < 1 ) return m_edit_field;
+	
+	if( m_edit_field )
 	{
-		m_edit_field = new Field( x, y, width, height );
-		m_edit_field -> setFixed( true );
-		m_edit_field -> setBlankWithFirstChar( false );
-		m_edit_field -> setAutoSkip( false );
-		m_edit_field -> setValidateBlank( true );
-		m_edit_field -> setBuffer( asString().c_str() );
-		m_edit_field -> setEnumField( bool_strings );
+		delete m_edit_field;
 	}
+	
+	m_edit_field = new Field( x, y, width, height );
+	m_edit_field -> setFixed( true );
+	m_edit_field -> setBlankWithFirstChar( false );
+	m_edit_field -> setAutoSkip( false );
+	m_edit_field -> setValidateBlank( true );
+	m_edit_field -> setBuffer( asString().c_str() );
+	m_edit_field -> setEnumField( bool_strings );
+	
 	return m_edit_field;
 }
 
@@ -102,15 +109,21 @@ void OptionInt::assignString( const string new_value )
 
 Field* OptionInt::editField( int x, int y, int width, int height )
 {
-	if( ! m_edit_field )
+	if( x < 0 || y < 0 ) return m_edit_field;
+	if( width < 1 || height < 1 ) return m_edit_field;
+	
+	if( m_edit_field )
 	{
-		m_edit_field = new Field( x, y, width, height );
-		m_edit_field -> setBlankWithFirstChar( false );
-		m_edit_field -> setAutoSkip( false );
-		m_edit_field -> setValidateBlank( true );
-		m_edit_field -> setBuffer( asString().c_str() );
-		m_edit_field -> setIntegerField( m_min, m_max );
+		delete m_edit_field;
 	}
+	
+	m_edit_field = new Field( x, y, width, height );
+	m_edit_field -> setBlankWithFirstChar( false );
+	m_edit_field -> setAutoSkip( false );
+	m_edit_field -> setValidateBlank( true );
+	m_edit_field -> setBuffer( asString().c_str() );
+	m_edit_field -> setIntegerField( m_min, m_max );
+	
 	return m_edit_field;
 }
 
@@ -165,15 +178,21 @@ void OptionLong::assignString( const string new_value )
 
 Field* OptionLong::editField( int x, int y, int width, int height )
 {
-	if( ! m_edit_field )
+	if( x < 0 || y < 0 ) return m_edit_field;
+	if( width < 1 || height < 1 ) return m_edit_field;
+	
+	if( m_edit_field )
 	{
-		m_edit_field = new Field( x, y, width, height );
-		m_edit_field -> setBlankWithFirstChar( false );
-		m_edit_field -> setAutoSkip( false );
-		m_edit_field -> setValidateBlank( true );
-		m_edit_field -> setBuffer( asString().c_str() );
-		m_edit_field -> setIntegerField( m_min, m_max );
+		delete m_edit_field;
 	}
+	
+	m_edit_field = new Field( x, y, width, height );
+	m_edit_field -> setBlankWithFirstChar( false );
+	m_edit_field -> setAutoSkip( false );
+	m_edit_field -> setValidateBlank( true );
+	m_edit_field -> setBuffer( asString().c_str() );
+	m_edit_field -> setIntegerField( m_min, m_max );
+	
 	return m_edit_field;
 }
 
@@ -230,16 +249,22 @@ void OptionStatusFormat::assignString( const string new_value )
 
 Field* OptionStatusFormat::editField( int x, int y, int width, int height )
 {
-	if( ! m_edit_field )
+	if( x < 0 || y < 0 ) return m_edit_field;
+	if( width < 1 || height < 1 ) return m_edit_field;
+	
+	if( m_edit_field )
 	{
-		m_edit_field = new Field( x, y, width, height );
-		m_edit_field -> setBlankWithFirstChar( false );
-		m_edit_field -> setAutoSkip( false );
-		m_edit_field -> setValidateBlank( true );
-		m_edit_field -> setFixed( true );
-		m_edit_field -> setBuffer( asString().c_str() );
-		m_edit_field -> setEnumField( status_format_strings );
+		delete m_edit_field;
 	}
+	
+	m_edit_field = new Field( x, y, width, height );
+	m_edit_field -> setBlankWithFirstChar( false );
+	m_edit_field -> setAutoSkip( false );
+	m_edit_field -> setValidateBlank( true );
+	m_edit_field -> setFixed( true );
+	m_edit_field -> setBuffer( asString().c_str() );
+	m_edit_field -> setEnumField( status_format_strings );
+	
 	return m_edit_field;
 }
 
