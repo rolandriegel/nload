@@ -1,6 +1,6 @@
 nload 0.4.0 (2001-12-06)
 real time monitor for network traffic
-Copyright (C) 2001 by Roland Riegel <support@roland-riegel.de>
+Copyright (C) 2001, 2002 by Roland Riegel <feedback@roland-riegel.de>
 
 1. Introduction
    ------------
@@ -42,16 +42,27 @@ man nload
 4. Uninstalling nload
    ------------------
 
-If you want to uninstall nload (I hope you never don't want to ;-), run:
+If you want to uninstall nload (I hope you never want to ;-), run:
 
 make uninstall
 
 in the build directory.
 
-5. Copyright / License
+5. Getting help
+   ------------
+
+If you have problems with compiling, installing or using nload, you may either
+mail me
+ feedback@roland-riegel.de
+or to the nload-user mailing list at
+ nload-user@lists.sourceforge.net
+To subscribe to the list, visit
+ https://lists.sourceforge.net/lists/listinfo/nload-user
+
+6. Copyright / License
    -------------------
 
-Copyright (C) 2001 by Roland Riegel <support@roland-riegel.de>
+Copyright (C) 2001, 20002 by Roland Riegel <feedback@roland-riegel.de>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
