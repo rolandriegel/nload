@@ -429,7 +429,7 @@ fprintf( stderr,
 	"		9 means high smoothness (average over a long period of time)\n"
 	"		default is %d\n"
 	"-t intervall	determines the refresh interval of the display in milliseconds\n"
-	"		if 0 print net load only one time and exit\n"
+	"		if 0 print net load only once and exit\n"
 	"		default is %d\n"
 	"-u h|b|k|m|g	sets the type of unit used for the display of traffic numbers\n"
 	"   H|B|K|M|G	h: human readable (auto), b: Bit/s, k: kBit/s, m: MBit/s etc.\n"
@@ -441,8 +441,8 @@ fprintf( stderr,
 	"		default is \"%s\"\n"
 	"--help\n"
 	"-h		print this help\n\n"
-	"example: %s -t 200 -s 7 -i 1024 -o 128 -U h eth0 eth1\n\n",
-	
+	"example: %s -t 200 -s 7 -i 1024 -o 128 -U h eth0 eth1\n\n"
+	"The options above can also be changed at run time by pressing the 'o' key.\n\n",
 	PACKAGE,
 	VERSION,
 	PACKAGE,
