@@ -84,8 +84,14 @@ void Graph::print( int x, int y )
 		//for each line cycle through the rows
 		for( list<int>::reverse_iterator r = m_values.rbegin(); r != m_values.rend() ; r++ )
 		{
-			if( (*r) / (float) m_trafficwithmaxdeflectionofbars >= 1.0 - ( l / (float) m_heightofbars ) )
+			int trafficperline = m_trafficwithmaxdeflectionofbars / m_heightofbars;
+			int restoftraffic = ( (*r) - ( m_heightofbars - l - 1 ) * trafficperline ) % trafficperline;
+			if( (float) (*r) / m_trafficwithmaxdeflectionofbars >= (float) ( m_heightofbars - l ) / m_heightofbars )
 				addch( '#' );
+			else if( restoftraffic >= 0.7 * trafficperline )
+				addch( '|' );
+			else if( restoftraffic >= 0.3 * trafficperline )
+				addch( '.' );
 			else
 				addch( ' ' );
 		}
