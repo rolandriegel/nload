@@ -73,8 +73,6 @@ main.cpp main.h		\
 proc.cpp proc.h		\
 status.cpp status.h
 
-
-nload_LDADD = -lncurses
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
@@ -86,6 +84,7 @@ CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 nload_OBJECTS =  dev.o graph.o main.o proc.o status.o
+nload_LDADD = $(LDADD)
 nload_DEPENDENCIES = 
 nload_LDFLAGS = 
 CXXFLAGS = @CXXFLAGS@

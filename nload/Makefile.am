@@ -8,5 +8,3 @@ graph.cpp graph.h 	\
 main.cpp main.h		\
 proc.cpp proc.h		\
 status.cpp status.h
-
-nload_LDADD = -lncurses
