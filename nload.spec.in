@@ -3,7 +3,7 @@ Name      : @PACKAGE@
 Version   : @VERSION@
 Release   : 1
 Copyright : GPL
-Url       : http://nload.sourceforge.net
+Url       : http://www.roland-riegel.de/nload/index_en.html
 Packager  : Helder Correia <helder.correia@netcabo.pt>
 Group     : Applications/Networking
 Source    : %{name}-%{version}.tar.gz
@@ -12,14 +12,10 @@ Prefix    : /usr/local
 
 
 %description
-It displays the total amount of data that has been transfered over a network
-device since the last reboot and also tells the user the current bandwidth
-usage. Additionally it displays the minimum, maximum and average of the
-bandwidth usage which measured since the start of nload. If the user wants,
-nload is also able to display two bars, similiar to progress bars,
-presenting the current load graphically. The bandwidth range of the bars can be 
-set independently.
-
+nload is a console application which monitors network traffic and bandwidth
+usage in real time. It visualizes the in- and outgoing traffic using two graphs
+and provides additionally info like total amount of transfered data and min/max
+network usage.
 
 %prep
 
