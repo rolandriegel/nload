@@ -35,6 +35,7 @@ int main (int argc, char *argv[])
 {
 
 int sleep_interval = STANDARD_SLEEP_INTERVAL;
+bool show_graphs = STANDARD_SHOW_GRAPHS;
 long bar_max_in = STANDARD_BAR_MAX_IN;
 long bar_max_out = STANDARD_BAR_MAX_OUT;
 int average_smoothness = STANDARD_AVERAGE_SMOOTHNESS;
@@ -44,6 +45,7 @@ struct timespec wanted_time;
 int index = 0;
 int cur_dev = 0;
 int key = 0;
+int x, y, curx, cury;
 
 network_device = (char **) malloc( sizeof( char * ) );
 if ( network_device == NULL )
@@ -135,6 +137,11 @@ for ( int i = 1; i < argc; i++ )
 			exit(1);
 		}
 	}
+  //has the user chosen to display multiple devices and thus not to desplay graphs?
+	else if ( strcmp( argv[i], "-m" ) == 0 )
+	{
+		show_graphs = false;
+	}
 	//obsolete -b option
 	else if ( strcmp( argv[i], "-b" ) == 0 ) {}
 	//assume unknown parameter to be the network device
@@ -173,7 +180,14 @@ noecho();
 
 for ( int i = 0; i < index; i++ )
 {
-	devs[i] = new Dev( network_device[i], bar_max_in, bar_max_out, average_smoothness, window, i + 1, index );
+	devs[i] = new Dev();
+	devs[i] -> setProcDev( network_device[i] );
+	devs[i] -> setShowGraphs( show_graphs );
+	devs[i] -> setTrafficWithMaxDeflectionOfGraphs( bar_max_in, bar_max_out );
+	devs[i] -> setAverageSmoothness( average_smoothness );
+	devs[i] -> setWindow( window );
+	devs[i] -> setDeviceNumber( i + 1 );
+	devs[i] -> setTotalNumberOfDevices( index );
 }
 
 do
@@ -184,20 +198,20 @@ do
 	wanted_time.tv_nsec = sleep_interval % 1000 * (long) 1000000;
 	nanosleep( &wanted_time, NULL );
 	
+	getmaxyx( window, y, x );
+	
 	//process keyboard
 	while( ( key = getch() ) != ERR )
 		switch( key )
 		{
 			case KEY_RIGHT:
-				if( cur_dev + 1 < index )
-					cur_dev++;
-				else
+				cur_dev += show_graphs ? 1 : ( y / 9 >= index ? 0 : y / 9 );
+				if( cur_dev > index )
 					cur_dev = 0;
 				break;
 			case KEY_LEFT:
-				if( cur_dev >= 1 )
-					cur_dev--;
-				else
+				cur_dev -= show_graphs ? 1 : ( y / 9 >= index ? 0 : y / 9 );
+				if( cur_dev < 0 )
 					cur_dev = index - 1;
 				break;
 			case 'q':
@@ -206,13 +220,27 @@ do
 				break;
 		}
 	
+	if( y / 9 >= index )
+		cur_dev = 0;
+	
 	//clear the screen
 	clear();
 	move( 0, 0 ); //this shouldn't be necessary at all
 	
 	//update all devices and print the data of the current one
 	for( int i = 0; i < index; i++ )
-		devs[i] -> update( i == cur_dev );
+	{
+		if( show_graphs )
+		{
+			devs[i] -> update( i == cur_dev );
+		}
+		else
+		{
+			getyx( window, cury, curx );
+			
+			devs[i] -> update( i >= cur_dev && y - cury >= 9 );
+		}
+	}
 	
 	//refresh the screen
 	refresh();
@@ -247,13 +275,14 @@ fprintf( stderr,
 	"GNU General Public License Version 2 (http://www.gnu.org/copyleft/gpl.html).\n\n"
 
 	"Command line syntax:\n"
-	"%s [-i max_scaling] [-o max_scaling] [-s smoothness] [-t interval] [devices]\n"
+	"%s [-i max_scaling] [-m] [-o max_scaling] [-s smoothness] [-t interval] [devices]\n"
 	"%s --help|-h\n\n"
 	
 	"-i max_scaling	specifies the 100%% mark in kBit/s of the graph indicating the\n"
 	"		incoming bandwidth usage\n"
-	"		ignored if max_scaling is 0\n"
+	"		ignored if max_scaling is 0 or the switch -m is given\n"
 	"		default is %i\n"
+	"-m		show multiple devices at a time; do not show the traffic graphs\n"
 	"-o max_scaling	same as -i but for the graph indicating the outgoing bandwidth\n"
 	"		usage\n"
 	"		default is %i\n"
@@ -264,11 +293,11 @@ fprintf( stderr,
 	"-t intervall	determines the refresh interval of the display in milliseconds\n"
 	"		if 0 print net load only one time and exit\n"
 	"		default is %i\n"
-	"-b		obsolete - ignored\n"
 	"devices		network devices to use\n"
 	"		default is \"%s\"\n"
 	"--help\n"
-	"-h		print this help\n\n"
+	"-h		print this help\n"
+	"-b		obsolete - ignored\n\n"
 	"example: %s -t 200 -s 7 -i 1024 -o 128 eth0 eth1\n\n",
 	
 	NLOAD_VERSION,

@@ -31,6 +31,7 @@
 
 #define STANDARD_BAR_MAX_IN 10240
 #define STANDARD_BAR_MAX_OUT 10240
+#define STANDARD_SHOW_GRAPHS true
 #define STANDARD_SLEEP_INTERVAL 500
 #define STANDARD_NETWORK_DEVICE "eth0"
 #define STANDARD_AVERAGE_SMOOTHNESS 9
@@ -40,23 +41,26 @@ class Dev : public Proc
 
 public:
 	Dev();
-	Dev( char *, long, long, int, WINDOW *, int, int );
 	~Dev();
 
 	void update( bool );
 	void setDeviceNumber( int );
 	void setTotalNumberOfDevices( int );
+	void setAverageSmoothness( int );
+	void setShowGraphs( bool );
+	void setTrafficWithMaxDeflectionOfGraphs( int, int );
 	
   void setWindow( WINDOW * );
 	
 private:
-	int device_number;
-	int total_number_of_devices;
+	int m_devicenumber;
+	int m_totalnumberofdevices;
+	bool m_showgraphs;
 	
 	Status *device_status[2];
 	Graph *traffic_graph[2];
 	
-	WINDOW *window;
+	WINDOW *m_window;
 	
 };
 
