@@ -316,10 +316,7 @@ do
 				case 'q':
 				case 'Q':
 					if( ! m_optwindow.visible() )
-					{
-						finish (0);
-						return 0;
-					}
+						end();
 					break;
 			}
 			if( m_optwindow.visible() )
@@ -342,9 +339,7 @@ do
 	
 } while ( print_only_once != true ); //do this endless except the user said "-t 0"
 
-finish(0);
-
-return 0;
+end();
 
 }
 
@@ -356,8 +351,8 @@ void optwindow_fieldChanged( FORM * form )
 void init()
 {
 	//handle interrrupt signal
-	signal( SIGINT, finish );
-	signal( SIGTERM, finish );
+	signal( SIGINT, end );
+	signal( SIGTERM, end );
 	signal( SIGWINCH, terminal_resized );
 	
 	//initialize ncurses
@@ -372,7 +367,7 @@ void init()
 	m_mainwindow.show( 0, 0, 0, 0 );
 }
 
-void finish( int signal )
+void finish()
 {
 	//destroy main window
 	m_mainwindow.hide();
@@ -381,13 +376,19 @@ void finish( int signal )
 	endwin();
 }
 
+void end( int signal )
+{
+	finish();
+	exit(0);
+}
+
 void terminal_resized( int signal )
 {
 	bool optwindow_was_visible = m_optwindow.visible();
 
 	m_optwindow.hide();
 
-	finish(0);	
+	finish();	
 	init();
 	
 	if( optwindow_was_visible )

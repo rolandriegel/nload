@@ -36,13 +36,14 @@
 using std::string;
 using std::vector;
 
-int main( int, char ** );
+int main( int argc, char *argv[] );
 
-void optwindow_fieldChanged( FORM * );
+void optwindow_fieldChanged( FORM* form );
 
 void init();
-void finish( int );
-void terminal_resized( int );
+void finish();
+void end( int signal = 0 );
+void terminal_resized( int signal );
 
 void printhelp();
 
