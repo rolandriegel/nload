@@ -27,22 +27,25 @@ Status::~Status()
 {
 }
 
+//new traffic measurement has been made => update statistics
 void Status::update( int new_value, int new_total )
 {
 	
 	m_cur = new_value;
-	minMax( m_cur );
-	average( m_cur );
+	minMax( m_cur ); //calculate new min/max traffic values
+	average( m_cur ); //calculate new average
 	
-	m_total = new_total;
+	m_total = new_total; //set new total transfered data
 	
 }
 
+//set the curses window where to print to
 void Status::setWindow( WINDOW *new_window )
 {
 	m_window = new_window;
 }
 
+//print statistics
 void Status::print( int x, int y )
 {
 	
@@ -76,9 +79,11 @@ void Status::print( int x, int y )
 	
 }
 
+//calculate min and max traffic values
 void Status::minMax( int new_value )
 {
 	
+	//if this is the first time call, set min/max to current value
 	if( m_min == -1 && m_max == -1 )
 	{
 		m_min = new_value;
@@ -92,6 +97,7 @@ void Status::minMax( int new_value )
 	
 }
 
+//set the "reaction time" to the current traffic situation of the average values
 void Status::setAverageSmoothness( int new_averagesmoothness )
 {
 	
@@ -100,6 +106,7 @@ void Status::setAverageSmoothness( int new_averagesmoothness )
 	
 }
 
+//calculate new average
 void Status::average( int new_value )
 {
 	
@@ -110,6 +117,7 @@ void Status::average( int new_value )
 	 * could need some help here.
 	 */
 	
+	//if this is the first time call, set average to current value
 	if( m_average == -1 )
 	{
 		m_average = new_value;

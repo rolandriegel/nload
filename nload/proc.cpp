@@ -34,6 +34,7 @@ Proc::Proc()
 	was_time.tv_sec = was_time.tv_usec = 0;
 	is_time.tv_sec = is_time.tv_usec = 0;
 	elapsed_time = 0;
+	dev_exists = 0;
 	
 }
 
@@ -47,15 +48,20 @@ Proc::~Proc()
 	free(ret);
 }
 
-void Proc::setProcDev(char *set)
+void Proc::setProcDev(char *new_procdev)
 {
-	strcpy(dev, set);
+	strcpy(dev, new_procdev);
 	readLoad();
 }
 
 char *Proc::ProcDev()
 {
 	return dev;
+}
+
+bool Proc::ProcDevExists()
+{
+	return dev_exists;
 }
 
 float *Proc::readLoad(void)
@@ -108,6 +114,9 @@ float *Proc::readLoad(void)
 			}
 
 			fclose(fd);
+			
+			dev_exists = true;
+			
 			return(ret);
 		}
 
@@ -116,10 +125,10 @@ float *Proc::readLoad(void)
 	S[0] = 0;
 	S[1] = 0;
 
-	//return negative value so the caller knows that the device does not exist
-	ret[0] = ret[1] = -1.0;
-	
 	fclose(fd);
+	
+	dev_exists = false;
+	
 	return(ret);
 }
 

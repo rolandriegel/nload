@@ -33,6 +33,8 @@ public:
 
 	void setProcDev(char *);
 	char *ProcDev();
+	
+	bool ProcDevExists();
 
 	float *readLoad(void);
 
@@ -46,6 +48,8 @@ private:
 	struct timeval was_time;
 	struct timeval is_time;
 	float elapsed_time;
+	
+	bool dev_exists;
 	
 	FILE *fd;
 

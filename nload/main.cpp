@@ -178,12 +178,13 @@ keypad( stdscr, true );
 nodelay( stdscr, true );
 noecho();
 
+//create one instance of the Dev class per device
 for ( int i = 0; i < index; i++ )
 {
 	devs[i] = new Dev();
 	devs[i] -> setProcDev( network_device[i] );
 	devs[i] -> setShowGraphs( show_graphs );
-	devs[i] -> setTrafficWithMaxDeflectionOfGraphs( bar_max_in, bar_max_out );
+	devs[i] -> setTrafficWithMaxDeflectionOfGraphs( bar_max_in * 1024 / 8, bar_max_out * 1024 / 8 );
 	devs[i] -> setAverageSmoothness( average_smoothness );
 	devs[i] -> setWindow( window );
 	devs[i] -> setDeviceNumber( i + 1 );
@@ -206,7 +207,7 @@ do
 		{
 			case KEY_RIGHT:
 				cur_dev += show_graphs ? 1 : ( y / 9 >= index ? 0 : y / 9 );
-				if( cur_dev > index )
+				if( cur_dev >= index )
 					cur_dev = 0;
 				break;
 			case KEY_LEFT:
@@ -220,7 +221,7 @@ do
 				break;
 		}
 	
-	if( y / 9 >= index )
+	if( ! show_graphs && y / 9 >= index )
 		cur_dev = 0;
 	
 	//clear the screen

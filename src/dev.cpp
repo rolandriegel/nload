@@ -53,84 +53,58 @@ Dev::Dev() : Proc::Proc()
 	
 }
 
-/*
-Dev::Dev(char *network_device, long max_b_in, long max_b_out, int avg_smoothness, WINDOW *win, int dev_number, int total_number_of_devs) : Proc::Proc()
-{
-	
-	for( int i = 0; i < 2; i++ )
-	{
-		
-		device_status[i] = new Status();
-		traffic_graph[i] = new Graph();
-		
-		switch(i)
-		{
-			case 0:
-				traffic_graph[i]->setTrafficWithMaxDeflectionOfBars( max_b_in );
-				break;
-			case 1:
-				traffic_graph[i]->setTrafficWithMaxDeflectionOfBars( max_b_out );
-				break;
-		}
-		
-		traffic_graph[i]->setWindow( win );
-		device_status[i]->setWindow( win );
-		device_status[i]->setAverageSmoothness( avg_smoothness );
-		
-	}
-	
-	setWindow( win );
-	
-	setProcDev( network_device );
-	
-	device_number = dev_number;
-	total_number_of_devices = total_number_of_devs;
-	
-}
-*/
-
 Dev::~Dev()
 {
 }
 
+//update and eventually print the device's data
 void Dev::update( bool print )
 {
 
 	char fText[100] = "";
 	int x = 0, y = 0, curx = 0, cury = 0;
 	
+	//read current traffic
 	float *currentio = readLoad();
 	getmaxyx( m_window, y, x );
 	
-	if ( currentio[0] == -1.0 && currentio[1] == -1.0 )
+	//if device does not exist
+	if ( ! ProcDevExists() )
 	{
 		if( print )
 		{
+			//... print warning message ...
 			sprintf( fText, "Device %s (%i/%i): does not exist\n", ProcDev(), m_devicenumber, m_totalnumberofdevices );
 			addstr( fText );
 			for( int i = 0; i < x; i++ )
 				addch( '=' );
 			addch( '\n' );
 		}
+		//... and exit
 		return;
 	}
 	
+	//calculate the traffic (Bytes/s)
 	currentio[0] = currentio[0] / ( getElapsedTime() / (float) 1000 );
 	currentio[1] = currentio[1] / ( getElapsedTime() / (float) 1000 );
 	
+	//update graphs and statistics
 	for( int i = 0; i < 2; i++ )
 	{
 		device_status[i] -> update( currentio[i], i == 0 ? totalIn() : totalOut() );
 		traffic_graph[i] -> update( currentio[i] );
 	}
 	
+	//if this device is currently not visible on the screen, exit here
 	if( ! print ) return;
 	
+	//print header
 	sprintf( fText, "Device %s (%i/%i):\n", ProcDev(), m_devicenumber, m_totalnumberofdevices );
 	addstr( fText );
 	for( int i = 0; i < x; i++ )
 		addch( '=' );
 	
+	//if graphs should be shown ...
 	if( m_showgraphs )
 	{
 		//incoming traffic
@@ -156,6 +130,7 @@ void Dev::update( bool print )
 		getyx( m_window, cury, curx );
 		device_status[1] -> print( x * 2 / 3 + 2, cury - 4 );
 	}
+	//... or not
 	else
 	{
 		addstr( "Incoming:" );
@@ -173,6 +148,7 @@ void Dev::update( bool print )
 	
 }
 
+//set the curses window where to print to
 void Dev::setWindow( WINDOW *new_window )
 {
 	m_window = new_window;
@@ -183,17 +159,20 @@ void Dev::setWindow( WINDOW *new_window )
 	}
 }
 
+//sets if the graphs should be shown or not
 void Dev::setShowGraphs( bool new_showgraphs )
 {
 	m_showgraphs = new_showgraphs;
 }
 
+//set the in- and outcoming graphs' averagesmoothness
 void Dev::setAverageSmoothness( int new_averagesmoothness )
 {
 	for( int i = 0; i < 2; i++ )
 		device_status[i] -> setAverageSmoothness( new_averagesmoothness );
 }
 
+//set the graphs' max deflection (max traffic level)
 void Dev::setTrafficWithMaxDeflectionOfGraphs( int new_trafficinwithmaxdeflectionofgraphs, int new_trafficoutwithmaxdeflectionofgraphs  )
 {
 	
@@ -210,11 +189,13 @@ void Dev::setTrafficWithMaxDeflectionOfGraphs( int new_trafficinwithmaxdeflectio
 
 }
 
+//set the number identifying the device (for display only)
 void Dev::setDeviceNumber( int new_devicenumber )
 {
 	m_devicenumber = new_devicenumber;
 }
 
+//set the total number of shown devices (for display only)
 void Dev::setTotalNumberOfDevices( int new_totalnumberofdevices )
 {
 	m_totalnumberofdevices = new_totalnumberofdevices;
