@@ -25,12 +25,10 @@
 #include "graph.h"
 #include "status.h"
 #include "window.h"
+#include "options.h"
 
-const int STANDARD_BAR_MAX_IN = 10240;
-const int STANDARD_BAR_MAX_OUT = 10240;
-const bool STANDARD_SHOW_GRAPHS = true;
+const bool STANDARD_HIDE_GRAPHS = false;
 const int STANDARD_SLEEP_INTERVAL = 500;
-const int STANDARD_AVERAGE_SMOOTHNESS = 9;
 const Status::status_format STANDARD_TRAFFIC_FORMAT = Status::kilobit;
 const Status::status_format STANDARD_DATA_FORMAT = Status::megabyte;
 
@@ -57,17 +55,21 @@ public:
 	void print( Window& );
 	void setDeviceNumber( int );
 	void setTotalNumberOfDevices( int );
-	void setAverageSmoothness( int );
-	void setShowGraphs( bool );
-	void setTrafficWithMaxDeflectionOfGraphs( int, int );
-	void setStatusFormat( Status::status_format, Status::status_format );
+	void setAverageSmoothness( OptionInt* );
+	void setHideGraphs( OptionBool* );
+	void setTrafficWithMaxDeflectionOfGraphs( OptionLong*, OptionLong* );
+	void setStatusFormat( OptionStatusFormat*, OptionStatusFormat* );
 	
 private:
+	bool hideGraphs();
+	Status::status_format trafficFormat();
+	Status::status_format dataFormat();
+	
 	int m_devicenumber;
 	int m_totalnumberofdevices;
-	bool m_showgraphs;
-	Status::status_format m_trafficformat;
-	Status::status_format m_dataformat;
+	OptionBool* m_hidegraphs;
+	OptionStatusFormat* m_trafficformat;
+	OptionStatusFormat* m_dataformat;
 	
 	Status *device_status[2];
 	Graph *traffic_graph[2];

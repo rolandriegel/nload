@@ -26,25 +26,13 @@ Dev::Dev() : Proc::Proc()
 		device_status[i] = new Status();
 		traffic_graph[i] = new Graph();
 		
-		switch(i)
-		{
-			case 0:
-				traffic_graph[i] -> setTrafficWithMaxDeflectionOfBars( STANDARD_BAR_MAX_IN );
-				break;
-			case 1:
-				traffic_graph[i] -> setTrafficWithMaxDeflectionOfBars( STANDARD_BAR_MAX_OUT );
-				break;
-		}
-		
-		device_status[i] -> setAverageSmoothness( STANDARD_AVERAGE_SMOOTHNESS );
-		
 	}
 	
-	setShowGraphs( STANDARD_SHOW_GRAPHS );
+	setHideGraphs(0);
 	
 	setProcDev( STANDARD_NETWORK_DEVICE );
 	
-	setStatusFormat( STANDARD_TRAFFIC_FORMAT, STANDARD_DATA_FORMAT );
+	setStatusFormat( 0, 0 );
 	
 	setDeviceNumber(0);
 	setTotalNumberOfDevices(0);
@@ -106,8 +94,22 @@ void Dev::print( Window& window )
 	for( int i = 0; i < window.width(); i++ )
 		window.print( '=' );
 	
-	//if graphs should be shown ...
-	if( m_showgraphs )
+	//if graphs should be hidden ...
+	if( hideGraphs() )
+	{
+		window.print( "Incoming:" );
+		window.setX( window.width() / 2 );
+		window.print( "Outgoing:\n" );
+		
+		int status_y = window.y();
+		
+		device_status[0] -> print( window, 0, status_y, trafficFormat(), dataFormat() ); //incoming traffic
+		device_status[1] -> print( window, window.width() / 2, status_y, trafficFormat(), dataFormat() ); //outgoing traffic
+		
+		window.print( '\n' );
+	}
+	//... or not
+	else
 	{
 		//incoming traffic
 		window.print( "Incoming:\n" );
@@ -116,7 +118,7 @@ void Dev::print( Window& window )
 		traffic_graph[0] -> setHeightOfBars( ( window.height() - window.y() - 1 ) / 2 );
 		traffic_graph[0] -> print( window, 0, window.y() );
 		
-		device_status[0] -> print( window, window.width() * 2 / 3 + 2, window.y() - 5, m_trafficformat, m_dataformat );
+		device_status[0] -> print( window, window.width() * 2 / 3 + 2, window.y() - 5, trafficFormat(), dataFormat() );
 		
 		//outgoing traffic
 		window.print( "Outgoing:\n" );
@@ -125,39 +127,26 @@ void Dev::print( Window& window )
 		traffic_graph[1] -> setHeightOfBars( window.height() - window.y() );
 		traffic_graph[1] -> print( window, 0, window.y() );
 		
-		device_status[1] -> print( window, window.width() * 2 / 3 + 2, window.y() - 4, m_trafficformat, m_dataformat );
-	}
-	//... or not
-	else
-	{
-		window.print( "Incoming:" );
-		window.setX( window.width() / 2 );
-		window.print( "Outgoing:\n" );
-		
-		device_status[0] -> print( window, 0, window.y(), m_trafficformat, m_dataformat ); //incoming traffic
-		device_status[1] -> print( window, window.width() / 2, window.y(), m_trafficformat, m_dataformat ); //outgoing traffic
-		
-		window.print( '\n' );
+		device_status[1] -> print( window, window.width() * 2 / 3 + 2, window.y() - 4, trafficFormat(), dataFormat() );
 	}
 }
 
 //sets if the graphs should be shown or not
-void Dev::setShowGraphs( bool new_showgraphs )
+void Dev::setHideGraphs( OptionBool* new_hidegraphs )
 {
-	m_showgraphs = new_showgraphs;
+	m_hidegraphs = new_hidegraphs;
 }
 
 //set the in- and outcoming graphs' averagesmoothness
-void Dev::setAverageSmoothness( int new_averagesmoothness )
+void Dev::setAverageSmoothness( OptionInt* new_averagesmoothness )
 {
 	for( int i = 0; i < 2; i++ )
 		device_status[i] -> setAverageSmoothness( new_averagesmoothness );
 }
 
 //set the graphs' max deflection (max traffic level)
-void Dev::setTrafficWithMaxDeflectionOfGraphs( int new_trafficinwithmaxdeflectionofgraphs, int new_trafficoutwithmaxdeflectionofgraphs  )
+void Dev::setTrafficWithMaxDeflectionOfGraphs( OptionLong* new_trafficinwithmaxdeflectionofgraphs, OptionLong* new_trafficoutwithmaxdeflectionofgraphs  )
 {
-	
 	for( int i = 0; i < 2; i++ )
 		switch(i)
 		{
@@ -168,7 +157,6 @@ void Dev::setTrafficWithMaxDeflectionOfGraphs( int new_trafficinwithmaxdeflectio
 				traffic_graph[i] -> setTrafficWithMaxDeflectionOfBars( new_trafficoutwithmaxdeflectionofgraphs );
 				break;
 		}
-
 }
 
 //set the number identifying the device (for display only)
@@ -184,8 +172,24 @@ void Dev::setTotalNumberOfDevices( int new_totalnumberofdevices )
 }
 
 //set the display format (unit) for traffic and data numbers
-void Dev::setStatusFormat( Status::status_format new_trafficformat, Status::status_format new_dataformat )
+void Dev::setStatusFormat( OptionStatusFormat* new_trafficformat, OptionStatusFormat* new_dataformat )
 {
 	m_trafficformat = new_trafficformat;
 	m_dataformat = new_dataformat;
 }
+
+bool Dev::hideGraphs()
+{
+	return m_hidegraphs ? (bool) *m_hidegraphs : STANDARD_HIDE_GRAPHS;
+}
+
+Status::status_format Dev::trafficFormat()
+{
+	return m_trafficformat ? (Status::status_format) *m_trafficformat : STANDARD_TRAFFIC_FORMAT;
+}
+
+Status::status_format Dev::dataFormat()
+{
+	return m_dataformat ? (Status::status_format) *m_dataformat : STANDARD_DATA_FORMAT;
+}
+

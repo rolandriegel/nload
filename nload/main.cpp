@@ -37,9 +37,9 @@ int main (int argc, char *argv[])
 vector<string *> network_device;
 
 OptionInt sleep_interval( STANDARD_SLEEP_INTERVAL, "Refresh interval (ms)" );
-OptionBool show_multiple_devices( ! STANDARD_SHOW_GRAPHS, "Show multiple devices" );
-OptionLong bar_max_in( STANDARD_BAR_MAX_IN, "Max Incoming deflection (kBit/s)" );
-OptionLong bar_max_out( STANDARD_BAR_MAX_OUT, "Max Outgoing deflection (kBit/s)" );
+OptionBool show_multiple_devices( STANDARD_HIDE_GRAPHS, "Show multiple devices" );
+OptionLong bar_max_in( STANDARD_MAX_DEFLECTION, "Max Incoming deflection (kBit/s)" );
+OptionLong bar_max_out( STANDARD_MAX_DEFLECTION, "Max Outgoing deflection (kBit/s)" );
 OptionInt average_smoothness( STANDARD_AVERAGE_SMOOTHNESS, "Smoothness of average" );
 average_smoothness.min(1);
 average_smoothness.max(9);
@@ -72,7 +72,7 @@ for ( int i = 1; i < argc; i++ )
 		if ( i < argc - 1 && isdigit( argv[ i + 1 ][0] ) != 0 )
 		{
 			bar_max_in = atol( argv[ i + 1 ] );
-			if ( bar_max_in == 0 ) bar_max_in = STANDARD_BAR_MAX_IN;
+			if ( bar_max_in == 0 ) bar_max_in = STANDARD_MAX_DEFLECTION;
 			i++;
 		}
 		else
@@ -91,7 +91,7 @@ for ( int i = 1; i < argc; i++ )
 		if ( i < argc - 1 && isdigit( argv[ i + 1 ][0] ) != 0 )
 		{
 			bar_max_out = atol( argv[ i + 1 ] );
-			if ( bar_max_out == 0 ) bar_max_out = STANDARD_BAR_MAX_OUT;
+			if ( bar_max_out == 0 ) bar_max_out = STANDARD_MAX_DEFLECTION;
 			i++;
 		}
 		else
@@ -268,7 +268,13 @@ for ( vector<string *>::size_type i = 0; i < network_device.size(); i++ )
 	m_mainwindow.devices().back() -> setProcDev( network_device[i] -> c_str() );
 	m_mainwindow.devices().back() -> setDeviceNumber( i + 1 );
 	m_mainwindow.devices().back() -> setTotalNumberOfDevices( network_device.size() );
+	m_mainwindow.devices().back() -> setStatusFormat( &traffic_format, &data_format );
+	m_mainwindow.devices().back() -> setHideGraphs( &show_multiple_devices );
+	m_mainwindow.devices().back() -> setTrafficWithMaxDeflectionOfGraphs( &bar_max_in, &bar_max_out );
+	m_mainwindow.devices().back() -> setAverageSmoothness( &average_smoothness );
 }
+
+m_mainwindow.setShowMultipleDevices( &show_multiple_devices );
 
 do
 {
@@ -321,15 +327,6 @@ do
 			else
 				m_mainwindow.processKey( key );
 		}
-	}
-	
-	//pipe through new settings (could be done in a cleaner way)
-	m_mainwindow.setShowMultipleDevices( show_multiple_devices );
-	for ( vector<Dev *>::const_iterator r = m_mainwindow.devices().begin(); r != m_mainwindow.devices().end(); r++ )
-	{
-		(*r) -> setTrafficWithMaxDeflectionOfGraphs( bar_max_in * 1024 / 8, bar_max_out * 1024 / 8 );
-		(*r) -> setAverageSmoothness( average_smoothness );
-		(*r) -> setStatusFormat( traffic_format, data_format );
 	}
 	
 	//clear the screen
@@ -420,11 +417,11 @@ fprintf( stderr,
 	"-i max_scaling	specifies the 100%% mark in kBit/s of the graph indicating the\n"
 	"		incoming bandwidth usage\n"
 	"		ignored if max_scaling is 0 or the switch -m is given\n"
-	"		default is %d\n"
+	"		default is %ld\n"
 	"-m		show multiple devices at a time; do not show the traffic graphs\n"
 	"-o max_scaling	same as -i but for the graph indicating the outgoing bandwidth\n"
 	"		usage\n"
-	"		default is %d\n"
+	"		default is %ld\n"
 	"-s smoothness	sets the \"smoothness\" of the average in/out values\n"
 	"		1 means little smoothness (average over a short period of time)\n"
 	"		9 means high smoothness (average over a long period of time)\n"
@@ -449,8 +446,8 @@ fprintf( stderr,
 	PACKAGE,
 	PACKAGE,
 	PACKAGE,
-	STANDARD_BAR_MAX_IN,
-	STANDARD_BAR_MAX_OUT,
+	STANDARD_MAX_DEFLECTION,
+	STANDARD_MAX_DEFLECTION,
 	STANDARD_AVERAGE_SMOOTHNESS,
 	STANDARD_SLEEP_INTERVAL,
 	STANDARD_NETWORK_DEVICE,

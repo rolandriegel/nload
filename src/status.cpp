@@ -21,6 +21,7 @@ Status::Status()
 {
 	m_min = m_max = m_average = -1;
 	m_cur = m_total = 0;
+	m_averagesmoothness = 0;
 }
 
 Status::~Status()
@@ -164,12 +165,9 @@ void Status::minMax( int new_value )
 }
 
 //set the "reaction time" to the current traffic situation of the average values
-void Status::setAverageSmoothness( int new_averagesmoothness )
+void Status::setAverageSmoothness( OptionInt* new_averagesmoothness )
 {
-	
-	if( ( new_averagesmoothness >= 1 ) && ( new_averagesmoothness <= 9 ) )
-		m_averagesmoothness = new_averagesmoothness;
-	
+	m_averagesmoothness = new_averagesmoothness;
 }
 
 //calculate new average
@@ -190,6 +188,12 @@ void Status::average( int new_value )
 		return;
 	}
 	
-	m_average = (int) ( new_value * ( 1.0 - m_averagesmoothness / 10.0 ) + m_average * ( m_averagesmoothness / 10.0 ) );
+	m_average = (int) ( new_value * ( 1.0 - averageSmoothness() / 10.0 ) + m_average * ( averageSmoothness() / 10.0 ) );
 	
+}
+
+int Status::averageSmoothness()
+{
+	int avg_smooth =  m_averagesmoothness ? (int) *m_averagesmoothness : STANDARD_AVERAGE_SMOOTHNESS;
+	return avg_smooth > 9 ? 9 : ( avg_smooth < 1 ? 1 : avg_smooth );
 }

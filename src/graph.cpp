@@ -44,9 +44,9 @@ void Graph::setHeightOfBars( int new_heightofbars )
 }
 
 //set the traffic at which the graph shows 100% deflection
-void Graph::setTrafficWithMaxDeflectionOfBars( int new_trafficwithmaxdeflectionofbars )
+void Graph::setTrafficWithMaxDeflectionOfBars( OptionLong* new_trafficwithmaxdeflectionofbars )
 {
-	//[new_trafficwithmaxdeflectionofbars] = Bytes/s
+	//[new_trafficwithmaxdeflectionofbars] = kBit/s
 	
 	m_trafficwithmaxdeflectionofbars = new_trafficwithmaxdeflectionofbars;
 }
@@ -76,9 +76,9 @@ void Graph::print( Window& window, int x, int y )
 		//for each line cycle through the rows
 		for( list<int>::reverse_iterator r = m_values.rbegin(); r != m_values.rend() ; r++ )
 		{
-			int trafficperline = m_trafficwithmaxdeflectionofbars / m_heightofbars;
+			int trafficperline = trafficWithMaxDeflectionOfBars() / m_heightofbars;
 			int restoftraffic = ( (*r) - ( m_heightofbars - l - 1 ) * trafficperline ) % trafficperline;
-			if( (float) (*r) / m_trafficwithmaxdeflectionofbars >= (float) ( m_heightofbars - l ) / m_heightofbars )
+			if( (float) (*r) / trafficWithMaxDeflectionOfBars() >= (float) ( m_heightofbars - l ) / m_heightofbars )
 				window.print( '#' );
 			else if( restoftraffic >= 0.7 * trafficperline )
 				window.print( '|' );
@@ -100,3 +100,10 @@ void Graph::resetTrafficData()
 	m_values.clear();
 	m_values.resize( size );
 }
+
+long Graph::trafficWithMaxDeflectionOfBars()
+{
+	int tr = m_trafficwithmaxdeflectionofbars ? (long) *m_trafficwithmaxdeflectionofbars : STANDARD_MAX_DEFLECTION;
+	return tr * 1024 / 8; //recalculate from kBit/s to Bytes/s
+}
+

@@ -23,6 +23,10 @@
 #include <math.h>
 #include "window.h"
 
+const int STANDARD_AVERAGE_SMOOTHNESS = 9;
+
+class OptionInt;
+
 class Status
 {
 
@@ -45,22 +49,27 @@ public:
 	};
 	
 	void update( int, unsigned int );
-	void print( Window&, int, int, status_format, status_format );
+	void print( Window&, int, int, status_format traff_format, status_format data_format );
 	void resetTrafficData();
-	
-	void setAverageSmoothness( int );
+
+	void setAverageSmoothness( OptionInt* );
 	
 private:
 	void minMax( int );
 	void average( int );
+	
+	int averageSmoothness();
 	
 	const char* getUnitString( status_format, long long );
 	double getUnitFactor( status_format, long long );
 	
 	int m_min, m_max, m_average, m_cur;
 	long long m_total;
-	int m_averagesmoothness;
+	
+	OptionInt* m_averagesmoothness;
 	
 };
+
+#include "options.h"
 
 #endif

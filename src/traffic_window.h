@@ -21,6 +21,7 @@
 #include "screen.h"
 #include "window.h"
 #include "dev.h"
+#include "options.h"
 
 #include <vector>
 using std::vector;
@@ -38,15 +39,16 @@ public:
 	vector<Dev *>& devices();
 	void setDevices( vector<Dev *>& );
 	
-	void setShowMultipleDevices( bool );
-	bool showMultipleDevices();
+	void setShowMultipleDevices( OptionBool* );
 	
 private:
+	
+	bool showMultipleDevices();
 	
 	vector<Dev *> m_devs;
 	
 	int m_cur_dev;
-	bool m_show_multiple_devices;
+	OptionBool* m_show_multiple_devices;
 	
 };
 
