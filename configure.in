@@ -1,16 +1,53 @@
 dnl Helder Correia <helder.correia@netcabo.pt>
-
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(src/main.cpp)
-AC_CANONICAL_SYSTEM
-AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(nload, 0.5.0)
+
+AC_PREREQ(2.57)
+
+AC_INIT([nload], [0.5.0], [feedback@roland-riegel.de])
+
+dnl System dependant jobs
+AC_CANONICAL_HOST
+case $host_os in
+    *linux*)
+        AC_DEFINE(HAVE_LINUX, 1, [Define to 1 if your build target is Linux.])
+        AC_CHECK_FUNCS([memset])
+        ;;
+    *bsd*)
+        AC_DEFINE(HAVE_BSD, 1, [Define to 1 if your build target is BSD.])
+        AC_FUNC_MALLOC
+        ;;
+    *solaris*)
+        AC_CHECK_LIB(rt, main)
+        AC_CHECK_LIB(kstat, kstat_open)
+        AC_CHECK_LIB(socket, main)
+        AC_CHECK_LIB(nsl, main)
+        AC_DEFINE(HAVE_SOLARIS, 1, [Define to 1 if your build target is Solaris.])
+        ;;
+    *)
+        AC_MSG_ERROR([nload does not support this operating system!])
+        ;;
+esac
+
+AC_CONFIG_SRCDIR([src/main.cpp])
+
+AC_CONFIG_HEADER([config.h])
+
+AC_CONFIG_FILES([
+Makefile
+nload.spec
+docs/Makefile
+docs/nload.1
+src/Makefile
+])
+
+AM_INIT_AUTOMAKE
 
 dnl Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_INSTALL
+AC_PROG_GCC_TRADITIONAL
 
 dnl Checks for libraries.
 AC_CHECK_LIB(ncurses, initscr)
@@ -31,41 +68,14 @@ if test "$GCC" = "yes" ; then
      CXXFLAGS="$CXXFLAGS -Wall"
 fi
 
-dnl System dependant jobs
-case $target in
-    *linux*)
-        AC_DEFINE(HAVE_LINUX, 1, [Define to 1 if your build target is Linux.])
-        AC_CHECK_FUNCS([memset])
-        ;;
-    *bsd*)
-        AC_DEFINE(HAVE_BSD, 1, [Define to 1 if your build target is BSD.])
-        AC_FUNC_MALLOC
-        ;;
-    *solaris*)
-        AC_CHECK_LIB(rt, main)
-        AC_CHECK_LIB(kstat, kstat_open)
-        AC_CHECK_LIB(socket, main)
-        AC_CHECK_LIB(nsl, main)
-        AC_DEFINE(HAVE_SOLARIS, 1, [Define to 1 if your build target is Solaris.])
-        ;;
-esac
-
 dnl Adds extra arguments to configure script.
 AC_ARG_ENABLE(debug,
-              AC_HELP_STRING([--enable-debug],[enable runtime debugging [[no]]]),
+              AC_HELP_STRING([--enable-debug], [do not strip debugging symbols (default no)]),
 	      test "$enableval" = "no" && LDFLAGS="$LDFLAGS -s",
 	      LDFLAGS="$LDFLAGS -s")
 
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
 AC_CHECK_FUNCS([gettimeofday pow inet_ntoa socket])
-
-AC_CONFIG_FILES([
-Makefile
-nload.spec
-docs/Makefile
-docs/nload.1
-src/Makefile
-])
 
 AC_OUTPUT
