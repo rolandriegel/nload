@@ -81,7 +81,7 @@ Show a short summary of these command line options.
 is read by nload to get the network traffic data.
 
 .SH VERSION
-This is version @VERSION@" of nload.
+This is version @VERSION@ of nload.
 For updates, look at http://www.roland-riegel.de/nload/index_en.html.
 
 .SH AUTHOR
