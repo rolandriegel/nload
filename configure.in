@@ -64,7 +64,6 @@ AC_CONFIG_FILES([
 Makefile
 docs/Makefile
 docs/nload.1
-nload.spec
 src/Makefile
 ])
 
