@@ -1,4 +1,4 @@
-####### kdevelop will overwrite this part!!! (begin)##########
+## Helder Correia <helder.correia@netcabo.pt>
 
-
-####### kdevelop will overwrite this part!!! (end)############
+dist_man1_MANS = nload.1.gz
+EXTRA_DIST = $(dist_man1_MANS)
