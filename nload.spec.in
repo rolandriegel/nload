@@ -37,7 +37,6 @@ make -j$numprocs
 
 %install
 make install DESTDIR=$RPM_BUILD_ROOT
-gzip $RPM_BUILD_ROOT/%{prefix}/man/man1/nload.1
 
 
 %clean
@@ -48,10 +47,12 @@ rm -rf $RPM_BUILD_DIR/%{name}-%{version}
 %files
 %attr(-,root,root)
 %{prefix}/bin/nload
-%{prefix}/man/man1/nload.1.gz
+%{prefix}/share/man/man1/nload.1.gz
 
 
 %changelog
+* Wed Dec  5 2001 Helder Correia <helder.correia@netcabo.pt>
+- Little path modifications and removal of man page gzipping
 
 * Sat Nov 10 2001 Helder Correia <helder.correia@netcabo.pt>
 - Spec file first stable version
