@@ -207,22 +207,19 @@ float* Proc::readLoad()
 	char s[32];
 	int mib[] = { CTL_NET, PF_ROUTE, 0, 0, NET_RT_IFLIST, 0 };
 	char *buf = 0;
-	size_t alloc = 0;
 	
 	if( sysctl( mib, 6, NULL, &needed, NULL, 0 ) < 0 )
 		return m_ret;
-	if( alloc < needed )
-	{
-		if( buf != NULL )
-			free( buf );
-		buf = (char *) malloc( needed );
-		if( buf == NULL )
-			return m_ret;
-		alloc = needed;
-	}
+	
+	buf = (char *) malloc( needed );
+	if( buf == NULL )
+		return m_ret;
 	
 	if( sysctl( mib, 6, buf, &needed, NULL, 0 ) < 0 )
+	{
+		free( buf );
 		return m_ret;
+	}
 	lim = buf + needed;
 
 	next = buf;
@@ -230,7 +227,10 @@ float* Proc::readLoad()
 	{
 		ifm = (struct if_msghdr *) next;
 		if( ifm->ifm_type != RTM_IFINFO )
+		{
+			free( buf );
 			return m_ret;
+		}
 		next += ifm->ifm_msglen;
 		
 		while( next < lim )
@@ -274,6 +274,8 @@ float* Proc::readLoad()
 	
 	if( ! m_dev_exists )
 		m_total[0] = m_total[1] = 0;
+
+	free( buf );
 #endif
 // === End Free/Net/OpenBSD specific network data reading code ===
 
