@@ -1,0 +1,56 @@
+Summary   : A console application which monitors network traffic and bandwidth usage in real time
+Name      : @PACKAGE@
+Version   : @VERSION@
+Release   : 1
+Copyright : GPL
+Url       : http://nload.sourceforge.net
+Packager  : Helder Correia <helder.correia@netcabo.pt>
+Group     : Applications/Networking
+Source    : %{name}-%{version}.tar.gz
+BuildRoot : /var/tmp/%{name}-%{version}-rpmbuildroot
+Prefix    : /usr/local
+
+
+%description
+It displays the total amount of data that has been transfered over a network
+device since the last reboot and also tells the user the current bandwidth
+usage. Additionally it displays the minimum, maximum and average of the
+bandwidth usage which measured since the start of nload. If the user wants,
+nload is also able to display two bars, similiar to progress bars,
+presenting the current load graphically. The bandwidth range of the bars can be 
+set independently.
+
+
+%prep
+
+
+%setup
+CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{prefix} $LOCALFLAGS
+
+
+%build
+# Setup for parallel builds
+numprocs=$(egrep -c ^cpu[0-9]+ /proc/stat || :)
+if [ "$numprocs" = "0" ]; then
+  numprocs=1
+fi
+
+make -j$numprocs
+
+
+%install
+make install DESTDIR=$RPM_BUILD_ROOT
+
+cd $RPM_BUILD_ROOT
+find . -type d | sed '1,2d;s,^\.,\%attr(-\,root\,root) \%dir ,' > $RPM_BUILD_DIR/file.list.%{name}-%{version}
+find . -type f | sed 's,^\.,\%attr(-\,root\,root) ,' >> $RPM_BUILD_DIR/file.list.%{name}-%{version}
+find . -type l | sed 's,^\.,\%attr(-\,root\,root) ,' >> $RPM_BUILD_DIR/file.list.%{name}-%{version}
+
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+rm -rf $RPM_BUILD_DIR/%{name}-%{version}
+rm -rf ../file.list.%{name}-%{version}
+
+
+%files -f ../file.list.%{name}-%{version}

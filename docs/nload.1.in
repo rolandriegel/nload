@@ -1,0 +1,88 @@
+.\"
+.\" Man page for nload
+.\" Copyright (C) 2001 by Roland Riegel <support@roland.riegel.de>
+.\"
+.TH nload 1 "October 11, 2001" nload "Network monitoring tools"
+.SH NAME
+nload \- displays the current network usage
+
+.SH SYNOPSIS
+.B nload [-i
+.I max_scaling
+.B ] [-m] [-o
+.I max_scaling
+.B ] [-s
+.I smoothness
+.B ] [-t
+.I interval
+.B ] [devices]
+
+.B nload --help|-h
+
+.SH DESCRIPTION
+.B nload
+is a console application which monitors network traffic and bandwidth usage in real time.
+It visualizes the in- and outgoing traffic using two graphs and provides additionally info
+like the total amount of transfered data and min/max network usage.
+
+.SH USAGE
+When running
+.B nload,
+you can switch between the devices (which you gave
+.B nload
+on the command line) by pressing the left and right arrow keys. If the -m command line
+parameter is given, the arrow keys switch as many devices back and forth as there are shown
+on the screen.
+If you want to quit, do so by pressing 'q', 'Q' or Ctrl+C.
+
+.SH OPTIONS
+A summary of the options supported by
+.B nload
+is included below.
+
+.TP
+.B \-i max_scaling
+Specifies the 100% mark in kBit/s of the graph indicating the incoming bandwidth usage.
+Ignored if max_scaling is 0 or the switch -m is given. The default value for max_scaling
+is 10240.
+.TP
+.B \-m
+Show multiple devices at a time; do not show the traffic graphs.
+.TP
+.B \-o max_scaling
+Same as -i but for the graph indicating the outgoing bandwidth usage.
+.TP
+.B \-s smoothness
+Sets the "smoothness" of the average in/out values.
+A value of 1 means little smoothness (average over a short period of time), a value of 9
+means high smoothness (average over a long period of time). The default is 9.
+.TP
+.B \-t interval
+Determines the refresh interval of the display in milliseconds.
+If interval is 0 print net load only one time and exit.
+The default value of interval is 500.
+
+PLEASE NOTE:
+Specifying refresh intervals shorter than about 200 milliseconds makes traffic
+calculation very unprecise. Also the display may flicker using such short
+refresh intervals.
+.B nload
+tries to balance this out by doing extra time measurements, but this may
+not always succeed.
+.TP
+.B devices
+Network devices to use. The default device is "eth0".
+.TP
+.B \-h, \-\-help
+Show a short summary of these command line options.
+
+.SH FILES
+.I /proc/net/dev
+is read by nload to get the network traffic data.
+
+.SH VERSION
+This is version @VERSION@" of nload.
+For updates, look at http://www.roland-riegel.de/nload/index_en.html.
+
+.SH AUTHOR
+Roland Riegel <support@roland-riegel.de>

@@ -30,6 +30,7 @@
  */
 
 #include "main.h"
+#include "config.h"
 
 int main (int argc, char *argv[])
 {
@@ -60,7 +61,7 @@ for ( int i = 1; i < argc; i++ )
   //wants the user help?
 	if ( strcmp( argv[i], "-h" ) == 0 || strcmp( argv[i], "--help" ) == 0 )
 	{
-		printhelp( argv[0] );
+		printhelp();
 		exit(0);
 	}
 	//has the user set a non-default 100% mark for
@@ -77,7 +78,7 @@ for ( int i = 1; i < argc; i++ )
 		else
 		{
 			fprintf( stderr, "Wrong argument for the -i parameter.\n\n" );
-			printhelp( argv[0] );
+			printhelp();
 			exit(1);
 		}
 		
@@ -96,7 +97,7 @@ for ( int i = 1; i < argc; i++ )
 		else
 		{
 			fprintf( stderr, "Wrong argument for the -o parameter.\n\n" );
-			printhelp( argv[0] );
+			printhelp();
 			exit(1);
 		}
 		
@@ -117,7 +118,7 @@ for ( int i = 1; i < argc; i++ )
 		else
 		{
 			fprintf( stderr, "Wrong argument for the -t parameter.\n\n" );
-			printhelp( argv[0] );
+			printhelp();
 			exit(1);
 		}
 	}
@@ -133,7 +134,7 @@ for ( int i = 1; i < argc; i++ )
 		else
 		{
 			fprintf( stderr, "Wrong argument for the -s parameter.\n\n" );
-			printhelp( argv[0] );
+			printhelp();
 			exit(1);
 		}
 	}
@@ -265,13 +266,13 @@ exit( EXIT_SUCCESS );
 
 }
 
-void printhelp( char *appname )
+void printhelp()
 {
 
 //print disclaimer
 fprintf( stderr,
-	"\nnload version %s, Copyright (C) 2001 Roland Riegel <support@roland-riegel.de>\n"
-	"nload comes with ABSOLUTELY NO WARRANTY. This is free software, and you are\n"
+	"\n%s version %s, Copyright (C) 2001 Roland Riegel <support@roland-riegel.de>\n"
+	"%s comes with ABSOLUTELY NO WARRANTY. This is free software, and you are\n"
 	"welcome to redistribute it under certain conditions. For more details see the\n"
 	"GNU General Public License Version 2 (http://www.gnu.org/copyleft/gpl.html).\n\n"
 
@@ -282,18 +283,18 @@ fprintf( stderr,
 	"-i max_scaling	specifies the 100%% mark in kBit/s of the graph indicating the\n"
 	"		incoming bandwidth usage\n"
 	"		ignored if max_scaling is 0 or the switch -m is given\n"
-	"		default is %i\n"
+	"		default is %d\n"
 	"-m		show multiple devices at a time; do not show the traffic graphs\n"
 	"-o max_scaling	same as -i but for the graph indicating the outgoing bandwidth\n"
 	"		usage\n"
-	"		default is %i\n"
+	"		default is %d\n"
 	"-s smoothness	sets the \"smoothness\" of the average in/out values\n"
 	"		value of 1 means little smoothness (average over a short period of time)\n"
 	"		value of 9 means high smoothness (average over a long period of time)\n"
-	"		default is %i\n"
+	"		default is %d\n"
 	"-t intervall	determines the refresh interval of the display in milliseconds\n"
 	"		if 0 print net load only one time and exit\n"
-	"		default is %i\n"
+	"		default is %d\n"
 	"devices		network devices to use\n"
 	"		default is \"%s\"\n"
 	"--help\n"
@@ -301,15 +302,17 @@ fprintf( stderr,
 	"-b		obsolete - ignored\n\n"
 	"example: %s -t 200 -s 7 -i 1024 -o 128 eth0 eth1\n\n",
 	
-	NLOAD_VERSION,
-	appname,
-	appname,
+	PACKAGE,
+	VERSION,
+	PACKAGE,
+	PACKAGE,
+	PACKAGE,
 	STANDARD_BAR_MAX_IN,
 	STANDARD_BAR_MAX_OUT,
 	STANDARD_AVERAGE_SMOOTHNESS,
 	STANDARD_SLEEP_INTERVAL,
 	STANDARD_NETWORK_DEVICE,
-	appname
+	PACKAGE
 	);
 
 }

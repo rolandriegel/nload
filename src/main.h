@@ -25,12 +25,10 @@
 #include <signal.h>
 #include "dev.h"
 
-#define NLOAD_VERSION "0.3.1"
-
 char **network_device;
 Dev **devs;
 
-void printhelp(char *);
+void printhelp();
 void finish(int);
 int main(int, char **);
 

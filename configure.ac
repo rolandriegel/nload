@@ -31,5 +31,7 @@ AC_CHECK_FUNCS([gettimeofday memset])
 AC_OUTPUT([
 Makefile
 docs/Makefile
+docs/nload.1
+nload.spec
 src/Makefile
 ])

@@ -29,8 +29,8 @@
 #include "graph.h"
 #include "status.h"
 
-const long STANDARD_BAR_MAX_IN = 10240;
-const long STANDARD_BAR_MAX_OUT = 10240;
+const int STANDARD_BAR_MAX_IN = 10240;
+const int STANDARD_BAR_MAX_OUT = 10240;
 const bool STANDARD_SHOW_GRAPHS = true;
 const int STANDARD_SLEEP_INTERVAL = 500;
 char* const STANDARD_NETWORK_DEVICE = "eth0";
