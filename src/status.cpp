@@ -65,8 +65,8 @@ void Status::print( Window& window, int x, int y, status_format traff_format, st
 	//print average traffic
 	window.setX( x );
 	tmp_value = calcAverage();
-	value = tmp_value * getUnitFactor( traff_format, tmp_value );
-	sprintf( fText, "Avg: %.2f %s/s\n", value, getUnitString( traff_format, tmp_value ) );
+	value = tmp_value * getUnitFactor( traff_format, (long long int)tmp_value );
+	sprintf( fText, "Avg: %.2f %s/s\n", value, getUnitString( traff_format, (long long int)tmp_value ) );
 	window.print( fText );
 	//print min traffic since nload start
 	window.setX( x );
