@@ -41,17 +41,17 @@ void TrafficWindow::processKey( int key )
 	switch( key )
 	{
 		case KEY_RIGHT:
-			m_cur_dev += m_show_multiple_devices ? ( y() / 9 >= m_devs.size() ? 0 : y() / 9 ) : 1;
+			m_cur_dev += m_show_multiple_devices ? height() / 9 : 1;
 			if( m_cur_dev >= m_devs.size() )
 				m_cur_dev = 0;
 			break;
 		case KEY_LEFT:
-			m_cur_dev -= m_show_multiple_devices ? ( y() / 9 >= m_devs.size() ? 0 : y() / 9 ) : 1;
+			m_cur_dev -= m_show_multiple_devices ? height() / 9 : 1;
 			if( m_cur_dev < 0 )
 				m_cur_dev = m_devs.size() - 1;
 			break;
 	}
-	if( m_show_multiple_devices && y() / 9 >= m_devs.size() )
+	if( m_show_multiple_devices && height() / 9 >= m_devs.size() )
 		m_cur_dev = 0;
 }
 
@@ -64,12 +64,12 @@ void TrafficWindow::print()
 		if( ! m_show_multiple_devices )
 		{
 			if( i == m_cur_dev )
-				m_devs[i] -> print( m_window );
+				m_devs[i] -> print( *this );
 		}
 		else
 		{
-			if( i >= m_cur_dev && y() - Screen::curr_y() >= 9 )
-				m_devs[i] -> print( m_window );
+			if( i >= m_cur_dev && height() - y() >= 9 )
+				m_devs[i] -> print( *this );
 		}
 	}
 }

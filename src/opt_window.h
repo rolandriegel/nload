@@ -44,7 +44,7 @@ public:
 	
 	void refresh();
 	
-	void processRequest( int );
+	void processKey( int );
 	void fieldChanged( FORM * );
 	
 	vector<OptionBase *>& options();
@@ -65,7 +65,6 @@ private:
 	
 	vector<OptionBase *> m_options;
 	
-	WINDOW *m_window;
 	WINDOW *m_sub_window;
 	FORM *m_form;
 	FIELD **m_fields;

@@ -21,6 +21,7 @@
 #include <curses.h>
 #include <limits.h>
 #include <math.h>
+#include "window.h"
 
 class Status
 {
@@ -44,7 +45,7 @@ public:
 	};
 	
 	void update( int, unsigned int );
-	void print( WINDOW*, int, int, status_format, status_format );
+	void print( Window&, int, int, status_format, status_format );
 	void resetTrafficData();
 	
 	void setAverageSmoothness( int );

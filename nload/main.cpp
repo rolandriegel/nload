@@ -317,7 +317,7 @@ do
 					break;
 			}
 			if( m_optwindow.visible() )
-				m_optwindow.processRequest( key );
+				m_optwindow.processKey( key );
 			else
 				m_mainwindow.processKey( key );
 		}

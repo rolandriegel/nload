@@ -82,22 +82,19 @@ void Dev::update()
 }
 
 //print the device's data
-void Dev::print( WINDOW* window )
+void Dev::print( Window& window )
 {
 	char fText[100] = "";
-	int x = 0, y = 0, curx = 0, cury = 0;
-	
-	getmaxyx( window, y, x );
 	
 	//if device does not exist
 	if ( ! ProcDevExists() )
 	{
 		//... print warning message ...
 		sprintf( fText, "Device %s (%i/%i): does not exist\n", ProcDev(), m_devicenumber, m_totalnumberofdevices );
-		waddstr( window, fText );
-		for( int i = 0; i < x; i++ )
-			waddch( window, '=' );
-		waddch( window, '\n' );
+		window.print( fText );
+		for( int i = 0; i < window.width(); i++ )
+			window.print( '=' );
+		window.print( '\n' );
 		
 		//... and exit
 		return;
@@ -105,50 +102,42 @@ void Dev::print( WINDOW* window )
 	
 	//print header
 	sprintf( fText, "Device %s (%i/%i):\n", ProcDev(), m_devicenumber, m_totalnumberofdevices );
-	waddstr( window, fText );
-	for( int i = 0; i < x; i++ )
-		waddch( window, '=' );
+	window.print( fText );
+	for( int i = 0; i < window.width(); i++ )
+		window.print( '=' );
 	
 	//if graphs should be shown ...
 	if( m_showgraphs )
 	{
 		//incoming traffic
-		waddstr( window, "Incoming:\n" );
+		window.print( "Incoming:\n" );
 		
-		getyx( window, cury, curx );
+		traffic_graph[0] -> setNumOfBars( window.width() * 2 / 3 );
+		traffic_graph[0] -> setHeightOfBars( ( window.height() - window.y() - 1 ) / 2 );
+		traffic_graph[0] -> print( window, 0, window.y() );
 		
-		traffic_graph[0] -> setNumOfBars( x * 2 / 3 );
-		traffic_graph[0] -> setHeightOfBars( ( y - cury - 1 ) / 2 );
-		traffic_graph[0] -> print( window, 0, cury );
-		
-		getyx( window, cury, curx );
-		device_status[0] -> print( window, x * 2 / 3 + 2, cury - 5, m_trafficformat, m_dataformat );
+		device_status[0] -> print( window, window.width() * 2 / 3 + 2, window.y() - 5, m_trafficformat, m_dataformat );
 		
 		//outgoing traffic
-		waddstr( window, "Outgoing:\n" );
+		window.print( "Outgoing:\n" );
 		
-		getyx( window, cury, curx );
-		traffic_graph[1] -> setNumOfBars( x * 2 / 3 );
-		traffic_graph[1] -> setHeightOfBars( y - cury );
-		traffic_graph[1] -> print( window, 0, cury );
+		traffic_graph[1] -> setNumOfBars( window.width() * 2 / 3 );
+		traffic_graph[1] -> setHeightOfBars( window.height() - window.y() );
+		traffic_graph[1] -> print( window, 0, window.y() );
 		
-		getyx( window, cury, curx );
-		device_status[1] -> print( window, x * 2 / 3 + 2, cury - 4, m_trafficformat, m_dataformat );
+		device_status[1] -> print( window, window.width() * 2 / 3 + 2, window.y() - 4, m_trafficformat, m_dataformat );
 	}
 	//... or not
 	else
 	{
-		waddstr( window, "Incoming:" );
-		getyx( window, cury, curx );
-		wmove( window, cury, x / 2 );
-		waddstr( window, "Outgoing:\n" );
+		window.print( "Incoming:" );
+		window.setX( window.width() / 2 );
+		window.print( "Outgoing:\n" );
 		
-		getyx( window, cury, curx );
+		device_status[0] -> print( window, 0, window.y(), m_trafficformat, m_dataformat ); //incoming traffic
+		device_status[1] -> print( window, window.width() / 2, window.y(), m_trafficformat, m_dataformat ); //outgoing traffic
 		
-		device_status[0] -> print( window, 0, cury, m_trafficformat, m_dataformat ); //incoming traffic
-		device_status[1] -> print( window, x / 2, cury, m_trafficformat, m_dataformat ); //outgoing traffic
-		
-		waddch( window, '\n' );
+		window.print( '\n' );
 	}
 }
 

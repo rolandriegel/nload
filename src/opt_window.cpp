@@ -147,7 +147,7 @@ void OptWindow::hide()
 }
 
 //process key presses
-void OptWindow::processRequest( int request )
+void OptWindow::processKey( int request )
 {
 	if( m_visible )
 	{
@@ -205,13 +205,14 @@ vector<OptionBase *>& OptWindow::options()
 
 void OptWindow::refresh()
 {
-	mvwaddstr( m_window, 0, 0, "Options:\n" );
+	print( "Options:\n", 0, 0 );
 	for( int x = 0; x < width(); x++ )
-		waddch( m_window, '=' );
+		print( '=' );
 	
 	char fText[40] = "";
 	sprintf( fText, " <-- (-) page %i/%i (+) --> ", page(), countPages() );
-	mvwaddstr( m_window, 1, width() - strlen( fText ) - 1, fText );
+	print( fText, width() - strlen( fText ) - 1, 1 );
+	
 	wrefresh( m_window );
 	wrefresh( m_sub_window );
 }

@@ -101,7 +101,7 @@ public:
 	}
 	
 	//return current distance to left screen edge
-	virtual int x()
+	virtual int left()
 	{
 		if( ! m_window ) return 0;
 		int x, y;
@@ -110,12 +110,75 @@ public:
 	}
 	
 	//return current distance to top screen edge
-	virtual int y()
+	virtual int top()
 	{
 		if( ! m_window ) return 0;
 		int x, y;
 		getbegyx( m_window, y, x );
 		return y;
+	}
+	
+	//return current cursor position on the x-axis
+	virtual int x()
+	{
+		if( ! m_window ) return 0;
+		int x, y;
+		getyx( m_window, y, x );
+		return x;
+	}
+	
+	//return current cursor position on the y-axis
+	virtual int y()
+	{
+		if( ! m_window ) return 0;
+		int x, y;
+		getyx( m_window, y, x );
+		return y;
+	}
+	
+	//set current cursor x position
+	virtual void setX( int new_x )
+	{
+		if( ! m_window ) return;
+		wmove( m_window, y(), new_x );
+	}
+	
+	//set current cursor y position
+	virtual void setY( int new_y )
+	{
+		if( ! m_window ) return;
+		wmove( m_window, new_y, x() );
+	}
+	
+	//set current cursor position
+	virtual void setXY( int new_x, int new_y )
+	{
+		setX( new_x );
+		setY( new_y );
+	}
+	
+	//print some text to the window
+	virtual void print( char* text, int new_x = -1, int new_y = -1 )
+	{
+		if( ! m_window ) return;
+		if( new_x <= -1 )
+			new_x = x();
+		if( new_y <= -1 )
+			new_y = y();
+		
+		mvwaddstr( m_window, new_y, new_x, text );
+	}
+	
+	//print a char to the window
+	virtual void print( char text, int new_x = -1, int new_y = -1 )
+	{
+		if( ! m_window ) return;
+		if( new_x <= -1 )
+			new_x = x();
+		if( new_y <= -1 )
+			new_y = y();
+		
+		mvwaddch( m_window, new_y, new_x, text );
 	}
 	
 protected:

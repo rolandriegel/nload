@@ -50,43 +50,36 @@ void Status::update( int new_value, unsigned int new_total )
 }
 
 //print statistics
-void Status::print( WINDOW* window, int x, int y, status_format traff_format, status_format data_format )
+void Status::print( Window& window, int x, int y, status_format traff_format, status_format data_format )
 {
-	
-	int curx, cury;
 	double value;
 	char fText[100] = "";
 	
 	//print current traffic
-	wmove( window, y, x );
+	window.setXY( x, y );
 	value = m_cur * getUnitFactor( traff_format, m_cur );
 	sprintf( fText, "Curr: %.2f %s/s\n", value, getUnitString( traff_format, m_cur ) );
-	waddstr( window, fText );
+	window.print( fText );
 	//print average traffic since nload start
-	getyx( window, cury, curx );
-	wmove( window, cury, x );
+	window.setX( x );
 	value = m_average * getUnitFactor( traff_format, m_average );
 	sprintf( fText, "Avg: %.2f %s/s\n", value, getUnitString( traff_format, m_average ) );
-	waddstr( window, fText );
+	window.print( fText );
 	//print min traffic since nload start
-	getyx( window, cury, curx );
-	wmove( window, cury, x );
+	window.setX( x );
 	value = m_min * getUnitFactor( traff_format, m_min );
 	sprintf( fText, "Min: %.2f %s/s\n", value, getUnitString( traff_format, m_min ) );
-	waddstr( window, fText );
+	window.print( fText );
 	//print max traffic since nload start
-	getyx( window, cury, curx );
-	wmove( window, cury, x );
+	window.setX( x );
 	value = m_max * getUnitFactor( traff_format, m_max );
 	sprintf( fText, "Max: %.2f %s/s\n", value, getUnitString( traff_format, m_max ) );
-	waddstr( window, fText );
+	window.print( fText );
 	//print total traffic since last system reboot
-	getyx( window, cury, curx );
-	wmove( window, cury, x );
+	window.setX( x );
 	value = m_total * getUnitFactor( data_format, m_total );
 	sprintf( fText, "Ttl: %.2f %s\n", value,  getUnitString( data_format, m_total ) );
-	waddstr( window, fText );
-	
+	window.print( fText );
 }
 
 //reset all displayed values to zero

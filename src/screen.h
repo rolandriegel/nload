@@ -27,8 +27,8 @@ public:
 	static int width() { int width, height; getmaxyx( stdscr, height, width ); return width; }
 	static int height() { int width, height; getmaxyx( stdscr, height, width ); return height; }
 	
-	static int curr_x() { int x, y; getyx( stdscr, y, x ); return x; }
-	static int curr_y() { int x, y; getyx( stdscr, y, x ); return y; }
+	static int x() { int x, y; getyx( stdscr, y, x ); return x; }
+	static int y() { int x, y; getyx( stdscr, y, x ); return y; }
 	
 };
 

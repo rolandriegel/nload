@@ -24,6 +24,7 @@
 #include "proc.h"
 #include "graph.h"
 #include "status.h"
+#include "window.h"
 
 const int STANDARD_BAR_MAX_IN = 10240;
 const int STANDARD_BAR_MAX_OUT = 10240;
@@ -53,7 +54,7 @@ public:
 	~Dev();
 
 	void update();
-	void print( WINDOW* );
+	void print( Window& );
 	void setDeviceNumber( int );
 	void setTotalNumberOfDevices( int );
 	void setAverageSmoothness( int );

@@ -66,11 +66,9 @@ void Graph::update(int new_value)
 }
 
 //print the graph with the upper left corner at the coordinates (x, y)
-void Graph::print( WINDOW* window, int x, int y )
+void Graph::print( Window& window, int x, int y )
 {
-	int curx, cury;
-	
-	wmove( window, y, x );
+	window.setXY( x, y );
 	
 	//cycle through through the lines
 	for( int l = 0; l < m_heightofbars; l++ )
@@ -81,17 +79,16 @@ void Graph::print( WINDOW* window, int x, int y )
 			int trafficperline = m_trafficwithmaxdeflectionofbars / m_heightofbars;
 			int restoftraffic = ( (*r) - ( m_heightofbars - l - 1 ) * trafficperline ) % trafficperline;
 			if( (float) (*r) / m_trafficwithmaxdeflectionofbars >= (float) ( m_heightofbars - l ) / m_heightofbars )
-				waddch( window, '#' );
+				window.print( '#' );
 			else if( restoftraffic >= 0.7 * trafficperline )
-				waddch( window, '|' );
+				window.print( '|' );
 			else if( restoftraffic >= 0.3 * trafficperline )
-				waddch( window, '.' );
+				window.print( '.' );
 			else
-				waddch( window, ' ' );
+				window.print( ' ' );
 		}
-		waddch( window, '\n' );
-		getyx( window, cury, curx );
-		wmove( window, cury, x );
+		window.print( '\n' );
+		window.setX( x );
 	}
 	
 }

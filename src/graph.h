@@ -22,6 +22,8 @@
 #include <list>
 using std::list;
 
+#include "window.h"
+
 class Graph
 {
 
@@ -34,7 +36,7 @@ public:
 	void setTrafficWithMaxDeflectionOfBars( int );
 	
 	void update( int );
-	void print( WINDOW*, int, int );
+	void print( Window&, int, int );
 	void resetTrafficData();
 
 private:
