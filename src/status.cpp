@@ -19,7 +19,7 @@
 
 Status::Status()
 {
-	m_min = m_max = m_average = -1;
+	m_min = m_max = -1;
 	m_cur = m_total = 0;
 	m_averagesmoothness = 0;
 }
@@ -34,7 +34,7 @@ void Status::update( int new_value, unsigned int new_total )
 	
 	m_cur = new_value;
 	minMax( m_cur ); //calculate new min/max traffic values
-	average( m_cur ); //calculate new average
+	updateAverage( m_cur ); //calculate new average
 	
 	/*
 	 *set new total transfered data
@@ -54,6 +54,7 @@ void Status::update( int new_value, unsigned int new_total )
 void Status::print( Window& window, int x, int y, status_format traff_format, status_format data_format )
 {
 	double value;
+	double tmp_value;
 	char fText[100] = "";
 	
 	//print current traffic
@@ -61,10 +62,11 @@ void Status::print( Window& window, int x, int y, status_format traff_format, st
 	value = m_cur * getUnitFactor( traff_format, m_cur );
 	sprintf( fText, "Curr: %.2f %s/s\n", value, getUnitString( traff_format, m_cur ) );
 	window.print( fText );
-	//print average traffic since nload start
+	//print average traffic
 	window.setX( x );
-	value = m_average * getUnitFactor( traff_format, m_average );
-	sprintf( fText, "Avg: %.2f %s/s\n", value, getUnitString( traff_format, m_average ) );
+	tmp_value = calcAverage();
+	value = tmp_value * getUnitFactor( traff_format, tmp_value );
+	sprintf( fText, "Avg: %.2f %s/s\n", value, getUnitString( traff_format, tmp_value ) );
 	window.print( fText );
 	//print min traffic since nload start
 	window.setX( x );
@@ -86,7 +88,8 @@ void Status::print( Window& window, int x, int y, status_format traff_format, st
 //reset all displayed values to zero
 void Status::resetTrafficData()
 {
-	m_cur = m_min = m_average = m_max = m_total = 0;
+	m_cur = m_min = m_max = m_total = 0;
+	m_average_values.clear();
 }
 
 //return the matching unit string, e.g. "kBit" for status_format::kilobit
@@ -170,26 +173,39 @@ void Status::setAverageSmoothness( OptionInt* new_averagesmoothness )
 	m_averagesmoothness = new_averagesmoothness;
 }
 
-//calculate new average
-void Status::average( int new_value )
+//put new value into average calculation
+void Status::updateAverage( int new_value )
 {
 	
 	/*
-	 * average calculation is not very good at the moment as it is not a real average
-	 * and is dependent from the display refresh interval.
-	 * it is a running estimate updated by forming a weighted average.
+	 * average calculation is not very good at the moment as it is dependent
+	 * from the display refresh interval.
 	 * could need some help here.
 	 */
 	
-	//if this is the first time call, set average to current value
-	if( m_average == -1 )
+	m_average_values.push_front( new_value );
+	
+	//limit value count dependent of the average smoothness
+	//ranges between 1 * 45 and 9 * 45 single values
+	while( m_average_values.size() > (unsigned int) *m_averagesmoothness * 45 )
 	{
-		m_average = new_value;
-		return;
+		m_average_values.pop_back();
 	}
 	
-	m_average = (int) ( new_value * ( 1.0 - averageSmoothness() / 10.0 ) + m_average * ( averageSmoothness() / 10.0 ) );
+}
+
+//calculate current average
+int Status::calcAverage()
+{
+	if( m_average_values.size() == 0 ) return 0;
+
+	int sum = 0;
+	for( list<int>::const_iterator i = m_average_values.begin(); i != m_average_values.end(); i++ )
+	{
+		sum += (*i);
+	}
 	
+	return sum / m_average_values.size();
 }
 
 int Status::averageSmoothness()
