@@ -1,3 +1,11 @@
+** version 0.4.0 ** 2001-12-06 *******************************************
+-ported to Free/Net/OpenBSD and Solaris
+-switches -u and -U for customizable data units
+-tripled graph resolution by adding two additional drawing chars
+ (thanks to Christian Hoenig)
+-fixed wrong data display after network device restart
+ (thanks to Christian Hoenig)
+**************************************************************************
 ** version 0.3.2 ** 2001-10-20 *******************************************
 -now the 4GB workaround really works
 **************************************************************************

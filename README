@@ -1,15 +1,15 @@
-nload 0.3.2 (2001-10-20)
+nload 0.4.0 (2001-12-06)
 real time monitor for network traffic
 Copyright (C) 2001 by Roland Riegel <support@roland-riegel.de>
 
 1. Introduction
    ------------
 
-This is version 0.3.2 of nload, a console application which monitors network
+This is version 0.4.0 of nload, a console application which monitors network
 traffic and bandwidth usage in real time.
 It visualizes the in- and outgoing traffic using two graphs and provides
-additionally info like total amount of transfered data
-and min/max network usage.
+additionally info like total amount of transfered data and min/max network
+usage.
 
 2. Installing / Compiling nload
    ----------------------------
