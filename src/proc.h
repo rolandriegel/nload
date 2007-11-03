@@ -36,8 +36,8 @@ public:
 	
 	void readLoad( unsigned long& in, unsigned long& out );
 
-	unsigned long totalIn();
-	unsigned long totalOut();
+	long long totalIn();
+	long long totalOut();
 	
 	int getElapsedTime();
 	
@@ -51,7 +51,7 @@ private:
 	
 	char m_ip[16];
 	
-	unsigned long m_total[2];
+	long long m_total[2];
 
 };
 

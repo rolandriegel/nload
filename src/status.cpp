@@ -30,7 +30,7 @@ Status::~Status()
 }
 
 //new traffic measurement has been made => update statistics
-void Status::update( unsigned long new_value, unsigned long new_total )
+void Status::update( unsigned long new_value, long long new_total )
 {
 	
 	m_cur = new_value;
@@ -44,7 +44,9 @@ void Status::update( unsigned long new_value, unsigned long new_total )
 	 *the /proc/net/dev file
 	 *(the total bytes value reaches 4GB and then switches to 0)
 	 */
-	if( new_total < ( m_total % UINT_MAX ) )
+	if (new_total >= UINT_MAX )
+		m_total = new_total;
+	else if ( new_total < ( m_total % UINT_MAX ) )
 		m_total = ( ( m_total / UINT_MAX ) + 1 ) * UINT_MAX + new_total;
 	else
 		m_total = ( m_total / UINT_MAX ) * UINT_MAX + new_total;

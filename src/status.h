@@ -52,7 +52,7 @@ public:
 		gigabyte = 7
 	};
 	
-	void update( unsigned long, unsigned long );
+	void update( unsigned long, long long);
 	void print( Window&, int, int, status_format traff_format, status_format data_format );
 	void resetTrafficData();
 

@@ -126,7 +126,7 @@ const char* Proc::ip()
 
 void Proc::readLoad( unsigned long& in, unsigned long& out )
 {
-	unsigned long total_new[2] = { 0, 0 };
+	long long total_new[2] = { 0, 0 };
 	int curr_time = 0;
 	struct timeval time;
 
@@ -181,7 +181,7 @@ void Proc::readLoad( unsigned long& in, unsigned long& out )
 			
 			if( ! strcmp( m_dev, dev ) )
 			{
-				sscanf( tmp, "%lu %*u %*u %*u %*u %*u %*u %*u %lu", &total_new[0], &total_new[1] );
+				sscanf( tmp, "%llu %*u %*u %*u %*u %*u %*u %*u %llu", &total_new[0], &total_new[1] );
 				
 				if( total_new[0] > m_total[0] )
 					in = total_new[0] - m_total[0];
@@ -198,7 +198,7 @@ void Proc::readLoad( unsigned long& in, unsigned long& out )
 		}
 	} while( 0 );
 
-	fclose(fd);
+	if (fd != NULL) fclose(fd);
 	
 #endif
 // === End Linux specific network data reading code ===
@@ -513,12 +513,12 @@ int Proc::getElapsedTime()
 	return m_elapsed_time;
 }
 
-unsigned long Proc::totalIn()
+long long Proc::totalIn()
 {
 	return m_total[0];
 }
 
-unsigned long Proc::totalOut()
+long long Proc::totalOut()
 {
 	return m_total[1];
 }

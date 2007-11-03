@@ -1,62 +1,119 @@
-** version 0.6.0 ** 2003-12-18 *******************************************
--ported to HP-UX
- (thanks to Roshan Sequeira)
--add some useful key shortcuts
--fixed some memory leaks (also on BSD), uninitialized variables
--fix compilation with gcc 3.x
--a bit of source code cleanup
-**************************************************************************
-** version 0.5.0 ** 2002-08-11 *******************************************
--new option window (via the 'o' key) to change program settings
- at run time
--display IP numbers of the devices
--faster keyboard reaction
--"real" average calculation
--big code reorganisation
--new nload-user mailing list (see README)
-**************************************************************************
-** version 0.4.0 ** 2001-12-06 *******************************************
--ported to Free/Net/OpenBSD and Solaris
--switches -u and -U for customizable data units
--tripled graph resolution by adding two additional drawing chars
- (thanks to Christian Hoenig)
--fixed wrong data display after network device restart
- (thanks to Christian Hoenig)
-**************************************************************************
-** version 0.3.2 ** 2001-10-20 *******************************************
--now the 4GB workaround really works
-**************************************************************************
-** version 0.3.1 ** 2001-10-17 *******************************************
--parameter -m introduced: don't show graphs
--added the nload(1) man page
--workaround for the 4GB kernel variable overflow
-**************************************************************************
-** version 0.3.0 ** 2001-09-25 *******************************************
--two-dimensional graphs for current net load
--arrow keys to switch between devices
--'q' key to exit
-**************************************************************************
-** version 0.2.2 ** 2001-08-18 *******************************************
--improved average calculation
--warning if device doesn't exist
--more command line parsing fixes
--code cleanups
-**************************************************************************
-** version 0.2.1 ** 2001-08-08 *******************************************
--added average calculation
--fixed min/max calculation
--fixed severe timing/calculation problems
- (thanks to Magnus Roth)
--fixed a command line parsing bug
-**************************************************************************
-** version 0.2.0 ** 2001-08-03 *******************************************
--switched to ncurses
--support of more than one network device
--displays min/max bandwidth usage
-**************************************************************************
-** version 0.1.1 ** 2001-07-28 *******************************************
--seg fault when specifying a network device fixed
-**************************************************************************
-** version 0.1.0 ** 2001-07-27 *******************************************
--first public release
-**************************************************************************
+
+2007-11-03 Roland Riegel <feedback@roland-riegel.de>
+
+    * Applied patch by Paul Brook <paul@nowt.org> so that nload works correctly on 64-bit kernels
+
+    * Fixed SIGSEGV when /proc/net/dev doesn't exist
+
+2003-12-18 Roland Riegel <feedback@roland-riegel.de>
+
+    * Ported to HP-UX (thanks to Roshan Sequeira)
+
+    * Added some useful key shortcuts
+
+    * Fixed some memory leaks (also on BSD), uninitialized variables
+
+    * Fixed compilation with gcc 3.x
+
+    * Source code cleanup
+
+	* Tagged 0.6.0 release
+
+2002-08-11 Roland Riegel <feedback@roland-riegel.de>
+
+    * New option window (via the 'o' key) to change program settings at run time
+
+    * Display IP numbers of the devices
+
+    * Faster keyboard reaction
+
+    * "Real" average calculation
+
+    * Big code reorganisation
+
+    * New nload-user mailing list (see README)
+
+	* Tagged 0.5.0 release
+
+2001-12-06 Roland Riegel <feedback@roland-riegel.de>
+
+    * Ported to Free/Net/OpenBSD and Solaris
+
+    * Switches -u and -U for customizable data units
+
+    * Tripled graph resolution by adding two additional drawing chars (thanks to Christian Hoenig)
+
+    * Fixed wrong data display after network device restart (thanks to Christian Hoenig)
+
+	* Tagged 0.4.0 release
+
+2001-10-20 Roland Riegel <feedback@roland-riegel.de>
+
+    * Now the 4GB workaround really works
+
+	* Tagged 0.3.2 release
+
+2001-10-17 Roland Riegel <feedback@roland-riegel.de>
+
+    * Parameter -m introduced: don't show graphs
+
+    * Added the nload(1) man page
+
+    * Workaround for the 4GB kernel variable overflow
+
+	* Tagged 0.3.1 release
+
+2001-09-25 Roland Riegel <feedback@roland-riegel.de>
+
+    * Two-dimensional graphs for current net load
+
+    * Arrow keys to switch between devices
+
+    * 'q' key to exit
+
+	* Tagged 0.3.0 release
+
+2001-08-18 Roland Riegel <feedback@roland-riegel.de>
+
+    * Improved average calculation
+
+    * Warning if device doesn't exist
+
+    * More command line parsing fixes
+
+    * Code cleanups
+
+	* Tagged 0.2.2 release
+
+2001-08-08 Roland Riegel <feedback@roland-riegel.de>
+
+    * Added average calculation
+
+    * Fixed min/max calculation
+
+    * Fixed severe timing/calculation problems (thanks to Magnus Roth)
+
+    * Fixed a command line parsing bug
+
+	* Tagged 0.2.1 release
+
+2001-08-03 Roland Riegel <feedback@roland-riegel.de>
+
+    * Switched to ncurses
+
+    * Support of more than one network device
+
+    * Displays min/max bandwidth usage
+
+	* Tagged 0.2.0 release
+
+2001-07-28 Roland Riegel <feedback@roland-riegel.de>
+
+    * Seg fault when specifying a network device fixed
+
+	* Tagged 0.1.1 release
+
+2001-07-27 Roland Riegel <feedback@roland-riegel.de>
+
+    * First public release 0.1.0
+
