@@ -171,7 +171,7 @@ void Window::setXY( int new_x, int new_y )
 }
 
 //print some text to the window
-void Window::print( char* text, int new_x, int new_y )
+void Window::print( const char* text, int new_x, int new_y )
 {
 	if( ! m_window )
 		return;

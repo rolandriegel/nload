@@ -31,25 +31,19 @@ class OptionInt;
 class OptionLong;
 class OptionStatusFormat;
 
-const bool STANDARD_HIDE_GRAPHS = false;
-const int STANDARD_SLEEP_INTERVAL = 500;
-const Status::status_format STANDARD_TRAFFIC_FORMAT = Status::kilobit;
-const Status::status_format STANDARD_DATA_FORMAT = Status::megabyte;
+static const bool STANDARD_HIDE_GRAPHS = false;
+static const int STANDARD_SLEEP_INTERVAL = 500;
+static const Status::status_format STANDARD_TRAFFIC_FORMAT = Status::kilobit;
+static const Status::status_format STANDARD_DATA_FORMAT = Status::megabyte;
 
-#ifdef HAVE_LINUX
-	char* const STANDARD_NETWORK_DEVICE = "eth0";
-#endif
-
-#ifdef HAVE_BSD
-	char* const STANDARD_NETWORK_DEVICE = "fxp0";
-#endif
-
-#ifdef HAVE_SOLARIS
-	char* const STANDARD_NETWORK_DEVICE = "hme0";
-#endif
-
-#ifdef HAVE_HPUX
-	char* const STANDARD_NETWORK_DEVICE = "lan0";
+#if defined(HAVE_LINUX)
+	static const char* STANDARD_NETWORK_DEVICE = "eth0";
+#elif defined(HAVE_BSD)
+	static const char* STANDARD_NETWORK_DEVICE = "fxp0";
+#elif defined(HAVE_SOLARIS)
+	static const char* STANDARD_NETWORK_DEVICE = "hme0";
+#elif defined(HAVE_HPUX)
+	static const char* STANDARD_NETWORK_DEVICE = "lan0";
 #endif
 
 class Dev : public Proc

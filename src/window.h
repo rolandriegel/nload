@@ -75,7 +75,7 @@ public:
 	virtual void setXY( int new_x, int new_y );
 	
 	//print some text to the window
-	virtual void print( char* text, int new_x = -1, int new_y = -1 );
+	virtual void print( const char* text, int new_x = -1, int new_y = -1 );
 	
 	//print a char to the window
 	virtual void print( char text, int new_x = -1, int new_y = -1 );
