@@ -21,12 +21,12 @@
 #include "traffic_window.h"
 #include "opt_window.h"
 
-int main( int argc, char *argv[] );
+int main(int argc, char *argv[]);
 
 void init();
 void finish();
-void end( int signal = 0 );
-void terminal_resized( int signal );
+void end(int signal = 0);
+void terminal_resized(int signal);
 
 void printhelp();
 

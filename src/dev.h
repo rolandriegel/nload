@@ -31,51 +31,50 @@ class OptionInt;
 class OptionLong;
 class OptionStatusFormat;
 
-static const bool STANDARD_HIDE_GRAPHS = false;
-static const int STANDARD_SLEEP_INTERVAL = 500;
-static const Status::status_format STANDARD_TRAFFIC_FORMAT = Status::kilobit;
-static const Status::status_format STANDARD_DATA_FORMAT = Status::megabyte;
+#define STANDARD_HIDE_GRAPHS false
+#define STANDARD_SLEEP_INTERVAL 500
+#define STANDARD_TRAFFIC_FORMAT Status::kilobit
+#define STANDARD_DATA_FORMAT Status::megabyte
 
 #if defined(HAVE_LINUX)
-	static const char* STANDARD_NETWORK_DEVICE = "eth0";
+	#define STANDARD_NETWORK_DEVICE "eth0"
 #elif defined(HAVE_BSD)
-	static const char* STANDARD_NETWORK_DEVICE = "fxp0";
+	#define STANDARD_NETWORK_DEVICE "fxp0"
 #elif defined(HAVE_SOLARIS)
-	static const char* STANDARD_NETWORK_DEVICE = "hme0";
+	#define STANDARD_NETWORK_DEVICE "hme0"
 #elif defined(HAVE_HPUX)
-	static const char* STANDARD_NETWORK_DEVICE = "lan0";
+	#define STANDARD_NETWORK_DEVICE "lan0"
 #endif
 
 class Dev : public Proc
 {
+    public:
+        Dev();
+        ~Dev();
 
-public:
-	Dev();
-	~Dev();
-
-	void update();
-	void print( Window& );
-	void setDeviceNumber( int );
-	void setTotalNumberOfDevices( int );
-	void setAverageSmoothness( OptionInt* );
-	void setHideGraphs( OptionBool* );
-	void setTrafficWithMaxDeflectionOfGraphs( OptionLong*, OptionLong* );
-	void setStatusFormat( OptionStatusFormat*, OptionStatusFormat* );
-	
-private:
-	bool hideGraphs();
-	Status::status_format trafficFormat();
-	Status::status_format dataFormat();
-	
-	int m_devicenumber;
-	int m_totalnumberofdevices;
-	OptionBool* m_hidegraphs;
-	OptionStatusFormat* m_trafficformat;
-	OptionStatusFormat* m_dataformat;
-	
-	Status *device_status[2];
-	Graph *traffic_graph[2];
-	
+        void update();
+        void print(Window&);
+        void setDeviceNumber(int);
+        void setTotalNumberOfDevices(int);
+        void setAverageSmoothness(OptionInt*);
+        void setHideGraphs(OptionBool*);
+        void setTrafficWithMaxDeflectionOfGraphs(OptionLong*, OptionLong*);
+        void setStatusFormat(OptionStatusFormat*, OptionStatusFormat*);
+        
+    private:
+        bool hideGraphs();
+        Status::status_format trafficFormat();
+        Status::status_format dataFormat();
+        
+        int m_devicenumber;
+        int m_totalnumberofdevices;
+        OptionBool* m_hidegraphs;
+        OptionStatusFormat* m_trafficformat;
+        OptionStatusFormat* m_dataformat;
+        
+        Status* device_status[2];
+        Graph* traffic_graph[2];
+        
 };
 
 #endif

@@ -19,7 +19,6 @@
 #define GRAPH_H
 
 #include <list>
-using std::list;
 
 class Window;
 class OptionLong;
@@ -28,27 +27,26 @@ const long STANDARD_MAX_DEFLECTION = 10240; // [kBit/s]  10 MBit/s = 10240 kBit/
 
 class Graph
 {
+    public:
+        Graph();
+        ~Graph();
+        
+        void setNumOfBars(int);
+        void setHeightOfBars(int);
+        void setTrafficWithMaxDeflectionOfBars(OptionLong*);
+        
+        void update(int);
+        void print(Window&, int, int);
+        void resetTrafficData();
 
-public:
-	Graph();
-	~Graph();
-	
-	void setNumOfBars( int );
-	void setHeightOfBars( int );
-	void setTrafficWithMaxDeflectionOfBars( OptionLong* );
-	
-	void update( int );
-	void print( Window&, int, int );
-	void resetTrafficData();
-
-private:
-	long trafficWithMaxDeflectionOfBars();
-	
-	int m_heightofbars;
-	OptionLong* m_trafficwithmaxdeflectionofbars;
-	
-	list<int> m_values;
-	
+    private:
+        long trafficWithMaxDeflectionOfBars();
+        
+        int m_heightofbars;
+        OptionLong* m_trafficwithmaxdeflectionofbars;
+        
+        std::list<int> m_values;
+        
 };
 
 #endif

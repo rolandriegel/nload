@@ -18,13 +18,15 @@
 #include "opt_window.h"
 #include "options.h"
 
-const int BORDER_LEFT = 1;
-const int BORDER_RIGHT = 1;
-const int BORDER_TOP = 2;
-const int BORDER_BOTTOM = 1;
+#define BORDER_LEFT 1
+#define BORDER_RIGHT 1
+#define BORDER_TOP 2
+#define BORDER_BOTTOM 1
+
+using namespace std;
 
 OptWindow::OptWindow()
-    : Window(), Form::Slots(), m_sub_window( this ), m_form( this )
+    : Window(), Form::Slots(), m_sub_window(this), m_form(this)
 {
 }
 
@@ -32,45 +34,45 @@ OptWindow::~OptWindow()
 {
 }
 
-//create option window and display the current settings
-void OptWindow::show( int x, int y, int width, int height )
+// create option window and display the current settings
+void OptWindow::show(int x, int y, int width, int height)
 {
-	if( m_visible )
+	if(m_visible)
 		hide();
 	
-	Window::show( x, y, width, height );
-	m_sub_window.show( BORDER_LEFT, BORDER_TOP, width - BORDER_LEFT - BORDER_RIGHT, height - BORDER_TOP - BORDER_BOTTOM );
+	Window::show(x, y, width, height);
+	m_sub_window.show(BORDER_LEFT, BORDER_TOP, width - BORDER_LEFT - BORDER_RIGHT, height - BORDER_TOP - BORDER_BOTTOM);
 	
 	const int field_width = m_sub_window.width() / 2;
 	int line = 0;
-	for( vector<OptionBase *>::iterator i = m_options.begin(); i != m_options.end(); i++ )
+	for(vector<OptionBase *>::iterator i = m_options.begin(); i != m_options.end(); i++)
 	{
 		line %= m_sub_window.height() < 1 ? 1 : m_sub_window.height();
 		
-		m_form.fields().push_back( (*i) -> labelField( 0, line, field_width, 1 ) );
-		m_form.fields().push_back( (*i) -> editField( field_width, line, field_width, 1 ) );
+		m_form.fields().push_back((*i)->labelField(0, line, field_width, 1));
+		m_form.fields().push_back((*i)->editField(field_width, line, field_width, 1));
 		
-		(*i) -> labelField() -> setNewPage( line == 0 );
+		(*i)->labelField()->setNewPage(line == 0);
 		
 		line++;
 	}
 	
-	m_form.show( this, &m_sub_window );
+	m_form.show(this, &m_sub_window);
 	
 	m_visible = true;
 }
 
-//this function is called when a form field changes
-void OptWindow::slot_fieldChanged( Field* field )
+// this function is called when a form field changes
+void OptWindow::slot_fieldChanged(Field* field)
 {
-	for( vector<OptionBase *>::const_iterator r = m_options.begin(); r != m_options.end(); r++ )
+	for(vector<OptionBase *>::const_iterator r = m_options.begin(); r != m_options.end(); r++)
 	{
-		if( *(*r) -> editField() == *field )
-			(*r) -> assignString( field -> buffer() );
+		if(*(*r)->editField() == *field)
+			(*r)->assignString(field->buffer());
 	}
 }
 
-//hide window and destroy it
+// hide window and destroy it
 void OptWindow::hide()
 {
 	m_form.hide();
@@ -81,12 +83,12 @@ void OptWindow::hide()
 	m_visible = false;
 }
 
-//process key presses
-void OptWindow::processKey( int request )
+// process key presses
+void OptWindow::processKey(int request)
 {
-	if( m_visible )
+	if(m_visible)
 	{
-		switch( request )
+		switch(request)
 		{
 			case KEY_LEFT:
 				request = REQ_PREV_CHAR;
@@ -131,13 +133,13 @@ void OptWindow::processKey( int request )
 				request = REQ_PREV_PAGE;
 				break;
 		}
-		m_form.processKey( request );
+		m_form.processKey(request);
 		refresh();
 	}
 }
 
 
-//export the collection of options shown in the window
+// export the collection of options shown in the window
 vector<OptionBase *>& OptWindow::options()
 {
 	return m_options;
@@ -145,15 +147,15 @@ vector<OptionBase *>& OptWindow::options()
 
 void OptWindow::refresh()
 {
-	print( "Options:\n", 0, 0 );
-	for( int x = 0; x < width(); x++ )
-		print( '=' );
+	print("Options:\n", 0, 0);
+	for(int x = 0; x < width(); x++)
+		print('=');
 	
 	char fText[40] = "";
-	sprintf( fText, " <-- (-) page %i/%i (+) --> ", page(), countPages() );
-	print( fText, width() - strlen( fText ) - 1, 1 );
+	sprintf(fText, " <-- (-) page %i/%i (+) --> ", page(), countPages());
+	print(fText, width() - strlen(fText) - 1, 1);
 	
-	wrefresh( m_window );
+	wrefresh(m_window);
 	m_sub_window.refresh();
 }
 

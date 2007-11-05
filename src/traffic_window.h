@@ -20,35 +20,34 @@
 
 #include "window.h"
 #include <vector>
-using std::vector;
 
 class Dev;
 class OptionBool;
 
 class TrafficWindow : public Window
 {
-public:
-	
-	TrafficWindow();
-	~TrafficWindow();
-	
-	void processKey( int key );
-	void print();
-	
-	vector<Dev *>& devices();
-	void setDevices( vector<Dev *>& );
-	
-	void setShowMultipleDevices( OptionBool* );
-	
-private:
-	
-	bool showMultipleDevices();
-	
-	vector<Dev *> m_devs;
-	
-	int m_cur_dev;
-	OptionBool* m_show_multiple_devices;
-	
+    public:
+        
+        TrafficWindow();
+        ~TrafficWindow();
+        
+        void processKey(int key);
+        void print();
+        
+        std::vector<Dev *>& devices();
+        void setDevices(std::vector<Dev *>&);
+        
+        void setShowMultipleDevices(OptionBool*);
+        
+    private:
+        
+        bool showMultipleDevices();
+        
+        std::vector<Dev *> m_devs;
+        
+        int m_cur_dev;
+        OptionBool* m_show_multiple_devices;
+        
 };
 
 #endif
