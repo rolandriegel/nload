@@ -2,7 +2,7 @@
                                   screen.h
                              -------------------
     begin                : Thu Jul 04 2002
-    copyright            : (C) 2002 - 2003 by Roland Riegel
+    copyright            : (C) 2002 - 2007 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 

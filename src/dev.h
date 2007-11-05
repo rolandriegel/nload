@@ -2,7 +2,7 @@
                                    dev.h
                              -------------------
     begin                : Wed Aug 1 2001
-    copyright            : (C) 2001 - 20003 by Roland Riegel
+    copyright            : (C) 2001 - 20007 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 

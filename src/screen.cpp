@@ -2,7 +2,7 @@
                                  screen.cpp
                              -------------------
     begin                : Thu Nov 25 2003
-    copyright            : (C) 2003 by Roland Riegel
+    copyright            : (C) 2003 - 2007 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 

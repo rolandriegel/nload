@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon Aug 9 1999
     copyright            : (C) 1999 by Markus Gustavsson
-                           (C) 2001 - 2003 by Roland Riegel
+                           (C) 2001 - 2007 by Roland Riegel
     email                : mighty@fragzone.se
                            feedback@roland-riegel.de
  ***************************************************************************/

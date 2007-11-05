@@ -2,7 +2,7 @@
                                   main.cpp
                              -------------------
     begin                : Wed Jul 25 2001
-    copyright            : (C) 2001 - 2003 by Roland Riegel 
+    copyright            : (C) 2001 - 2007 by Roland Riegel 
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -17,7 +17,7 @@
 /*
  * nload
  * real time monitor for network traffic
- * Copyright (C) 2001 - 2003 Roland Riegel <feedback@roland-riegel.de>
+ * Copyright (C) 2001 - 2007 Roland Riegel <feedback@roland-riegel.de>
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of

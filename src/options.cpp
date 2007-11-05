@@ -2,7 +2,7 @@
                                  options.cpp
                              -------------------
     begin                : Sun Dec 23 2001
-    copyright            : (C) 2001 - 2003 by Roland Riegel
+    copyright            : (C) 2001 - 2007 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
