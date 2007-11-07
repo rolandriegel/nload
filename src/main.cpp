@@ -36,39 +36,52 @@
 #include "main.h"
 #include "graph.h"
 #include "dev.h"
-#include "options.h"
 #include "screen.h"
+#include "setting.h"
+#include "settingstore.h"
+
+#include <string>
+#include <vector>
+
 #include <ctype.h>
 #include <time.h>
 #include <curses.h>
 #include <signal.h>
-#include <string>
-#include <vector>
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
+    SettingStore::add(Setting("sleep_interval", "Refresh interval (ms)", STANDARD_SLEEP_INTERVAL));
+    SettingStore::add(Setting("multiple_devices", "Show multiple devices", STANDARD_HIDE_GRAPHS));
+    SettingStore::add(Setting("bar_max_in", "Max Incoming deflection (kBit/s)", STANDARD_MAX_DEFLECTION));
+    SettingStore::add(Setting("bar_max_out", "Max Outgoing deflection (kBit/s)", STANDARD_MAX_DEFLECTION));
+    SettingStore::add(Setting("average_smoothness", "Smoothness of average", STANDARD_AVERAGE_SMOOTHNESS));
+    SettingStore::add(Setting("traffic_format", "Unit for traffic numbers", STANDARD_TRAFFIC_FORMAT));
+    SettingStore::add(Setting("data_format", "Unit for data numbers", STANDARD_DATA_FORMAT));
+
+    map<string, string> valueMapping;
+
+    valueMapping[toString(false)] = "[ ]";
+    valueMapping[toString(true)] = "[x]";
+    SettingStore::get("multiple_devices").setValueMapping(valueMapping);
+    valueMapping.clear();
+
+    valueMapping[toString(Status::human_readable_bit)] = "Human Readable (Bit)";
+    valueMapping[toString(Status::human_readable_byte)] = "Human Readable (Byte)";
+    valueMapping[toString(Status::bit)] = "Bit";
+    valueMapping[toString(Status::byte)] = "Byte";
+    valueMapping[toString(Status::kilobit)] = "kBit";
+    valueMapping[toString(Status::kilobyte)] = "kByte";
+    valueMapping[toString(Status::megabit)] = "MBit";
+    valueMapping[toString(Status::megabyte)] = "MByte";
+    valueMapping[toString(Status::gigabit)] = "GBit";
+    valueMapping[toString(Status::gigabyte)] = "GByte";
+    SettingStore::get("traffic_format").setValueMapping(valueMapping);
+    SettingStore::get("data_format").setValueMapping(valueMapping);
+    valueMapping.clear();
 
     vector<string *> network_device;
-
-    OptionInt sleep_interval(STANDARD_SLEEP_INTERVAL, "Refresh interval (ms)");
-    OptionBool show_multiple_devices(STANDARD_HIDE_GRAPHS, "Show multiple devices");
-    OptionLong bar_max_in(STANDARD_MAX_DEFLECTION, "Max Incoming deflection (kBit/s)");
-    OptionLong bar_max_out(STANDARD_MAX_DEFLECTION, "Max Outgoing deflection (kBit/s)");
-    OptionInt average_smoothness(STANDARD_AVERAGE_SMOOTHNESS, "Smoothness of average");
-    average_smoothness.min(1);
-    average_smoothness.max(9);
-    OptionStatusFormat traffic_format(STANDARD_TRAFFIC_FORMAT, "Unit for traffic numbers");
-    OptionStatusFormat data_format(STANDARD_DATA_FORMAT, "Unit for data numbers");
-    m_optwindow.options().push_back(&sleep_interval);
-    m_optwindow.options().push_back(&show_multiple_devices);
-    m_optwindow.options().push_back(&bar_max_in);
-    m_optwindow.options().push_back(&bar_max_out);
-    m_optwindow.options().push_back(&average_smoothness);
-    m_optwindow.options().push_back(&traffic_format);
-    m_optwindow.options().push_back(&data_format);
-
     bool print_only_once = false;
 
     // parse the command line
@@ -84,12 +97,14 @@ int main(int argc, char *argv[])
         // the incoming bandwidth bar?
         else if(strcmp(argv[i], "-i") == 0)
         {
+            Setting& setting = SettingStore::get("bar_max_in");
             
             if(i < argc - 1 && isdigit(argv[ i + 1 ][0]) != 0)
             {
-                bar_max_in = atol(argv[ i + 1 ]);
-                if(bar_max_in == 0)
-                    bar_max_in = STANDARD_MAX_DEFLECTION;
+                setting = atol(argv[ i + 1 ]);
+                if(setting == 0)
+                    setting = STANDARD_MAX_DEFLECTION;
+
                 i++;
             }
             else
@@ -98,18 +113,19 @@ int main(int argc, char *argv[])
                 printhelp();
                 exit(1);
             }
-            
         }
         // has the user set a non-default 100% mark for
         // the outgoing bandwidth bar?
         else if(strcmp(argv[i], "-o") == 0)
         {
+            Setting& setting = SettingStore::get("bar_max_out");
             
             if(i < argc - 1 && isdigit(argv[ i + 1 ][0]) != 0)
             {
-                bar_max_out = atol(argv[ i + 1 ]);
-                if(bar_max_out == 0)
-                    bar_max_out = STANDARD_MAX_DEFLECTION;
+                setting = atol(argv[ i + 1 ]);
+                if(setting == 0)
+                    setting = STANDARD_MAX_DEFLECTION;
+
                 i++;
             }
             else
@@ -118,20 +134,22 @@ int main(int argc, char *argv[])
                 printhelp();
                 exit(1);
             }
-            
         }
         // has the user set a non-default refresh interval?
         else if(strcmp(argv[i], "-t") == 0)
         {
+            Setting& setting = SettingStore::get("sleep_interval");
+            
             if(i < argc - 1 && isdigit(argv[ i + 1 ][0]) != 0)
             {
-                sleep_interval = atoi(argv[ i + 1 ]);
-                i++;
-                if(sleep_interval == 0)
+                setting = atoi(argv[ i + 1 ]);
+                if(setting == 0)
                 {
                     print_only_once = true;
-                    sleep_interval = STANDARD_SLEEP_INTERVAL;
+                    setting = STANDARD_SLEEP_INTERVAL;
                 }
+
+                i++;
             }
             else
             {
@@ -143,11 +161,14 @@ int main(int argc, char *argv[])
         // has the user set a non-default average smoothness?
         else if(strcmp(argv[i], "-s") == 0)
         {
+            Setting& setting = SettingStore::get("average_smoothness");
+            
             if(i < argc - 1 && isdigit(argv[ i + 1 ][0]) != 0)
             {
-                average_smoothness = atoi(argv[ i + 1 ]);
-                if(average_smoothness < 1 || average_smoothness > 9)
-                    average_smoothness = STANDARD_AVERAGE_SMOOTHNESS;
+                setting = atoi(argv[ i + 1 ]);
+                if(setting < 1 || setting > 9)
+                    setting = STANDARD_AVERAGE_SMOOTHNESS;
+
                 i++;
             }
             else
@@ -160,45 +181,48 @@ int main(int argc, char *argv[])
         // has the user set a non-default unit for traffic numbers?
         else if(strcmp(argv[i], "-u") == 0)
         {
+            Setting& setting = SettingStore::get("traffic_format");
+            
             if(i < argc - 1 && isalpha(argv[ i + 1 ][0]) != 0)
             {
                 switch(argv[ i + 1 ][0])
                 {
                     case 'H':
-                        traffic_format = Status::human_readable_byte;
+                        setting = Status::human_readable_byte;
                         break;
                     case 'h':
-                        traffic_format = Status::human_readable_bit;
+                        setting = Status::human_readable_bit;
                         break;
                     case 'B':
-                        traffic_format = Status::byte;
+                        setting = Status::byte;
                         break;
                     case 'b':
-                        traffic_format = Status::bit;
+                        setting = Status::bit;
                         break;
                     case 'K':
-                        traffic_format = Status::kilobyte;
+                        setting = Status::kilobyte;
                         break;
                     case 'k':
-                        traffic_format = Status::kilobit;
+                        setting = Status::kilobit;
                         break;
                     case 'M':
-                        traffic_format = Status::megabyte;
+                        setting = Status::megabyte;
                         break;
                     case 'm':
-                        traffic_format = Status::megabit;
+                        setting = Status::megabit;
                         break;
                     case 'G':
-                        traffic_format = Status::gigabyte;
+                        setting = Status::gigabyte;
                         break;
                     case 'g':
-                        traffic_format = Status::gigabit;
+                        setting = Status::gigabit;
                         break;
                     default:
                         fprintf(stderr, "Wrong argument for the -u parameter.\n\n");
                         printhelp();
                         exit(1);
                 }
+
                 i++;
             }
             else
@@ -211,45 +235,48 @@ int main(int argc, char *argv[])
         // has the user set a non-default unit for numbers of amount of data?
         else if(strcmp(argv[i], "-U") == 0)
         {
+            Setting& setting = SettingStore::get("data_format");
+            
             if(i < argc - 1 && isalpha(argv[ i + 1 ][0]) != 0)
             {
                 switch(argv[ i + 1 ][0])
                 {
                     case 'H':
-                        data_format = Status::human_readable_byte;
+                        setting = Status::human_readable_byte;
                         break;
                     case 'h':
-                        data_format = Status::human_readable_bit;
+                        setting = Status::human_readable_bit;
                         break;
                     case 'B':
-                        data_format = Status::byte;
+                        setting = Status::byte;
                         break;
                     case 'b':
-                        data_format = Status::bit;
+                        setting = Status::bit;
                         break;
                     case 'K':
-                        data_format = Status::kilobyte;
+                        setting = Status::kilobyte;
                         break;
                     case 'k':
-                        data_format = Status::kilobit;
+                        setting = Status::kilobit;
                         break;
                     case 'M':
-                        data_format = Status::megabyte;
+                        setting = Status::megabyte;
                         break;
                     case 'm':
-                        data_format = Status::megabit;
+                        setting = Status::megabit;
                         break;
                     case 'G':
-                        data_format = Status::gigabyte;
+                        setting = Status::gigabyte;
                         break;
                     case 'g':
-                        data_format = Status::gigabit;
+                        setting = Status::gigabit;
                         break;
                     default:
                         fprintf(stderr, "Wrong argument for the -U parameter.\n\n");
                         printhelp();
                         exit(1);
                 }
+
                 i++;
             }
             else
@@ -263,7 +290,7 @@ int main(int argc, char *argv[])
         // has the user chosen to display multiple devices and thus not to display graphs?
         else if(strcmp(argv[i], "-m") == 0)
         {
-            show_multiple_devices = true;
+            SettingStore::get("multiple_devices") = true;
         }
         // obsolete -b option
         else if(strcmp(argv[i], "-b") == 0)
@@ -274,7 +301,6 @@ int main(int argc, char *argv[])
         {
             network_device.push_back(new string(argv[i]));
         }
-
     }
 
     if(network_device.size() == 0)
@@ -289,24 +315,17 @@ int main(int argc, char *argv[])
         m_mainwindow.devices().back()->setProcDev(network_device[i]->c_str());
         m_mainwindow.devices().back()->setDeviceNumber(i + 1);
         m_mainwindow.devices().back()->setTotalNumberOfDevices(network_device.size());
-        m_mainwindow.devices().back()->setStatusFormat(&traffic_format, &data_format);
-        m_mainwindow.devices().back()->setHideGraphs(&show_multiple_devices);
-        m_mainwindow.devices().back()->setTrafficWithMaxDeflectionOfGraphs(&bar_max_in, &bar_max_out);
-        m_mainwindow.devices().back()->setAverageSmoothness(&average_smoothness);
         delete network_device[i];
     }
     network_device.clear();
 
-    m_mainwindow.setShowMultipleDevices(&show_multiple_devices);
-
     do
     {
-        
         // wait sleep_interval milliseconds (in steps of 100 ms)
         struct timespec wanted_time;
         wanted_time.tv_sec = 0;
         
-        int rest_of_sleep_interval = sleep_interval;
+        int rest_of_sleep_interval = SettingStore::get("sleep_interval");
         
         while(rest_of_sleep_interval > 0)
         {
@@ -340,11 +359,13 @@ int main(int argc, char *argv[])
                         if(!m_optwindow.visible())
                             end();
                         break;
+                    default:
+                        if(m_optwindow.visible())
+                            m_optwindow.processKey(key);
+                        else
+                            m_mainwindow.processKey(key);
+                        break;
                 }
-                if(m_optwindow.visible())
-                    m_optwindow.processKey(key);
-                else
-                    m_mainwindow.processKey(key);
             }
         }
         
@@ -441,11 +462,11 @@ void printhelp()
         "-i max_scaling	specifies the 100%% mark in kBit/s of the graph indicating the\n"
         "		incoming bandwidth usage\n"
         "		ignored if max_scaling is 0 or the switch -m is given\n"
-        "		default is %ld\n"
+        "		default is %d\n"
         "-m		show multiple devices at a time; do not show the traffic graphs\n"
         "-o max_scaling	same as -i but for the graph indicating the outgoing bandwidth\n"
         "		usage\n"
-        "		default is %ld\n"
+        "		default is %d\n"
         "-s smoothness	sets the \"smoothness\" of the average in/out values\n"
         "		1 means little smoothness (average over a short period of time)\n"
         "		9 means high smoothness (average over a long period of time)\n"

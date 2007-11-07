@@ -22,7 +22,6 @@
 #include <vector>
 
 class Dev;
-class OptionBool;
 
 class TrafficWindow : public Window
 {
@@ -37,8 +36,6 @@ class TrafficWindow : public Window
         std::vector<Dev *>& devices();
         void setDevices(std::vector<Dev *>&);
         
-        void setShowMultipleDevices(OptionBool*);
-        
     private:
         
         bool showMultipleDevices();
@@ -46,8 +43,6 @@ class TrafficWindow : public Window
         std::vector<Dev *> m_devs;
         
         int m_cur_dev;
-        OptionBool* m_show_multiple_devices;
-        
 };
 
 #endif

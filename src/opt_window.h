@@ -20,37 +20,30 @@
 
 #include "window.h"
 #include "form_field.h"
-#include <vector>
 
-class OptionBase;
+#include <map>
+#include <string>
 
 class OptWindow : public Window, public Form::Slots
 {
     public:
-        
         OptWindow();
         ~OptWindow();
         
-        void show(int, int, int, int);
+        void show(int x, int y, int width, int height);
         void hide();
         
         void refresh();
         
-        void processKey(int);
-        void slot_fieldChanged(Field*);
-        
-        std::vector<OptionBase *>& options();
+        void processKey(int request);
+        void slot_fieldChanged(Field* field);
         
     private:
-        
-        int page();
-        int countPages();
-        
-        std::vector<OptionBase *> m_options;
-        
         SubWindow m_sub_window;
         Form m_form;
-        
+
+        std::map<Field*, std::string> m_labels;
+        std::map<Field*, std::string> m_fields;
 };
 
 #endif

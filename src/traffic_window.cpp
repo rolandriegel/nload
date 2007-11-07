@@ -15,14 +15,15 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "traffic_window.h"
 #include "dev.h"
-#include "options.h"
+#include "setting.h"
+#include "settingstore.h"
+#include "traffic_window.h"
 
 using namespace std;
 
 TrafficWindow::TrafficWindow()
-    : Window(), m_cur_dev(0), m_show_multiple_devices(0)
+    : Window(), m_cur_dev(0)
 {
 }
 
@@ -74,8 +75,8 @@ void TrafficWindow::print()
 	// update all devices and print the data of the current one
 	for(int i = 0; (unsigned int) i < m_devs.size(); i++)
 	{
-		m_devs[i] -> update();
-		if(! showMultipleDevices())
+		m_devs[i]->update();
+		if(!showMultipleDevices())
 		{
 			if(i == m_cur_dev)
 				m_devs[i] -> print(*this);
@@ -88,13 +89,8 @@ void TrafficWindow::print()
 	}
 }
 
-void TrafficWindow::setShowMultipleDevices(OptionBool* new_smd)
-{
-	m_show_multiple_devices = new_smd;
-}
-
 bool TrafficWindow::showMultipleDevices()
 {
-	return m_show_multiple_devices ? (bool) *m_show_multiple_devices : ! STANDARD_HIDE_GRAPHS;
+    return SettingStore::get("multiple_devices");
 }
 

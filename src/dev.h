@@ -26,10 +26,6 @@
 class Status;
 class Graph;
 class Window;
-class OptionBool;
-class OptionInt;
-class OptionLong;
-class OptionStatusFormat;
 
 #define STANDARD_HIDE_GRAPHS false
 #define STANDARD_SLEEP_INTERVAL 500
@@ -56,21 +52,13 @@ class Dev : public Proc
         void print(Window&);
         void setDeviceNumber(int);
         void setTotalNumberOfDevices(int);
-        void setAverageSmoothness(OptionInt*);
-        void setHideGraphs(OptionBool*);
-        void setTrafficWithMaxDeflectionOfGraphs(OptionLong*, OptionLong*);
-        void setStatusFormat(OptionStatusFormat*, OptionStatusFormat*);
         
     private:
-        bool hideGraphs();
         Status::status_format trafficFormat();
         Status::status_format dataFormat();
         
         int m_devicenumber;
         int m_totalnumberofdevices;
-        OptionBool* m_hidegraphs;
-        OptionStatusFormat* m_trafficformat;
-        OptionStatusFormat* m_dataformat;
         
         Status* device_status[2];
         Graph* traffic_graph[2];

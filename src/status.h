@@ -18,16 +18,12 @@
 #ifndef STATUS_H
 #define STATUS_H
 
-#include <curses.h>
-#include <limits.h>
-#include <math.h>
 #include <string>
 #include <list>
 
 class Window;
-class OptionInt;
 
-const int STANDARD_AVERAGE_SMOOTHNESS = 9;
+#define STANDARD_AVERAGE_SMOOTHNESS 9
 
 class Status
 {
@@ -53,8 +49,6 @@ class Status
         void print(Window&, int, int, status_format traff_format, status_format data_format);
         void resetTrafficData();
 
-        void setAverageSmoothness(OptionInt*);
-        
     private:
         void minMax(unsigned long);
         
@@ -69,8 +63,6 @@ class Status
         long long m_total;
         
         std::list<unsigned long> m_average_values;
-        
-        OptionInt* m_averagesmoothness;
         
 };
 

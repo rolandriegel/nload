@@ -1,8 +1,8 @@
 /***************************************************************************
-                                  graph.h
+                                stringutils.h
                              -------------------
-    begin                : Sat Sep 29 2001
-    copyright            : (C) 2001 - 2007 by Roland Riegel
+    begin                : Tue Nov 06 2007
+    copyright            : (C) 2007 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -15,35 +15,35 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GRAPH_H
-#define GRAPH_H
+#ifndef STRINGUTILS_H
+#define STRINGUTILS_H
 
-#include <list>
+#include <sstream>
+#include <string>
+#include <vector>
 
-class Window;
+std::string trim(const std::string& s);
+std::vector<std::string> split(const std::string& s, const std::string& separators);
+std::vector<std::string> splitQuoted(const std::string& s, const std::string& separators, const std::string& quotes = "\"");
 
-#define STANDARD_MAX_DEFLECTION 10240 // [kBit/s]  10 MBit/s = 10240 kBit/s
-
-class Graph
+template<class T>
+std::string toString(const T& t)
 {
-    public:
-        Graph();
-        ~Graph();
-        
-        void setNumOfBars(int);
-        void setHeightOfBars(int);
-        
-        void update(int);
-        void print(Window&, int, int);
-        void resetTrafficData();
+    std::ostringstream stream;
+    stream << t;
 
-    private:
-        long trafficWithMaxDeflectionOfBars();
-        
-        int m_heightofbars;
-        
-        std::list<int> m_values;
-        
-};
+    return stream.str();
+}
+
+template<class T>
+T fromString(const std::string& s)
+{
+    std::istringstream stream(s);
+    T t;
+    stream >> t;
+
+    return t;
+}
 
 #endif
+

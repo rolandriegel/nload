@@ -1,8 +1,8 @@
 /***************************************************************************
-                                optionbase.h
+                               settingstore.h
                              -------------------
-    begin                : Sun Jan 20 2002
-    copyright            : (C) 2002 - 2007 by Roland Riegel
+    begin                : Tue Nov 06 2007
+    copyright            : (C) 2007 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -15,34 +15,27 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef OPTIONBASE_H
-#define OPTIONBASE_H
+#ifndef SETTINGSTORE_H
+#define SETTINGSTORE_H
 
+#include <map>
 #include <string>
 
-class Field;
+class Setting;
 
-class OptionBase
+class SettingStore
 {
     public:
-        OptionBase(std::string new_description = "");
-        virtual ~OptionBase();
-        
-        void setDescription(std::string);
-        std::string description() const;
-        
-        virtual std::string asString() const = 0;
-        virtual void assignString(const std::string new_value) = 0;
-        
-        virtual Field* editField(int x = -1, int y = -1, int width = -1, int height = -1) = 0;
-        
-        Field* labelField(int x = -1, int y = -1, int width = -1, int height = -1);
-        
+        static Setting& get(const std::string& key);
+        static void add(const Setting& setting);
+        static void remove(const std::string& key);
+        static bool exists(const std::string& key);
+
+        static std::map<std::string, Setting>& getAll();
+
     private:
-        
-        std::string m_description;
-        Field* m_label_field;
-        
+        static std::map<std::string, Setting> m_settings;
 };
 
 #endif
+

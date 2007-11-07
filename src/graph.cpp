@@ -16,15 +16,15 @@
  ***************************************************************************/
 
 #include "graph.h"
+#include "setting.h"
+#include "settingstore.h"
 #include "window.h"
-#include "options.h"
 
 using namespace std;
 
 Graph::Graph()
 {
 	m_heightofbars = 0;
-	m_trafficwithmaxdeflectionofbars = 0;
 }
 
 Graph::~Graph()
@@ -46,14 +46,6 @@ void Graph::setNumOfBars(int new_numofbars)
 void Graph::setHeightOfBars(int new_heightofbars)
 {
 	m_heightofbars = new_heightofbars;
-}
-
-// set the traffic at which the graph shows 100% deflection
-void Graph::setTrafficWithMaxDeflectionOfBars(OptionLong* new_trafficwithmaxdeflectionofbars)
-{
-	// [new_trafficwithmaxdeflectionofbars] = kBit/s
-	
-	m_trafficwithmaxdeflectionofbars = new_trafficwithmaxdeflectionofbars;
 }
 
 // new traffic measurement has been made => update the graph's value list
@@ -108,7 +100,7 @@ void Graph::resetTrafficData()
 
 long Graph::trafficWithMaxDeflectionOfBars()
 {
-	int tr = m_trafficwithmaxdeflectionofbars ? (long) *m_trafficwithmaxdeflectionofbars : STANDARD_MAX_DEFLECTION;
+	int tr = SettingStore::get("bar_max_in"); // TODO: use "bar_max_out" as well
 	return tr * 1024 / 8; // recalculate from kBit/s to Bytes/s
 }
 

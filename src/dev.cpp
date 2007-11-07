@@ -16,10 +16,10 @@
  ***************************************************************************/
 
 #include "dev.h"
-
 #include "graph.h"
+#include "setting.h"
+#include "settingstore.h"
 #include "window.h"
-#include "options.h"
 
 Dev::Dev() : Proc::Proc()
 {
@@ -30,11 +30,7 @@ Dev::Dev() : Proc::Proc()
 		traffic_graph[i] = new Graph();
 	}
 	
-	setHideGraphs(0);
-	
 	setProcDev(STANDARD_NETWORK_DEVICE);
-	
-	setStatusFormat(0, 0);
 	
 	setDeviceNumber(0);
 	setTotalNumberOfDevices(0);
@@ -108,8 +104,11 @@ void Dev::print(Window& window)
 	for(int i = 0; i < window.width(); i++)
 		window.print('=');
 	
+    Status::status_format trafficFormat = (Status::status_format) ((int) SettingStore::get("traffic_format"));
+    Status::status_format dataFormat = (Status::status_format) ((int) SettingStore::get("data_format"));
+
 	// if graphs should be hidden ...
-	if(hideGraphs())
+	if(SettingStore::get("multiple_devices"))
 	{
 		window.print("Incoming:");
 		window.setX(window.width() / 2);
@@ -117,8 +116,8 @@ void Dev::print(Window& window)
 		
 		int status_y = window.y();
 		
-		device_status[0]->print(window, 0, status_y, trafficFormat(), dataFormat()); // incoming traffic
-		device_status[1]->print(window, window.width() / 2, status_y, trafficFormat(), dataFormat()); // outgoing traffic
+		device_status[0]->print(window, 0, status_y, trafficFormat, dataFormat); // incoming traffic
+		device_status[1]->print(window, window.width() / 2, status_y, trafficFormat, dataFormat); // outgoing traffic
 		
 		window.print('\n');
 	}
@@ -132,7 +131,7 @@ void Dev::print(Window& window)
 		traffic_graph[0]->setHeightOfBars((window.height() - window.y() - 1) / 2);
 		traffic_graph[0]->print(window, 0, window.y());
 		
-		device_status[0]->print(window, window.width() * 2 / 3 + 2, window.y() - 5, trafficFormat(), dataFormat());
+		device_status[0]->print(window, window.width() * 2 / 3 + 2, window.y() - 5, trafficFormat, dataFormat);
 		
 		// outgoing traffic
 		window.print("Outgoing:\n");
@@ -141,36 +140,8 @@ void Dev::print(Window& window)
 		traffic_graph[1]->setHeightOfBars(window.height() - window.y());
 		traffic_graph[1]->print(window, 0, window.y());
 		
-		device_status[1]->print(window, window.width() * 2 / 3 + 2, window.y() - 4, trafficFormat(), dataFormat());
+		device_status[1]->print(window, window.width() * 2 / 3 + 2, window.y() - 4, trafficFormat, dataFormat);
 	}
-}
-
-// sets if the graphs should be shown or not
-void Dev::setHideGraphs(OptionBool* new_hidegraphs)
-{
-	m_hidegraphs = new_hidegraphs;
-}
-
-// set the in- and outcoming graphs' averagesmoothness
-void Dev::setAverageSmoothness(OptionInt* new_averagesmoothness)
-{
-	for(int i = 0; i < 2; i++)
-		device_status[i]->setAverageSmoothness(new_averagesmoothness);
-}
-
-// set the graphs' max deflection (max traffic level)
-void Dev::setTrafficWithMaxDeflectionOfGraphs(OptionLong* new_trafficinwithmaxdeflectionofgraphs, OptionLong* new_trafficoutwithmaxdeflectionofgraphs )
-{
-	for(int i = 0; i < 2; i++)
-		switch(i)
-		{
-			case 0:
-				traffic_graph[i]->setTrafficWithMaxDeflectionOfBars(new_trafficinwithmaxdeflectionofgraphs);
-				break;
-			case 1:
-				traffic_graph[i]->setTrafficWithMaxDeflectionOfBars(new_trafficoutwithmaxdeflectionofgraphs);
-				break;
-		}
 }
 
 // set the number identifying the device (for display only)
@@ -183,27 +154,5 @@ void Dev::setDeviceNumber(int new_devicenumber)
 void Dev::setTotalNumberOfDevices(int new_totalnumberofdevices)
 {
 	m_totalnumberofdevices = new_totalnumberofdevices;
-}
-
-// set the display format (unit) for traffic and data numbers
-void Dev::setStatusFormat(OptionStatusFormat* new_trafficformat, OptionStatusFormat* new_dataformat)
-{
-	m_trafficformat = new_trafficformat;
-	m_dataformat = new_dataformat;
-}
-
-bool Dev::hideGraphs()
-{
-	return m_hidegraphs ? (bool) *m_hidegraphs : STANDARD_HIDE_GRAPHS;
-}
-
-Status::status_format Dev::trafficFormat()
-{
-	return m_trafficformat ? (Status::status_format) *m_trafficformat : STANDARD_TRAFFIC_FORMAT;
-}
-
-Status::status_format Dev::dataFormat()
-{
-	return m_dataformat ? (Status::status_format) *m_dataformat : STANDARD_DATA_FORMAT;
 }
 

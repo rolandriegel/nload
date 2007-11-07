@@ -20,8 +20,10 @@
 
 #include <curses.h>
 #include <form.h>
-#include <vector>
+
 #include <list>
+#include <string>
+#include <vector>
 
 class Window;
 class SubWindow;
@@ -30,51 +32,43 @@ class Form;
 class Field
 {
     public:
-
         Field(int x, int y, int width, int height);
         ~Field();
 
-        void setBuffer(const char* new_buffer);
-        const char* buffer();
+        void setText(const std::string& text);
+        std::string getText();
         
         void move(int x, int y);
         
         void setVisible(bool new_visible);
-        bool visible();
+        bool isVisible();
         
         void setEnabled(bool new_enabled);
-        bool enabled();
+        bool isEnabled();
         
         void setIntegerField(int min, int max);
-        void setEnumField(const char* elements[]);
+        void setEnumField(const std::vector<std::string>& elements);
         
         void setFixed(bool new_fixed);
-        bool fixed();
+        bool isFixed();
         
-        void setBlankWithFirstChar(bool new_blankwithfirstchar);
-        bool blankWithFirstChar();
-        
-        void setAutoSkip(bool new_autoskip);
-        bool autoSkip();
-        
-        void setValidateBlank(bool new_validateblank);
-        bool validateBlank();
-        
-        void setNewPage(bool new_newpage);
-        bool newPage();
+        void setFirstOnPage(bool new_newpage);
+        bool isFirstOnPage();
         
         friend bool operator==(const Field& field1, const Field& field2);
         friend bool operator==(const Field& field1, const FIELD* field2);
         
     private:
         friend class Form;
+
         FIELD* m_field;
+        std::vector<std::string> m_enumElements;
+        const char** m_enumElementsArray;
 };
 
 class Form
 {
     public:
-        
         class Slots
         {
             public:
@@ -90,24 +84,27 @@ class Form
         
         void show(Window* main_window, SubWindow* sub_window);
         void hide();
-        bool visible();
-        
+
         void processKey(int key);
         
-        int page();
-        int countPages();
+        bool isVisible();
+        
+        int getPage();
+        int getPageCount();
         
     private:
-        
-        static void fieldChanged(FORM* form);
-        static std::list<Form *> m_instances;
         Slots* m_slots;
         
         FORM* m_form;
-        std::vector<Field *> m_fields;
         FIELD** m_curses_fields;
+        std::vector<Field *> m_fields;
+
         bool m_visible;
         
+        static std::list<Form *> m_instances;
+        
+        static void fieldChanged(FORM* form);
 };
 
 #endif
+

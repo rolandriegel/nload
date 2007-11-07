@@ -1,8 +1,8 @@
 /***************************************************************************
-                               optionbase.cpp
+                              settingstore.cpp
                              -------------------
-    begin                : Sun Jan 20 2002
-    copyright            : (C) 2002 - 2007 by Roland Riegel
+    begin                : Tue Nov 06 2007
+    copyright            : (C) 2007 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -15,46 +15,35 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "optionbase.h"
-#include "form_field.h"
+#include "setting.h"
+#include "settingstore.h"
 
 using namespace std;
 
-OptionBase::OptionBase(string new_description)
- : m_label_field(0)
+map<string, Setting> SettingStore::m_settings;
+
+Setting& SettingStore::get(const string& key)
 {
-	m_description = new_description;
+    return m_settings[key];
 }
 
-OptionBase::~OptionBase()
+void SettingStore::add(const Setting& setting)
 {
-	if(m_label_field)
-		delete m_label_field;
+    m_settings[setting.getId()] = setting;
 }
 
-void OptionBase::setDescription(string new_description)
+void SettingStore::remove(const string& key)
 {
-	m_description = new_description;
+    m_settings.erase(key);
 }
 
-string OptionBase::description() const
+bool SettingStore::exists(const string& key)
 {
-	return m_description;
+    return m_settings.find(key) != m_settings.end();
 }
 
-Field* OptionBase::labelField(int x, int y, int width, int height)
+map<std::string, Setting>& SettingStore::getAll()
 {
-	if(x < 0 || y < 0)
-        return m_label_field;
-	if(width < 1 || height < 1)
-        return m_label_field;
-
-	if(m_label_field)
-		delete m_label_field;
-	
-	m_label_field = new Field(x, y, width, height);
-	m_label_field->setEnabled(false);
-	m_label_field->setBuffer((m_description + ":").c_str());
-	
-	return m_label_field;
+    return m_settings;
 }
+

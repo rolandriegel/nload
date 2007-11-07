@@ -15,16 +15,16 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "setting.h"
+#include "settingstore.h"
 #include "status.h"
 #include "window.h"
-#include "options.h"
 
 using namespace std;
 
 Status::Status()
 {
 	m_min = m_max = m_cur = m_total = 0;
-	m_averagesmoothness = 0;
 }
 
 Status::~Status()
@@ -176,15 +176,10 @@ void Status::minMax(unsigned long new_value)
 	
 }
 
-// set the "reaction time" to the current traffic situation of the average values
-void Status::setAverageSmoothness(OptionInt* new_averagesmoothness)
-{
-	m_averagesmoothness = new_averagesmoothness;
-}
-
 // put new value into average calculation
 void Status::updateAverage(unsigned long new_value)
 {
+    unsigned int averageSmoothness = SettingStore::get("average_smoothness");
 	
 	/*
 	 * average calculation is not very good at the moment as it is dependent
@@ -196,7 +191,7 @@ void Status::updateAverage(unsigned long new_value)
 	
 	// limit value count dependent of the average smoothness
 	// ranges between 1 * 45 and 9 * 45 single values
-	while(m_average_values.size() > (unsigned int) *m_averagesmoothness * 45)
+	while(m_average_values.size() > averageSmoothness * 45)
 	{
 		m_average_values.pop_back();
 	}
@@ -219,6 +214,6 @@ unsigned long Status::calcAverage()
 
 int Status::averageSmoothness()
 {
-	int avg_smooth =  m_averagesmoothness ? (int) *m_averagesmoothness : STANDARD_AVERAGE_SMOOTHNESS;
+	int avg_smooth = SettingStore::get("average_smoothness");
 	return avg_smooth > 9 ? 9 : (avg_smooth < 1 ? 1 : avg_smooth);
 }
