@@ -8,13 +8,13 @@ nload \- displays the current network usage
 
 .SH SYNOPSIS
 .B nload
+.RB [ \-a
+.IR period ]
 .RB [ \-i
 .IR max_scaling ]
 .RB [ \-m ]
 .RB [ \-o
 .IR max_scaling ]
-.RB [ \-s
-.IR smoothness ]
 .RB [ \-t
 .IR interval ]
 .RB [ \-u
@@ -53,6 +53,10 @@ A summary of the options supported by
 is included below.
 
 .TP
+.B \-a period
+Sets the length in seconds of the time window for average calculation.
+The default is 300.
+.TP
 .B \-i max_scaling
 Specifies the 100% mark in kBit/s of the graph indicating the incoming bandwidth usage.
 Ignored if max_scaling is 0 or the switch -m is given. The default value for max_scaling
@@ -63,11 +67,6 @@ Show multiple devices at a time; do not show the traffic graphs.
 .TP
 .B \-o max_scaling
 Same as -i but for the graph indicating the outgoing bandwidth usage.
-.TP
-.B \-s smoothness
-Sets the "smoothness" of the average in/out values.
-A value of 1 means little smoothness (average over a short period of time), a value of 9
-means high smoothness (average over a long period of time). The default is 9.
 .TP
 .B \-t interval
 Determines the refresh interval of the display in milliseconds.

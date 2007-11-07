@@ -99,7 +99,7 @@ void Status::print(Window& window, int x, int y, status_format traff_format, sta
 void Status::resetTrafficData()
 {
     m_cur = m_min = m_max = m_total = 0;
-    m_average_values.clear();
+    m_averageValues.clear();
 }
 
 // determine the matching unit string, e.g. "kBit" for status_format::kilobit, and
@@ -179,41 +179,32 @@ void Status::minMax(unsigned long new_value)
 // put new value into average calculation
 void Status::updateAverage(unsigned long new_value)
 {
-    unsigned int averageSmoothness = SettingStore::get("average_smoothness");
+    // calculate number of values within average window
+    unsigned int averageWindow = SettingStore::get("average_window");
+    unsigned int sleepTime = SettingStore::get("sleep_interval");
+    unsigned int averageCount = 1000.0 / sleepTime * averageWindow;
+    if(averageCount < 1)
+        averageCount = 1;
     
-    /*
-     * average calculation is not very good at the moment as it is dependent
-     * from the display refresh interval.
-     * could need some help here.
-     */
+    // put new value into window
+    m_averageValues.push_front(new_value);
     
-    m_average_values.push_front(new_value);
-    
-    // limit value count dependent of the average smoothness
-    // ranges between 1 * 45 and 9 * 45 single values
-    while(m_average_values.size() > averageSmoothness * 45)
-    {
-        m_average_values.pop_back();
-    }
+    // limit value count dependent of the average window
+    while(m_averageValues.size() > averageCount)
+        m_averageValues.pop_back();
     
 }
 
 // calculate current average
 unsigned long Status::calcAverage()
 {
-    if(m_average_values.size() == 0) return 0;
+    unsigned int averageCount = m_averageValues.size();
 
-    unsigned long sum = 0;
-    for(list<unsigned long>::const_iterator i = m_average_values.begin(); i != m_average_values.end(); i++)
-    {
-        sum += (*i);
-    }
+    // calculate average
+    float average = 0;
+    for(list<unsigned long>::const_iterator itAvg = m_averageValues.begin(); itAvg != m_averageValues.end(); ++itAvg)
+        average += (float) *itAvg / averageCount;
     
-    return sum / m_average_values.size();
+    return average;
 }
 
-int Status::averageSmoothness()
-{
-    int avg_smooth = SettingStore::get("average_smoothness");
-    return avg_smooth > 9 ? 9 : (avg_smooth < 1 ? 1 : avg_smooth);
-}

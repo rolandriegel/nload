@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     SettingStore::add(Setting("multiple_devices", "Show multiple devices", STANDARD_HIDE_GRAPHS));
     SettingStore::add(Setting("bar_max_in", "Max Incoming deflection (kBit/s)", STANDARD_MAX_DEFLECTION));
     SettingStore::add(Setting("bar_max_out", "Max Outgoing deflection (kBit/s)", STANDARD_MAX_DEFLECTION));
-    SettingStore::add(Setting("average_smoothness", "Smoothness of average", STANDARD_AVERAGE_SMOOTHNESS));
+    SettingStore::add(Setting("average_window", "Window length for average (s)", STANDARD_AVERAGE_WINDOW));
     SettingStore::add(Setting("traffic_format", "Unit for traffic numbers", STANDARD_TRAFFIC_FORMAT));
     SettingStore::add(Setting("data_format", "Unit for data numbers", STANDARD_DATA_FORMAT));
 
@@ -87,11 +87,31 @@ int main(int argc, char *argv[])
     // parse the command line
     for(int i = 1; i < argc; i++)
     {
-        // wants the user help?
+        // does the user want help?
         if(strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0)
         {
             printhelp();
             exit(0);
+        }
+        // has the user set a non-default average time window?
+        else if(strcmp(argv[i], "-a") == 0)
+        {
+            Setting& setting = SettingStore::get("average_window");
+            
+            if(i < argc - 1 && isdigit(argv[ i + 1 ][0]) != 0)
+            {
+                setting = atoi(argv[ i + 1 ]);
+                if(setting < 1)
+                    setting = STANDARD_AVERAGE_WINDOW;
+
+                i++;
+            }
+            else
+            {
+                fprintf(stderr, "Wrong argument for the -a parameter.\n\n");
+                printhelp();
+                exit(1);
+            }
         }
         // has the user set a non-default 100% mark for
         // the incoming bandwidth bar?
@@ -154,26 +174,6 @@ int main(int argc, char *argv[])
             else
             {
                 fprintf(stderr, "Wrong argument for the -t parameter.\n\n");
-                printhelp();
-                exit(1);
-            }
-        }
-        // has the user set a non-default average smoothness?
-        else if(strcmp(argv[i], "-s") == 0)
-        {
-            Setting& setting = SettingStore::get("average_smoothness");
-            
-            if(i < argc - 1 && isdigit(argv[ i + 1 ][0]) != 0)
-            {
-                setting = atoi(argv[ i + 1 ]);
-                if(setting < 1 || setting > 9)
-                    setting = STANDARD_AVERAGE_SMOOTHNESS;
-
-                i++;
-            }
-            else
-            {
-                fprintf(stderr, "Wrong argument for the -s parameter.\n\n");
                 printhelp();
                 exit(1);
             }
@@ -294,6 +294,10 @@ int main(int argc, char *argv[])
         }
         // obsolete -b option
         else if(strcmp(argv[i], "-b") == 0)
+        {
+        }
+        // obsolete -s option
+        else if(strcmp(argv[i], "-s") == 0)
         {
         }
         // assume unknown parameter to be the network device
@@ -459,31 +463,30 @@ void printhelp()
         "%s --help|-h\n\n"
         
         "Options:\n"
-        "-i max_scaling specifies the 100%% mark in kBit/s of the graph indicating the\n"
-        "       incoming bandwidth usage\n"
-        "       ignored if max_scaling is 0 or the switch -m is given\n"
-        "       default is %d\n"
-        "-m     show multiple devices at a time; do not show the traffic graphs\n"
-        "-o max_scaling same as -i but for the graph indicating the outgoing bandwidth\n"
-        "       usage\n"
-        "       default is %d\n"
-        "-s smoothness  sets the \"smoothness\" of the average in/out values\n"
-        "       1 means little smoothness (average over a short period of time)\n"
-        "       9 means high smoothness (average over a long period of time)\n"
-        "       default is %d\n"
-        "-t intervall   determines the refresh interval of the display in milliseconds\n"
-        "       if 0 print net load only once and exit\n"
-        "       default is %d\n"
-        "-u h|b|k|m|g   sets the type of unit used for the display of traffic numbers\n"
-        "   H|B|K|M|G   h: human readable (auto), b: Bit/s, k: kBit/s, m: MBit/s etc.\n"
-        "       H: human readable (auto), B: Byte/s, K: kByte/s, M: MByte/s etc.\n"
-        "       default is k\n"
-        "-U h|b|k|m|g   same as -u, but for a total amount of data (without \"/s\")\n"
-        "   H|B|K|M|G   default is M\n"
-        "devices        network devices to use\n"
-        "       default is \"%s\"\n"
+        "-a period       Sets the length in seconds of the time window for average\n"
+        "                calculation.\n"
+        "                Default is %d.\n"
+        "-i max_scaling  Specifies the 100%% mark in kBit/s of the graph indicating the\n"
+        "                incoming bandwidth usage. Ignored if max_scaling is 0 or the\n"
+        "                switch -m is given.\n"
+        "                Default is %d.\n"
+        "-m              Show multiple devices at a time; no traffic graphs.\n"
+        "-o max_scaling  Same as -i but for the graph indicating the outgoing bandwidth\n"
+        "                usage.\n"
+        "                Default is %d.\n"
+        "-t interval     Determines the refresh interval of the display in milliseconds.\n"
+        "                If 0 print net load only once and exit.\n"
+        "                Default is %d.\n"
+        "-u h|b|k|m|g    Sets the type of unit used for the display of traffic numbers.\n"
+        "   H|B|K|M|G    h: auto, b: Bit/s, k: kBit/s, m: MBit/s etc.\n"
+        "                H: auto, B: Byte/s, K: kByte/s, M: MByte/s etc.\n"
+        "                Default is k.\n"
+        "-U h|b|k|m|g    Same as -u, but for a total amount of data (without \"/s\").\n"
+        "   H|B|K|M|G    Default is M.\n"
+        "devices         Network devices to use.\n"
+        "                Default is \"%s\".\n"
         "--help\n"
-        "-h     print this help\n\n"
+        "-h              Print this help.\n\n"
         "example: %s -t 200 -s 7 -i 1024 -o 128 -U h eth0 eth1\n\n"
         "The options above can also be changed at run time by pressing the 'o' key.\n\n",
         PACKAGE,
@@ -491,9 +494,9 @@ void printhelp()
         PACKAGE,
         PACKAGE,
         PACKAGE,
+        STANDARD_AVERAGE_WINDOW,
         STANDARD_MAX_DEFLECTION,
         STANDARD_MAX_DEFLECTION,
-        STANDARD_AVERAGE_SMOOTHNESS,
         STANDARD_SLEEP_INTERVAL,
         STANDARD_NETWORK_DEVICE,
         PACKAGE

@@ -39,7 +39,7 @@ template<class T>
 T fromString(const std::string& s)
 {
     std::istringstream stream(s);
-    T t;
+    T t = T();
     stream >> t;
 
     return t;

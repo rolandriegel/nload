@@ -23,7 +23,7 @@
 
 class Window;
 
-#define STANDARD_AVERAGE_SMOOTHNESS 9
+#define STANDARD_AVERAGE_WINDOW 300
 
 class Status
 {
@@ -55,14 +55,12 @@ class Status
         void updateAverage(unsigned long);
         unsigned long calcAverage();
         
-        int averageSmoothness();
-        
         void getUnit(status_format format, long long value, std::string& description, float& factor);
         
         unsigned long m_min, m_max, m_cur;
         long long m_total;
         
-        std::list<unsigned long> m_average_values;
+        std::list<unsigned long> m_averageValues;
 };
 
 #endif
