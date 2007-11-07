@@ -40,6 +40,7 @@
 #include "setting.h"
 #include "settingstore.h"
 
+#include <cstdlib>
 #include <string>
 #include <vector>
 
