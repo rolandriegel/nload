@@ -26,7 +26,6 @@ class Dev;
 class TrafficWindow : public Window
 {
     public:
-        
         TrafficWindow();
         ~TrafficWindow();
         
@@ -37,7 +36,6 @@ class TrafficWindow : public Window
         void setDevices(std::vector<Dev *>&);
         
     private:
-        
         bool showMultipleDevices();
         
         std::vector<Dev *> m_devs;
@@ -46,3 +44,4 @@ class TrafficWindow : public Window
 };
 
 #endif
+

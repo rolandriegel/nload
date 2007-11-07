@@ -20,14 +20,13 @@
 
 class Screen
 {
-public:
-	
-	static int width();
-	static int height();
-	
-	static int x();
-	static int y();
-	
+    public:
+        static int width();
+        static int height();
+        
+        static int x();
+        static int y();
 };
 
 #endif
+

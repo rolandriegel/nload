@@ -33,13 +33,13 @@ class Window;
 #define STANDARD_DATA_FORMAT Status::megabyte
 
 #if defined(HAVE_LINUX)
-	#define STANDARD_NETWORK_DEVICE "eth0"
+    #define STANDARD_NETWORK_DEVICE "eth0"
 #elif defined(HAVE_BSD)
-	#define STANDARD_NETWORK_DEVICE "fxp0"
+    #define STANDARD_NETWORK_DEVICE "fxp0"
 #elif defined(HAVE_SOLARIS)
-	#define STANDARD_NETWORK_DEVICE "hme0"
+    #define STANDARD_NETWORK_DEVICE "hme0"
 #elif defined(HAVE_HPUX)
-	#define STANDARD_NETWORK_DEVICE "lan0"
+    #define STANDARD_NETWORK_DEVICE "lan0"
 #endif
 
 class Dev : public Proc
@@ -62,7 +62,6 @@ class Dev : public Proc
         
         Status* device_status[2];
         Graph* traffic_graph[2];
-        
 };
 
 #endif

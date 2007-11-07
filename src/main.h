@@ -34,3 +34,4 @@ OptWindow m_optwindow;
 TrafficWindow m_mainwindow;
 
 #endif
+

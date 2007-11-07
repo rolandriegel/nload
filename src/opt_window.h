@@ -47,3 +47,4 @@ class OptWindow : public Window, public Form::Slots
 };
 
 #endif
+

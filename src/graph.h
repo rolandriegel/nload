@@ -43,7 +43,6 @@ class Graph
         int m_heightofbars;
         
         std::list<int> m_values;
-        
 };
 
 #endif

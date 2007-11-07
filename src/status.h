@@ -63,7 +63,7 @@ class Status
         long long m_total;
         
         std::list<unsigned long> m_average_values;
-        
 };
 
 #endif
+

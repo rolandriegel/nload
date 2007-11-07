@@ -30,7 +30,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-	#include <config.h>
+    #include <config.h>
 #endif
 
 #include "main.h"
@@ -389,58 +389,58 @@ int main(int argc, char *argv[])
 
 void init()
 {
-	// handle interrrupt signal
-	signal(SIGINT, end);
-	signal(SIGTERM, end);
-	signal(SIGWINCH, terminal_resized);
-	
-	// initialize ncurses
-	initscr();
-	keypad(stdscr, true);
-	nodelay(stdscr, true);
-	noecho();
-	nonl();
-	cbreak();
-	
-	// create main window
-	m_mainwindow.show(0, 0, 0, 0);
+    // handle interrrupt signal
+    signal(SIGINT, end);
+    signal(SIGTERM, end);
+    signal(SIGWINCH, terminal_resized);
+    
+    // initialize ncurses
+    initscr();
+    keypad(stdscr, true);
+    nodelay(stdscr, true);
+    noecho();
+    nonl();
+    cbreak();
+    
+    // create main window
+    m_mainwindow.show(0, 0, 0, 0);
 }
 
 void finish()
 {
-	// destroy main window
-	m_mainwindow.hide();
-	
-	// stop ncurses
-	endwin();
+    // destroy main window
+    m_mainwindow.hide();
+    
+    // stop ncurses
+    endwin();
 }
 
 void end(int signal)
 {
-	finish();
-	
-	vector<Dev *>& devs = m_mainwindow.devices();
-	for(vector<Dev *>::const_iterator i = devs.begin(); i != devs.end(); i++)
-		delete *i;
-	devs.clear();
-	
-	exit(0);
+    finish();
+    
+    vector<Dev *>& devs = m_mainwindow.devices();
+    for(vector<Dev *>::const_iterator i = devs.begin(); i != devs.end(); i++)
+        delete *i;
+    devs.clear();
+    
+    exit(0);
 }
 
 void terminal_resized(int signal)
 {
-	bool optwindow_was_visible = m_optwindow.visible();
+    bool optwindow_was_visible = m_optwindow.visible();
 
-	m_optwindow.hide();
+    m_optwindow.hide();
 
-	finish();	
-	init();
-	
-	if(optwindow_was_visible)
-	{
-		m_mainwindow.resize(0, Screen::height() / 4, Screen::width(), Screen::height() - Screen::height() / 4);
-		m_optwindow.show(0, 0, Screen::width(), Screen::height() / 4);
-	}
+    finish();   
+    init();
+    
+    if(optwindow_was_visible)
+    {
+        m_mainwindow.resize(0, Screen::height() / 4, Screen::width(), Screen::height() - Screen::height() / 4);
+        m_optwindow.show(0, 0, Screen::width(), Screen::height() / 4);
+    }
 }
 
 void printhelp()
@@ -459,31 +459,31 @@ void printhelp()
         "%s --help|-h\n\n"
         
         "Options:\n"
-        "-i max_scaling	specifies the 100%% mark in kBit/s of the graph indicating the\n"
-        "		incoming bandwidth usage\n"
-        "		ignored if max_scaling is 0 or the switch -m is given\n"
-        "		default is %d\n"
-        "-m		show multiple devices at a time; do not show the traffic graphs\n"
-        "-o max_scaling	same as -i but for the graph indicating the outgoing bandwidth\n"
-        "		usage\n"
-        "		default is %d\n"
-        "-s smoothness	sets the \"smoothness\" of the average in/out values\n"
-        "		1 means little smoothness (average over a short period of time)\n"
-        "		9 means high smoothness (average over a long period of time)\n"
-        "		default is %d\n"
-        "-t intervall	determines the refresh interval of the display in milliseconds\n"
-        "		if 0 print net load only once and exit\n"
-        "		default is %d\n"
-        "-u h|b|k|m|g	sets the type of unit used for the display of traffic numbers\n"
-        "   H|B|K|M|G	h: human readable (auto), b: Bit/s, k: kBit/s, m: MBit/s etc.\n"
-        "		H: human readable (auto), B: Byte/s, K: kByte/s, M: MByte/s etc.\n"
-        "		default is k\n"
-        "-U h|b|k|m|g	same as -u, but for a total amount of data (without \"/s\")\n"
-        "   H|B|K|M|G	default is M\n"
-        "devices		network devices to use\n"
-        "		default is \"%s\"\n"
+        "-i max_scaling specifies the 100%% mark in kBit/s of the graph indicating the\n"
+        "       incoming bandwidth usage\n"
+        "       ignored if max_scaling is 0 or the switch -m is given\n"
+        "       default is %d\n"
+        "-m     show multiple devices at a time; do not show the traffic graphs\n"
+        "-o max_scaling same as -i but for the graph indicating the outgoing bandwidth\n"
+        "       usage\n"
+        "       default is %d\n"
+        "-s smoothness  sets the \"smoothness\" of the average in/out values\n"
+        "       1 means little smoothness (average over a short period of time)\n"
+        "       9 means high smoothness (average over a long period of time)\n"
+        "       default is %d\n"
+        "-t intervall   determines the refresh interval of the display in milliseconds\n"
+        "       if 0 print net load only once and exit\n"
+        "       default is %d\n"
+        "-u h|b|k|m|g   sets the type of unit used for the display of traffic numbers\n"
+        "   H|B|K|M|G   h: human readable (auto), b: Bit/s, k: kBit/s, m: MBit/s etc.\n"
+        "       H: human readable (auto), B: Byte/s, K: kByte/s, M: MByte/s etc.\n"
+        "       default is k\n"
+        "-U h|b|k|m|g   same as -u, but for a total amount of data (without \"/s\")\n"
+        "   H|B|K|M|G   default is M\n"
+        "devices        network devices to use\n"
+        "       default is \"%s\"\n"
         "--help\n"
-        "-h		print this help\n\n"
+        "-h     print this help\n\n"
         "example: %s -t 200 -s 7 -i 1024 -o 128 -U h eth0 eth1\n\n"
         "The options above can also be changed at run time by pressing the 'o' key.\n\n",
         PACKAGE,

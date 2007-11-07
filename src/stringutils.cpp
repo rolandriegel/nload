@@ -19,7 +19,7 @@
 
 using namespace std;
 
-std::string trim(const std::string& s)
+string trim(const string& s)
 {
     // find end of whitespace at the beginning
     string::size_type posBegin = s.find_first_not_of(" \011\012\015");

@@ -20,33 +20,33 @@
 
 int Screen::width()
 {
-	int width;
-	int height;
-	getmaxyx(stdscr, height, width);
-	return width;
+    int width;
+    int height;
+    getmaxyx(stdscr, height, width);
+    return width;
 }
 
 int Screen::height()
 {
-	int width;
-	int height;
-	getmaxyx(stdscr, height, width);
-	return height;
+    int width;
+    int height;
+    getmaxyx(stdscr, height, width);
+    return height;
 }
 
 int Screen::x()
 {
-	int x;
-	int y;
-	getyx(stdscr, y, x);
-	return x;
+    int x;
+    int y;
+    getyx(stdscr, y, x);
+    return x;
 }
 
 int Screen::y()
 {
-	int x;
-	int y;
-	getyx(stdscr, y, x);
-	return y;
+    int x;
+    int y;
+    getyx(stdscr, y, x);
+    return y;
 }
 
