@@ -19,9 +19,10 @@
 #define TRAFFIC_WINDOW_H
 
 #include "window.h"
+
 #include <vector>
 
-class Dev;
+class Device;
 
 class TrafficWindow : public Window
 {
@@ -32,15 +33,14 @@ class TrafficWindow : public Window
         void processKey(int key);
         void print();
         
-        std::vector<Dev *>& devices();
-        void setDevices(std::vector<Dev *>&);
+        std::vector<Device*>& devices();
         
     private:
         bool showMultipleDevices();
         
-        std::vector<Dev *> m_devs;
+        std::vector<Device*> m_devices;
         
-        int m_cur_dev;
+        int m_curDev;
 };
 
 #endif

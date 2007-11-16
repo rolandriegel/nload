@@ -26,12 +26,9 @@ int main(int argc, char *argv[]);
 void init();
 void finish();
 void end(int signal = 0);
-void terminal_resized(int signal);
+void terminalResized(int signal);
 
-void printhelp();
-
-OptWindow m_optwindow;
-TrafficWindow m_mainwindow;
+void printHelp(bool error);
 
 #endif
 

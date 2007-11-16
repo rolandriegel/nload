@@ -23,8 +23,8 @@
 using namespace std;
 
 Graph::Graph()
+    : m_heightOfBars(5), m_maxDeflection(10 * 1024 * 1024 / 8)
 {
-    m_heightofbars = 0;
 }
 
 Graph::~Graph()
@@ -32,34 +32,34 @@ Graph::~Graph()
 }
 
 // sets the number of the graph's vertical #-bars
-void Graph::setNumOfBars(int new_numofbars)
+void Graph::setNumOfBars(unsigned int numOfBars)
 {
-    // logically wrong: number of #-bars has always to be positive
-    if(new_numofbars <= 0)
-        return;
-    
     // vertically resize the graph's value list
-    m_values.resize(new_numofbars);
+    m_values.resize(numOfBars);
 }
 
 // sets the height of the graph's vertical #-bars
-void Graph::setHeightOfBars(int new_heightofbars)
+void Graph::setHeightOfBars(unsigned int heightOfBars)
 {
-    m_heightofbars = new_heightofbars;
+    m_heightOfBars = heightOfBars;
+}
+
+void Graph::setMaxDeflection(long long maxDeflection)
+{
+    m_maxDeflection = maxDeflection;
 }
 
 // new traffic measurement has been made => update the graph's value list
-void Graph::update(int new_value)
+void Graph::update(long long value)
 {
     // [new_value] = Bytes/s
     
-    if(m_values.size() == 0) return;
-    
     // put new value to the beginning of the list, it becomes the first #-bar
-    m_values.push_front(new_value);
-    // delete the last #-bar of the list
-    m_values.pop_back();
-    
+    m_values.push_front(value);
+
+    // delete the last #-bar of the list, but keep at least one
+    if(m_values.size() > 1)
+        m_values.pop_back();
 }
 
 // print the graph with the upper left corner at the coordinates (x, y)
@@ -68,18 +68,18 @@ void Graph::print(Window& window, int x, int y)
     window.setXY(x, y);
     
     // cycle through through the lines
-    for(int l = 0; l < m_heightofbars; l++)
+    for(unsigned int l = 0; l < m_heightOfBars; l++)
     {
         // for each line cycle through the rows
-        for(list<int>::reverse_iterator r = m_values.rbegin(); r != m_values.rend() ; r++)
+        for(list<long long>::reverse_iterator r = m_values.rbegin(); r != m_values.rend() ; r++)
         {
-            int trafficperline = trafficWithMaxDeflectionOfBars() / m_heightofbars;
-            int restoftraffic = ((*r) - (m_heightofbars - l - 1) * trafficperline) % trafficperline;
-            if((float) (*r) / trafficWithMaxDeflectionOfBars() >= (float) (m_heightofbars - l) / m_heightofbars)
+            long long trafficPerLine = m_maxDeflection / m_heightOfBars;
+            long long restOfTraffic = ((*r) - (m_heightOfBars - l - 1) * trafficPerLine) % trafficPerLine;
+            if((float) (*r) / m_maxDeflection >= (float) (m_heightOfBars - l) / m_heightOfBars)
                 window.print('#');
-            else if(restoftraffic >= 0.7 * trafficperline)
+            else if(restOfTraffic >= 0.7 * trafficPerLine)
                 window.print('|');
-            else if(restoftraffic >= 0.3 * trafficperline)
+            else if(restOfTraffic >= 0.3 * trafficPerLine)
                 window.print('.');
             else
                 window.print(' ');
@@ -96,11 +96,5 @@ void Graph::resetTrafficData()
     int size = m_values.size();
     m_values.clear();
     m_values.resize(size);
-}
-
-long Graph::trafficWithMaxDeflectionOfBars()
-{
-    int tr = SettingStore::get("bar_max_in"); // TODO: use "bar_max_out" as well
-    return tr * 1024 / 8; // recalculate from kBit/s to Bytes/s
 }
 

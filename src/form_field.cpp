@@ -133,21 +133,13 @@ bool operator==(const Field& field1, const FIELD* field2)
 }
 
 
-Form::Form(Slots* slots) : m_slots(slots), m_form(0), m_visible(false)
+Form::Form(Slots* slots)
+    : m_slots(slots), m_form(0), m_visible(false)
 {
-    m_instances.push_back(this);
 }
 
 Form::~Form()
 {
-    for(list<Form*>::iterator i = m_instances.begin(); i != m_instances.end(); i++)
-    {
-        if(*i == this)
-        {
-            m_instances.erase(i);
-            break;
-        }
-    }
 }
 
 vector<Field*>& Form::fields()
@@ -175,6 +167,7 @@ void Form::show(Window* main_window, SubWindow* sub_window)
     if(!m_form)
         return;
     
+    set_form_userptr(m_form, this);
     set_form_win(m_form, main_window->m_window);
     set_form_sub(m_form, sub_window->m_window);
     set_field_term(m_form, fieldChanged);
@@ -230,17 +223,15 @@ int Form::getPageCount()
 
 void Form::fieldChanged(FORM* form)
 {
-    for(list<Form*>::iterator i = m_instances.begin(); i != m_instances.end(); i++)
+    Form* f = (Form*) form_userptr(form);
+    if(!f)
+        return;
+
+    if(f->m_slots)
     {
-        if((*i)->m_form == form && (*i)->m_slots)
-        {
-            for(vector<Field*>::const_iterator j = (*i)->m_fields.begin(); j != (*i)->m_fields.end(); j++)
-                if((*j)->m_field == current_field(form))
-                    (*i)->m_slots->slot_fieldChanged(*j);
-            break;
-        }
+        for(vector<Field*>::const_iterator i = f->m_fields.begin(); i != f->m_fields.end(); ++i)
+            if((*i)->m_field == current_field(form))
+                f->m_slots->slot_fieldChanged(*i);
     }
 }
-
-list<Form*> Form::m_instances;
 

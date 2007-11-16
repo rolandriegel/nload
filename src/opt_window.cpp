@@ -46,7 +46,7 @@ void OptWindow::show(int x, int y, int width, int height)
     Window::show(x, y, width, height);
     m_sub_window.show(BORDER_LEFT, BORDER_TOP, width - BORDER_LEFT - BORDER_RIGHT, height - BORDER_TOP - BORDER_BOTTOM);
     
-    const int field_width = m_sub_window.width() / 2;
+    const int field_width = m_sub_window.getWidth() / 2;
     int line = 0;
 
     map<string, Setting>& settings = SettingStore::getAll();
@@ -80,7 +80,7 @@ void OptWindow::show(int x, int y, int width, int height)
         }
         
         ++line;
-        line %= m_sub_window.height() < 1 ? 1 : m_sub_window.height();
+        line %= m_sub_window.getHeight() < 1 ? 1 : m_sub_window.getHeight();
     }
     
     m_form.show(this, &m_sub_window);
@@ -181,12 +181,12 @@ void OptWindow::processKey(int request)
 void OptWindow::refresh()
 {
     print("Options:\n", 0, 0);
-    for(int x = 0; x < width(); x++)
+    for(int x = 0; x < getWidth(); x++)
         print('=');
     
     char fText[40] = "";
     sprintf(fText, " <-- (-) page %i/%i (+) --> ", m_form.getPage() + 1, m_form.getPageCount());
-    print(fText, width() - strlen(fText) - 1, 1);
+    print(fText, getWidth() - strlen(fText) - 1, 1);
     
     wrefresh(m_window);
     m_sub_window.refresh();

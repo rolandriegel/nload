@@ -27,27 +27,42 @@ AC_PROG_GCC_TRADITIONAL
 AC_PROG_INSTALL
 
 dnl System dependant jobs
+AM_CONDITIONAL(HAVE_LINUX, false)
+AM_CONDITIONAL(HAVE_BSD, false)
+AM_CONDITIONAL(HAVE_SOLARIS, false)
+AM_CONDITIONAL(HAVE_HPUX, false)
 case $host_os in
     *linux*)
         AC_DEFINE(HAVE_LINUX, 1, [Define to 1 if your build target is Linux.])
+        AM_CONDITIONAL(HAVE_LINUX, true)
+
         AC_CHECK_FUNCS([memset])
         ;;
     *bsd*)
         AC_DEFINE(HAVE_BSD, 1, [Define to 1 if your build target is BSD.])
+        AM_CONDITIONAL(HAVE_BSD, true)
+        
         AC_FUNC_MALLOC
         ;;
     *solaris*)
+        AC_DEFINE(HAVE_SOLARIS, 1, [Define to 1 if your build target is Solaris.])
+        AM_CONDITIONAL(HAVE_SOLARIS, true)
+        
         AC_CHECK_LIB(rt, main)
         AC_CHECK_LIB(kstat, kstat_open)
         AC_CHECK_LIB(socket, main)
         AC_CHECK_LIB(nsl, main)
-        AC_DEFINE(HAVE_SOLARIS, 1, [Define to 1 if your build target is Solaris.])
+        
+        INCLUDES="${INCLUDES} -I/usr/local/include/ncurses"
+        AC_SUBST(INCLUDES)
         ;;
     *hpux*)
+        AC_DEFINE(HAVE_HPUX, 1, [Define to 1 if your build target is HP-UX.])
+        AM_CONDITIONAL(HAVE_HPUX, true)
+        
     	INCLUDES="${INCLUDES} -I/usr/local/include/ncurses"
     	LIBS="-L/usr/local/lib ${LIBS}"
     	AC_SUBST(INCLUDES)
-        AC_DEFINE(HAVE_HPUX, 1, [Define to 1 if your build target is HP-UX.])
         ;;
     *)
         AC_MSG_ERROR([nload does not support this operating system!])

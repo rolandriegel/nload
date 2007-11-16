@@ -1,0 +1,236 @@
+/***************************************************************************
+                                  dev.cpp
+                             -------------------
+    begin                : Wed Aug 1 2001
+    copyright            : (C) 2001 - 2007 by Roland Riegel
+    email                : feedback@roland-riegel.de
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#include "device.h"
+#include "devreader.h"
+#include "graph.h"
+#include "setting.h"
+#include "settingstore.h"
+#include "window.h"
+
+using namespace std;
+
+Device::Device(DevReader& devReader)
+    : m_deviceNumber(0), m_totalNumberOfDevices(0), m_devReader(devReader)
+{
+}
+
+Device::~Device()
+{
+}
+
+// update the device's data
+void Device::update()
+{
+    // read current traffic
+    DataFrame dataFrame = m_devReader.getNewDataFrame();
+
+    if(dataFrame.isValid())
+    {
+        /* Depending on the CPU architecture and the OS interface
+         * used for reading the device statistics, the counts can
+         * overflow. We monitor the overflows and fix them.
+         */
+        fixOverflows(dataFrame, m_dataFrameOld);
+
+        m_deviceStatistics.insertDataFrame(dataFrame);
+
+        m_deviceGraphIn.update(m_deviceStatistics.getDataInPerSecond());
+        m_deviceGraphOut.update(m_deviceStatistics.getDataOutPerSecond());
+
+        m_dataFrameOld = dataFrame;
+    }
+    else
+    {
+        m_deviceStatistics.reset();
+        m_deviceGraphIn.resetTrafficData();
+        m_deviceGraphOut.resetTrafficData();
+    }
+}
+
+// print the device's data
+void Device::print(Window& window)
+{
+    char fText[100] = "";
+    
+    // if device does not exist
+    if(!m_deviceStatistics.isValid())
+    {
+        // ... print warning message ...
+        sprintf(fText, "Device %s (%i/%i): does not exist\n", m_devReader.getDeviceName().c_str(), m_deviceNumber + 1, m_totalNumberOfDevices);
+        window.print(fText);
+        for(int i = 0; i < window.getWidth(); i++)
+            window.print('=');
+        window.print('\n');
+        
+        // ... and exit
+        return;
+    }
+    
+    // print header
+    string ip4 = m_dataFrameOld.getIpV4();
+    if(!ip4.empty())
+        sprintf(fText, "Device %s [%s] (%i/%i):\n", m_devReader.getDeviceName().c_str(), ip4.c_str(), m_deviceNumber + 1, m_totalNumberOfDevices);
+    else
+        sprintf(fText, "Device %s (%i/%i):\n", m_devReader.getDeviceName().c_str(), m_deviceNumber + 1, m_totalNumberOfDevices);
+    window.print(fText);
+    for(int i = 0; i < window.getWidth(); i++)
+        window.print('=');
+    
+    // if graphs should be hidden ...
+    if(SettingStore::get("multiple_devices"))
+    {
+        window.print("Incoming:");
+        window.setX(window.getWidth() / 2);
+        window.print("Outgoing:\n");
+        
+        int statusY = window.getY();
+        
+        printStatisticsIn(window, 0, statusY);
+        printStatisticsOut(window, window.getWidth() / 2, statusY);
+        
+        window.print('\n');
+    }
+    // ... or not
+    else
+    {
+        // incoming traffic
+        window.print("Incoming:\n");
+        
+        m_deviceGraphIn.setNumOfBars(window.getWidth() * 2 / 3);
+        m_deviceGraphIn.setHeightOfBars((window.getHeight() - window.getY() - 1) / 2);
+        m_deviceGraphIn.setMaxDeflection((long long) SettingStore::get("bar_max_in") * 1024 / 8);
+        m_deviceGraphIn.print(window, 0, window.getY());
+        
+        printStatisticsIn(window, window.getWidth() * 2 / 3 + 2, window.getY() - 5);
+        
+        // outgoing traffic
+        window.print("Outgoing:\n");
+        
+        m_deviceGraphOut.setNumOfBars(window.getWidth() * 2 / 3);
+        m_deviceGraphOut.setHeightOfBars(window.getHeight() - window.getY());
+        m_deviceGraphOut.setMaxDeflection((long long) SettingStore::get("bar_max_out") * 1024 / 8);
+        m_deviceGraphOut.print(window, 0, window.getY());
+        
+        printStatisticsOut(window, window.getWidth() * 2 / 3 + 2, window.getY() - 4);
+    }
+}
+
+// set the number identifying the device (for display only)
+void Device::setDeviceNumber(int deviceNumber)
+{
+    m_deviceNumber = deviceNumber;
+}
+
+// set the total number of shown devices (for display only)
+void Device::setTotalNumberOfDevices(int totalNumberOfDevices)
+{
+    m_totalNumberOfDevices = totalNumberOfDevices;
+}
+
+void Device::fixOverflows(DataFrame& dataFrame, const DataFrame& dataFrameOld)
+{
+    if(!dataFrame.isValid() || !dataFrameOld.isValid())
+        return;
+
+    dataFrame.setTotalDataIn(fixOverflow(dataFrame.getTotalDataIn(), dataFrameOld.getTotalDataIn()));
+    dataFrame.setTotalDataOut(fixOverflow(dataFrame.getTotalDataOut(), dataFrameOld.getTotalDataOut()));
+    dataFrame.setTotalPacketsIn(fixOverflow(dataFrame.getTotalPacketsIn(), dataFrameOld.getTotalPacketsIn()));
+    dataFrame.setTotalPacketsOut(fixOverflow(dataFrame.getTotalPacketsOut(), dataFrameOld.getTotalPacketsOut()));
+    dataFrame.setTotalErrorsIn(fixOverflow(dataFrame.getTotalErrorsIn(), dataFrameOld.getTotalErrorsIn()));
+    dataFrame.setTotalErrorsOut(fixOverflow(dataFrame.getTotalErrorsOut(), dataFrameOld.getTotalErrorsOut()));
+    dataFrame.setTotalDropsIn(fixOverflow(dataFrame.getTotalDropsIn(), dataFrameOld.getTotalDropsIn()));
+    dataFrame.setTotalDropsOut(fixOverflow(dataFrame.getTotalDropsOut(), dataFrameOld.getTotalDropsOut()));
+}
+
+long long Device::fixOverflow(long long value, long long valueOld)
+{
+    if(value > UINT_MAX)
+        return value;
+
+    if(value < (valueOld % UINT_MAX))
+        // overflow happend (again)
+        return ((valueOld / UINT_MAX) + 1) * UINT_MAX + value;
+
+    // no overflow happend, keep previous ones
+    return (valueOld / UINT_MAX) * UINT_MAX + value;
+}
+
+void Device::printTrafficValue(Window& window, int x, int y, const std::string& description, long long value)
+{
+    Statistics::dataUnit trafficFormat = (Statistics::dataUnit) ((int) SettingStore::get("traffic_format"));
+
+    string unitString = Statistics::getUnitString(trafficFormat, value);
+    float unitFactor = Statistics::getUnitFactor(trafficFormat, value);
+
+    char fText[100] = "";
+    sprintf(fText, "%s: %.2f %s/s\n", description.c_str(), (float) value / unitFactor, unitString.c_str());
+
+    window.setXY(x, y);
+    window.print(fText);
+}
+
+void Device::printDataValue(Window& window, int x, int y, const std::string& description, long long value)
+{
+    Statistics::dataUnit dataFormat = (Statistics::dataUnit) ((int) SettingStore::get("data_format"));
+
+    string unitString = Statistics::getUnitString(dataFormat, value);
+    float unitFactor = Statistics::getUnitFactor(dataFormat, value);
+
+    char fText[100] = "";
+    sprintf(fText, "%s: %.2f %s\n", description.c_str(), (float) value / unitFactor, unitString.c_str());
+
+    window.setXY(x, y);
+    window.print(fText);
+}
+
+void Device::printStatisticsIn(Window& window, int x, int y)
+{
+    // print current traffic
+    printTrafficValue(window, x, y, "Curr", m_deviceStatistics.getDataInPerSecond());
+    
+    // print average traffic
+    printTrafficValue(window, x, y + 1, "Avg", m_deviceStatistics.getDataInAverage());
+    
+    // print min traffic since nload start
+    printTrafficValue(window, x, y + 2, "Min", m_deviceStatistics.getDataInMin());
+    
+    // print max traffic since nload start
+    printTrafficValue(window, x, y + 3, "Max", m_deviceStatistics.getDataInMax());
+    
+    // print total traffic since last system reboot
+    printDataValue(window, x, y + 4, "Ttl", m_deviceStatistics.getDataInTotal());
+}
+
+void Device::printStatisticsOut(Window& window, int x, int y)
+{
+    // print current traffic
+    printTrafficValue(window, x, y, "Curr", m_deviceStatistics.getDataOutPerSecond());
+    
+    // print average traffic
+    printTrafficValue(window, x, y + 1, "Avg", m_deviceStatistics.getDataOutAverage());
+    
+    // print min traffic since nload start
+    printTrafficValue(window, x, y + 2, "Min", m_deviceStatistics.getDataOutMin());
+    
+    // print max traffic since nload start
+    printTrafficValue(window, x, y + 3, "Max", m_deviceStatistics.getDataOutMax());
+    
+    // print total traffic since last system reboot
+    printDataValue(window, x, y + 4, "Ttl", m_deviceStatistics.getDataOutTotal());
+}
+

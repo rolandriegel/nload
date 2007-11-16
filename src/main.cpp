@@ -33,14 +33,17 @@
     #include <config.h>
 #endif
 
-#include "main.h"
+#include "device.h"
+#include "devreader.h"
+#include "devreaderfactory.h"
 #include "graph.h"
-#include "dev.h"
+#include "main.h"
 #include "screen.h"
 #include "setting.h"
 #include "settingstore.h"
 
 #include <cstdlib>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -49,7 +52,17 @@
 #include <curses.h>
 #include <signal.h>
 
+#define STANDARD_AVERAGE_WINDOW 300
+#define STANDARD_DATA_FORMAT Statistics::megaByte
+#define STANDARD_HIDE_GRAPHS false
+#define STANDARD_MAX_DEFLECTION 10240
+#define STANDARD_SLEEP_INTERVAL 500
+#define STANDARD_TRAFFIC_FORMAT Statistics::kiloBit
+
 using namespace std;
+
+static OptWindow m_optWindow;
+static TrafficWindow m_mainWindow;
 
 int main(int argc, char *argv[])
 {
@@ -68,21 +81,21 @@ int main(int argc, char *argv[])
     SettingStore::get("multiple_devices").setValueMapping(valueMapping);
     valueMapping.clear();
 
-    valueMapping[toString(Status::human_readable_bit)] = "Human Readable (Bit)";
-    valueMapping[toString(Status::human_readable_byte)] = "Human Readable (Byte)";
-    valueMapping[toString(Status::bit)] = "Bit";
-    valueMapping[toString(Status::byte)] = "Byte";
-    valueMapping[toString(Status::kilobit)] = "kBit";
-    valueMapping[toString(Status::kilobyte)] = "kByte";
-    valueMapping[toString(Status::megabit)] = "MBit";
-    valueMapping[toString(Status::megabyte)] = "MByte";
-    valueMapping[toString(Status::gigabit)] = "GBit";
-    valueMapping[toString(Status::gigabyte)] = "GByte";
+    valueMapping[toString(Statistics::humanReadableBit)] = "Human Readable (Bit)";
+    valueMapping[toString(Statistics::humanReadableByte)] = "Human Readable (Byte)";
+    valueMapping[toString(Statistics::bit)] = "Bit";
+    valueMapping[toString(Statistics::byte)] = "Byte";
+    valueMapping[toString(Statistics::kiloBit)] = "kBit";
+    valueMapping[toString(Statistics::kiloByte)] = "kByte";
+    valueMapping[toString(Statistics::megaBit)] = "MBit";
+    valueMapping[toString(Statistics::megaByte)] = "MByte";
+    valueMapping[toString(Statistics::gigaBit)] = "GBit";
+    valueMapping[toString(Statistics::gigaByte)] = "GByte";
     SettingStore::get("traffic_format").setValueMapping(valueMapping);
     SettingStore::get("data_format").setValueMapping(valueMapping);
     valueMapping.clear();
 
-    vector<string *> network_device;
+    list<string> devicesRequested;
     bool print_only_once = false;
 
     // parse the command line
@@ -91,7 +104,7 @@ int main(int argc, char *argv[])
         // does the user want help?
         if(strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0)
         {
-            printhelp();
+            printHelp(false);
             exit(0);
         }
         // has the user set a non-default average time window?
@@ -109,8 +122,8 @@ int main(int argc, char *argv[])
             }
             else
             {
-                fprintf(stderr, "Wrong argument for the -a parameter.\n\n");
-                printhelp();
+                cerr << "Wrong argument for the -a parameter." << endl;
+                printHelp(true);
                 exit(1);
             }
         }
@@ -130,8 +143,8 @@ int main(int argc, char *argv[])
             }
             else
             {
-                fprintf(stderr, "Wrong argument for the -i parameter.\n\n");
-                printhelp();
+                cerr << "Wrong argument for the -i parameter." << endl;
+                printHelp(true);
                 exit(1);
             }
         }
@@ -151,8 +164,8 @@ int main(int argc, char *argv[])
             }
             else
             {
-                fprintf(stderr, "Wrong argument for the -o parameter.\n\n");
-                printhelp();
+                cerr << "Wrong argument for the -o parameter." << endl;
+                printHelp(true);
                 exit(1);
             }
         }
@@ -174,8 +187,8 @@ int main(int argc, char *argv[])
             }
             else
             {
-                fprintf(stderr, "Wrong argument for the -t parameter.\n\n");
-                printhelp();
+                cerr << "Wrong argument for the -t parameter." << endl;
+                printHelp(true);
                 exit(1);
             }
         }
@@ -189,38 +202,38 @@ int main(int argc, char *argv[])
                 switch(argv[ i + 1 ][0])
                 {
                     case 'H':
-                        setting = Status::human_readable_byte;
+                        setting = Statistics::humanReadableByte;
                         break;
                     case 'h':
-                        setting = Status::human_readable_bit;
+                        setting = Statistics::humanReadableBit;
                         break;
                     case 'B':
-                        setting = Status::byte;
+                        setting = Statistics::byte;
                         break;
                     case 'b':
-                        setting = Status::bit;
+                        setting = Statistics::bit;
                         break;
                     case 'K':
-                        setting = Status::kilobyte;
+                        setting = Statistics::kiloByte;
                         break;
                     case 'k':
-                        setting = Status::kilobit;
+                        setting = Statistics::kiloBit;
                         break;
                     case 'M':
-                        setting = Status::megabyte;
+                        setting = Statistics::megaByte;
                         break;
                     case 'm':
-                        setting = Status::megabit;
+                        setting = Statistics::megaBit;
                         break;
                     case 'G':
-                        setting = Status::gigabyte;
+                        setting = Statistics::gigaByte;
                         break;
                     case 'g':
-                        setting = Status::gigabit;
+                        setting = Statistics::gigaBit;
                         break;
                     default:
-                        fprintf(stderr, "Wrong argument for the -u parameter.\n\n");
-                        printhelp();
+                        cerr << "Wrong argument for the -u parameter." << endl;
+                        printHelp(true);
                         exit(1);
                 }
 
@@ -228,8 +241,8 @@ int main(int argc, char *argv[])
             }
             else
             {
-                fprintf(stderr, "Wrong argument for the -u parameter.\n\n");
-                printhelp();
+                cerr << "Wrong argument for the -u parameter." << endl;
+                printHelp(true);
                 exit(1);
             }
         }
@@ -243,38 +256,38 @@ int main(int argc, char *argv[])
                 switch(argv[ i + 1 ][0])
                 {
                     case 'H':
-                        setting = Status::human_readable_byte;
+                        setting = Statistics::humanReadableByte;
                         break;
                     case 'h':
-                        setting = Status::human_readable_bit;
+                        setting = Statistics::humanReadableBit;
                         break;
                     case 'B':
-                        setting = Status::byte;
+                        setting = Statistics::byte;
                         break;
                     case 'b':
-                        setting = Status::bit;
+                        setting = Statistics::bit;
                         break;
                     case 'K':
-                        setting = Status::kilobyte;
+                        setting = Statistics::kiloByte;
                         break;
                     case 'k':
-                        setting = Status::kilobit;
+                        setting = Statistics::kiloBit;
                         break;
                     case 'M':
-                        setting = Status::megabyte;
+                        setting = Statistics::megaByte;
                         break;
                     case 'm':
-                        setting = Status::megabit;
+                        setting = Statistics::megaBit;
                         break;
                     case 'G':
-                        setting = Status::gigabyte;
+                        setting = Statistics::gigaByte;
                         break;
                     case 'g':
-                        setting = Status::gigabit;
+                        setting = Statistics::gigaBit;
                         break;
                     default:
-                        fprintf(stderr, "Wrong argument for the -U parameter.\n\n");
-                        printhelp();
+                        cerr << "Wrong argument for the -U parameter." << endl;
+                        printHelp(true);
                         exit(1);
                 }
 
@@ -282,8 +295,8 @@ int main(int argc, char *argv[])
             }
             else
             {
-                fprintf(stderr, "Wrong argument for the -U parameter.\n\n");
-                printhelp();
+                cerr << "Wrong argument for the -U parameter." << endl;
+                printHelp(true);
                 exit(1);
             }
         
@@ -304,40 +317,77 @@ int main(int argc, char *argv[])
         // assume unknown parameter to be the network device
         else
         {
-            network_device.push_back(new string(argv[i]));
+            devicesRequested.push_back(argv[i]);
         }
     }
 
-    if(network_device.size() == 0)
-        network_device.push_back(new string(STANDARD_NETWORK_DEVICE));
+    // auto-detect network devices
+    DevReaderFactory::findAllDevices();
+    const map<string, DevReader*>& devicesDetected = DevReaderFactory::getAllDevReaders();
+
+    map<string, DevReader*> deviceReaders;
+    if(devicesRequested.empty() || devicesRequested.front() == "all")
+    {
+        // use all detected devices
+        deviceReaders = devicesDetected;
+    }
+    else
+    {
+        // check if requested devices are available
+        for(list<string>::const_iterator itRequested = devicesRequested.begin(); itRequested != devicesRequested.end(); ++itRequested)
+        {
+            map<string, DevReader*>::const_iterator detectedDevice = devicesDetected.find(*itRequested);
+            if(detectedDevice != devicesDetected.end())
+            {
+                deviceReaders[*itRequested] = detectedDevice->second;
+            }
+            else
+            {
+                cerr << "no such device: " << *itRequested << endl;
+            }
+        }
+    }
+
+    if(devicesRequested.size() > deviceReaders.size())
+    {
+        cerr << "some devices not found, aborting" << endl;
+        return 0;
+    }
+    if(deviceReaders.empty())
+    {
+        cerr << "no devices left, aborting" << endl;
+        return 0;
+    }
 
     init();
 
     // create one instance of the Dev class per device
-    for(vector<string *>::size_type i = 0; i < network_device.size(); i++)
+    unsigned int deviceIndex = 0;
+    for(map<string, DevReader*>::const_iterator itDevice = deviceReaders.begin(); itDevice != deviceReaders.end(); ++itDevice)
     {
-        m_mainwindow.devices().push_back(new Dev());
-        m_mainwindow.devices().back()->setProcDev(network_device[i]->c_str());
-        m_mainwindow.devices().back()->setDeviceNumber(i + 1);
-        m_mainwindow.devices().back()->setTotalNumberOfDevices(network_device.size());
-        delete network_device[i];
+        Device* device = new Device(*itDevice->second);
+        device->setDeviceNumber(deviceIndex++);
+        device->setTotalNumberOfDevices(deviceReaders.size());
+
+        device->update();
+
+        m_mainWindow.devices().push_back(device);
     }
-    network_device.clear();
 
     do
     {
         // wait sleep_interval milliseconds (in steps of 100 ms)
-        struct timespec wanted_time;
-        wanted_time.tv_sec = 0;
+        struct timespec wantedTime;
+        wantedTime.tv_sec = 0;
         
-        int rest_of_sleep_interval = SettingStore::get("sleep_interval");
+        int restOfSleepInterval = SettingStore::get("sleep_interval");
         
-        while(rest_of_sleep_interval > 0)
+        while(restOfSleepInterval > 0)
         {
-            rest_of_sleep_interval -= 100;
-            wanted_time.tv_nsec = (rest_of_sleep_interval >= 0 ? 100 : 100 + rest_of_sleep_interval) * 1000000L;
+            restOfSleepInterval -= 100;
+            wantedTime.tv_nsec = (restOfSleepInterval >= 0 ? 100 : 100 + restOfSleepInterval) * 1000000L;
             
-            nanosleep(&wanted_time, 0);
+            nanosleep(&wantedTime, 0);
             
             // process keyboard
             int key;
@@ -347,49 +397,49 @@ int main(int argc, char *argv[])
                 {
                     case 'o':
                     case 'O':
-                        if(m_optwindow.visible())
+                        if(m_optWindow.isVisible())
                         {
-                            m_optwindow.hide();
-                            m_mainwindow.resize(0, 0, Screen::width(), Screen::height());
+                            m_optWindow.hide();
+                            m_mainWindow.resize(0, 0, Screen::width(), Screen::height());
                         }
                         else
                         {
-                            m_mainwindow.resize(0, Screen::height() / 4, Screen::width(), Screen::height() - Screen::height() / 4);
-                            m_optwindow.show(0, 0, Screen::width(), Screen::height() / 4);
+                            m_mainWindow.resize(0, Screen::height() / 4, Screen::width(), Screen::height() - Screen::height() / 4);
+                            m_optWindow.show(0, 0, Screen::width(), Screen::height() / 4);
                         }
-                        rest_of_sleep_interval = 0; // update the screen
+                        restOfSleepInterval = 0; // update the screen
                         break;
                     case 'q':
                     case 'Q':
-                        if(!m_optwindow.visible())
+                        if(!m_optWindow.isVisible())
                             end();
                         break;
                     default:
-                        if(m_optwindow.visible())
-                            m_optwindow.processKey(key);
+                        if(m_optWindow.isVisible())
+                            m_optWindow.processKey(key);
                         else
-                            m_mainwindow.processKey(key);
+                            m_mainWindow.processKey(key);
                         break;
                 }
             }
         }
         
         // clear the screen
-        m_mainwindow.clear();
+        m_mainWindow.clear();
         
         // print device data
-        m_mainwindow.print();
+        m_mainWindow.print();
         
         // refresh the screen
-        m_mainwindow.refresh();
+        m_mainWindow.refresh();
         
-        if(m_optwindow.visible())
-            m_optwindow.refresh(); // always show cursor in option dialog
+        if(m_optWindow.isVisible())
+            m_optWindow.refresh(); // always show cursor in option dialog
         
     } while(print_only_once != true); // do this endless except the user said "-t 0"
 
     end();
-
+    return 0;
 }
 
 void init()
@@ -397,7 +447,7 @@ void init()
     // handle interrrupt signal
     signal(SIGINT, end);
     signal(SIGTERM, end);
-    signal(SIGWINCH, terminal_resized);
+    signal(SIGWINCH, terminalResized);
     
     // initialize ncurses
     initscr();
@@ -408,13 +458,13 @@ void init()
     cbreak();
     
     // create main window
-    m_mainwindow.show(0, 0, 0, 0);
+    m_mainWindow.show(0, 0, 0, 0);
 }
 
 void finish()
 {
     // destroy main window
-    m_mainwindow.hide();
+    m_mainWindow.hide();
     
     // stop ncurses
     endwin();
@@ -424,83 +474,72 @@ void end(int signal)
 {
     finish();
     
-    vector<Dev *>& devs = m_mainwindow.devices();
-    for(vector<Dev *>::const_iterator i = devs.begin(); i != devs.end(); i++)
+    vector<Device*>& devices = m_mainWindow.devices();
+    for(vector<Device*>::const_iterator i = devices.begin(); i != devices.end(); ++i)
         delete *i;
-    devs.clear();
+    devices.clear();
     
     exit(0);
 }
 
-void terminal_resized(int signal)
+void terminalResized(int signal)
 {
-    bool optwindow_was_visible = m_optwindow.visible();
+    bool optWindowWasVisible = m_optWindow.isVisible();
 
-    m_optwindow.hide();
+    m_optWindow.hide();
 
     finish();   
     init();
     
-    if(optwindow_was_visible)
+    if(optWindowWasVisible)
     {
-        m_mainwindow.resize(0, Screen::height() / 4, Screen::width(), Screen::height() - Screen::height() / 4);
-        m_optwindow.show(0, 0, Screen::width(), Screen::height() / 4);
+        m_mainWindow.resize(0, Screen::height() / 4, Screen::width(), Screen::height() - Screen::height() / 4);
+        m_optWindow.show(0, 0, Screen::width(), Screen::height() / 4);
     }
 }
 
-void printhelp()
+void printHelp(bool error)
 {
-
     // print disclaimer
-    fprintf(stderr,
-        "\n%s version %s\n"
-        "Copyright (C) 2001 - 2003 by Roland Riegel <feedback@roland-riegel.de>\n"
-        "%s comes with ABSOLUTELY NO WARRANTY. This is free software, and you are\n"
-        "welcome to redistribute it under certain conditions. For more details see the\n"
-        "GNU General Public License Version 2 (http://www.gnu.org/copyleft/gpl.html).\n\n"
+    (error ? cerr : cout)
+        << "\n"
+        << PACKAGE << " version " << VERSION << "\n"
+        << "Copyright (C) 2001 - 2003 by Roland Riegel <feedback@roland-riegel.de>\n"
+        << PACKAGE << " comes with ABSOLUTELY NO WARRANTY. This is free software, and you are\n"
+        << "welcome to redistribute it under certain conditions. For more details see the\n"
+        << "GNU General Public License Version 2 (http://www.gnu.org/copyleft/gpl.html).\n\n"
 
-        "Command line syntax:\n"
-        "%s [options] [devices]\n"
-        "%s --help|-h\n\n"
-        
-        "Options:\n"
-        "-a period       Sets the length in seconds of the time window for average\n"
-        "                calculation.\n"
-        "                Default is %d.\n"
-        "-i max_scaling  Specifies the 100%% mark in kBit/s of the graph indicating the\n"
-        "                incoming bandwidth usage. Ignored if max_scaling is 0 or the\n"
-        "                switch -m is given.\n"
-        "                Default is %d.\n"
-        "-m              Show multiple devices at a time; no traffic graphs.\n"
-        "-o max_scaling  Same as -i but for the graph indicating the outgoing bandwidth\n"
-        "                usage.\n"
-        "                Default is %d.\n"
-        "-t interval     Determines the refresh interval of the display in milliseconds.\n"
-        "                If 0 print net load only once and exit.\n"
-        "                Default is %d.\n"
-        "-u h|b|k|m|g    Sets the type of unit used for the display of traffic numbers.\n"
-        "   H|B|K|M|G    h: auto, b: Bit/s, k: kBit/s, m: MBit/s etc.\n"
-        "                H: auto, B: Byte/s, K: kByte/s, M: MByte/s etc.\n"
-        "                Default is k.\n"
-        "-U h|b|k|m|g    Same as -u, but for a total amount of data (without \"/s\").\n"
-        "   H|B|K|M|G    Default is M.\n"
-        "devices         Network devices to use.\n"
-        "                Default is \"%s\".\n"
-        "--help\n"
-        "-h              Print this help.\n\n"
-        "example: %s -t 200 -s 7 -i 1024 -o 128 -U h eth0 eth1\n\n"
-        "The options above can also be changed at run time by pressing the 'o' key.\n\n",
-        PACKAGE,
-        VERSION,
-        PACKAGE,
-        PACKAGE,
-        PACKAGE,
-        STANDARD_AVERAGE_WINDOW,
-        STANDARD_MAX_DEFLECTION,
-        STANDARD_MAX_DEFLECTION,
-        STANDARD_SLEEP_INTERVAL,
-        STANDARD_NETWORK_DEVICE,
-        PACKAGE
-    );
+        << "Command line syntax:\n"
+        << PACKAGE << " [options] [devices]\n"
+        << PACKAGE << " --help|-h\n\n"
+
+        << "Options:\n"
+        << "-a period       Sets the length in seconds of the time window for average\n"
+        << "                calculation.\n"
+        << "                Default is " << STANDARD_AVERAGE_WINDOW << ".\n"
+        << "-i max_scaling  Specifies the 100%% mark in kBit/s of the graph indicating the\n"
+        << "                incoming bandwidth usage. Ignored if max_scaling is 0 or the\n"
+        << "                switch -m is given.\n"
+        << "                Default is " << STANDARD_MAX_DEFLECTION << ".\n"
+        << "-m              Show multiple devices at a time; no traffic graphs.\n"
+        << "-o max_scaling  Same as -i but for the graph indicating the outgoing bandwidth\n"
+        << "                usage.\n"
+        << "                Default is " << STANDARD_MAX_DEFLECTION << ".\n"
+        << "-t interval     Determines the refresh interval of the display in milliseconds.\n"
+        << "                If 0 print net load only once and exit.\n"
+        << "                Default is " << STANDARD_SLEEP_INTERVAL << ".\n"
+        << "-u h|b|k|m|g    Sets the type of unit used for the display of traffic numbers.\n"
+        << "   H|B|K|M|G    h: auto, b: Bit/s, k: kBit/s, m: MBit/s etc.\n"
+        << "                H: auto, B: Byte/s, K: kByte/s, M: MByte/s etc.\n"
+        << "                Default is k.\n"
+        << "-U h|b|k|m|g    Same as -u, but for a total amount of data (without \"/s\").\n"
+        << "   H|B|K|M|G    Default is M.\n"
+        << "devices         Network devices to use.\n"
+        << "                Default is to use all auto-detected devices.\n"
+        << "--help\n"
+        << "-h              Print this help.\n\n"
+        << "example: " << PACKAGE << " -t 200 -s 7 -i 1024 -o 128 -U h eth0 eth1\n\n"
+        << "The options above can also be changed at run time by pressing the 'o' key.\n"
+        << endl;
 }
 

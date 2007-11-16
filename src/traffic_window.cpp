@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "dev.h"
+#include "device.h"
 #include "setting.h"
 #include "settingstore.h"
 #include "traffic_window.h"
@@ -23,7 +23,7 @@
 using namespace std;
 
 TrafficWindow::TrafficWindow()
-    : Window(), m_cur_dev(0)
+    : Window(), m_curDev(0)
 {
 }
 
@@ -31,14 +31,9 @@ TrafficWindow::~TrafficWindow()
 {
 }
 
-void TrafficWindow::setDevices(vector<Dev *>& new_devs)
+vector<Device*>& TrafficWindow::devices()
 {
-    m_devs = new_devs;
-}
-
-vector<Dev *>& TrafficWindow::devices()
-{
-    return m_devs;
+    return m_devices;
 }
 
 void TrafficWindow::processKey(int key)
@@ -53,38 +48,38 @@ void TrafficWindow::processKey(int key)
         case '\n':
         case '\t':
         case '\015':
-            m_cur_dev += showMultipleDevices() ? height() / 9 : 1;
-            if((unsigned int) m_cur_dev >= m_devs.size())
-                m_cur_dev = 0;
+            m_curDev += showMultipleDevices() ? getHeight() / 9 : 1;
+            if((unsigned int) m_curDev >= m_devices.size())
+                m_curDev = 0;
             break;
         case KEY_LEFT:
         case KEY_UP:
         case KEY_PPAGE:
         case 'p':
-            m_cur_dev -= showMultipleDevices() ? height() / 9 : 1;
-            if(m_cur_dev < 0)
-                m_cur_dev = m_devs.size() - 1;
+            m_curDev -= showMultipleDevices() ? getHeight() / 9 : 1;
+            if(m_curDev < 0)
+                m_curDev = m_devices.size() - 1;
             break;
     }
-    if(showMultipleDevices() && (unsigned int) height() / 9 >= m_devs.size())
-        m_cur_dev = 0;
+    if(showMultipleDevices() && (unsigned int) getHeight() / 9 >= m_devices.size())
+        m_curDev = 0;
 }
 
 void TrafficWindow::print()
 {
     // update all devices and print the data of the current one
-    for(int i = 0; (unsigned int) i < m_devs.size(); i++)
+    for(int i = 0; (unsigned int) i < m_devices.size(); i++)
     {
-        m_devs[i]->update();
+        m_devices[i]->update();
         if(!showMultipleDevices())
         {
-            if(i == m_cur_dev)
-                m_devs[i] -> print(*this);
+            if(i == m_curDev)
+                m_devices[i]->print(*this);
         }
         else
         {
-            if(i >= m_cur_dev && height() - y() >= 9)
-                m_devs[i] -> print(*this);
+            if(i >= m_curDev && getHeight() - getY() >= 9)
+                m_devices[i]->print(*this);
         }
     }
 }

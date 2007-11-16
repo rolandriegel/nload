@@ -22,27 +22,24 @@
 
 class Window;
 
-#define STANDARD_MAX_DEFLECTION 10240 // [kBit/s]  10 MBit/s = 10240 kBit/s
-
 class Graph
 {
     public:
         Graph();
         ~Graph();
         
-        void setNumOfBars(int);
-        void setHeightOfBars(int);
+        void setNumOfBars(unsigned int numOfBars);
+        void setHeightOfBars(unsigned int heightOfBars);
+        void setMaxDeflection(long long maxDeflection);
         
-        void update(int);
-        void print(Window&, int, int);
+        void update(long long value);
+        void print(Window& window, int x, int y);
         void resetTrafficData();
 
     private:
-        long trafficWithMaxDeflectionOfBars();
-        
-        int m_heightofbars;
-        
-        std::list<int> m_values;
+        unsigned int m_heightOfBars;
+        long long m_maxDeflection;
+        std::list<long long> m_values;
 };
 
 #endif

@@ -21,7 +21,6 @@
 #include <curses.h>
 #include <form.h>
 
-#include <list>
 #include <string>
 #include <vector>
 
@@ -100,8 +99,6 @@ class Form
         std::vector<Field *> m_fields;
 
         bool m_visible;
-        
-        static std::list<Form *> m_instances;
         
         static void fieldChanged(FORM* form);
 };

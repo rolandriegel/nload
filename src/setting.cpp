@@ -36,12 +36,19 @@ string Setting::mapToString() const
 
 void Setting::assignThroughMap(const string& value)
 {
-    for(map<string, string>::const_iterator itMapping = m_mapping.begin(); itMapping != m_mapping.end(); ++itMapping)
+    if(m_mapping.empty())
     {
-        if(itMapping->second == value)
+        m_value = value;
+    }
+    else
+    {
+        for(map<string, string>::const_iterator itMapping = m_mapping.begin(); itMapping != m_mapping.end(); ++itMapping)
         {
-            m_value = itMapping->first;
-            break;
+            if(itMapping->second == value)
+            {
+                m_value = itMapping->first;
+                break;
+            }
         }
     }
 }
