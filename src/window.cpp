@@ -16,12 +16,47 @@
  ***************************************************************************/
 
 #include "window.h"
+
 #include <curses.h>
 
 using namespace std;
 
+Window::WindowStreamBuf::WindowStreamBuf(Window& window)
+    : m_window(window)
+{
+}
+
+Window::WindowStreamBuf::~WindowStreamBuf()
+{
+}
+
+Window::WindowStreamBuf::int_type Window::WindowStreamBuf::xsputn(const char_type* str, std::streamsize n)
+{
+    m_window.print(string(str, n));
+    return n;
+}
+
+Window::WindowStreamBuf::int_type Window::WindowStreamBuf::overflow(int_type c)
+{
+    if(c == traits_type::eof())
+        return c;
+
+    m_window.print((char) c);
+    return c;
+}
+
+Window::WindowStream::WindowStream(Window& window)
+    : basic_ostream<char>(new WindowStreamBuf(window))
+{
+}
+
+Window::WindowStream::~WindowStream()
+{
+    delete rdbuf();
+}
+
 Window::Window()
- : m_visible(false), m_window(0)
+ : m_visible(false), m_window(0), m_stream(*this)
 {
 }
 
@@ -211,6 +246,18 @@ void Window::print(char text, int new_x, int new_y)
         new_y = getY();
     
     mvwaddch(m_window, new_y, new_x, text);
+}
+
+// print via stream to window
+Window::WindowStream& Window::print(int x, int y)
+{
+    if(x <= -1)
+        x = getX();
+    if(y <= -1)
+        y = getY();
+    setXY(x, y);
+
+    return m_stream;
 }
 
 SubWindow::SubWindow(Window* parent)

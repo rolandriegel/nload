@@ -65,7 +65,7 @@ void TrafficWindow::processKey(int key)
         m_curDev = 0;
 }
 
-void TrafficWindow::print()
+void TrafficWindow::printTraffic()
 {
     // update all devices and print the data of the current one
     for(int i = 0; (unsigned int) i < m_devices.size(); i++)

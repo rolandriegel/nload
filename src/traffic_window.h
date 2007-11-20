@@ -31,7 +31,7 @@ class TrafficWindow : public Window
         ~TrafficWindow();
         
         void processKey(int key);
-        void print();
+        void printTraffic();
         
         std::vector<Device*>& devices();
         

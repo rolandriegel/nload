@@ -18,6 +18,8 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include <ostream>
+#include <streambuf>
 #include <string>
 
 #include <curses.h>
@@ -27,6 +29,27 @@ class Form;
 class Window
 {
     public:
+        class WindowStreamBuf : public std::basic_streambuf<char>
+        {
+            public:
+                WindowStreamBuf(Window& window);
+                ~WindowStreamBuf();
+
+            protected:
+                int_type xsputn(const char_type* str, std::streamsize n);
+                int_type overflow(int_type c = traits_type::eof());
+
+            private:
+                Window& m_window;
+        };
+
+        class WindowStream : public std::basic_ostream<char>
+        {
+            public:
+                WindowStream(Window& window);
+                ~WindowStream();
+        };
+
         Window();
         virtual ~Window();
         
@@ -80,6 +103,9 @@ class Window
         
         // print a char to the window
         virtual void print(char text, int new_x = -1, int new_y = -1);
+
+        // print via stream to the window
+        virtual WindowStream& print(int x = -1, int y = -1);
         
     protected:
         friend class SubWindow;
@@ -87,6 +113,8 @@ class Window
 
         bool m_visible;
         WINDOW* m_window;
+
+        WindowStream m_stream;
 };
 
 class SubWindow : public Window

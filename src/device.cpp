@@ -22,6 +22,8 @@
 #include "settingstore.h"
 #include "window.h"
 
+#include <iomanip>
+
 using namespace std;
 
 Device::Device(DevReader& devReader)
@@ -65,17 +67,12 @@ void Device::update()
 // print the device's data
 void Device::print(Window& window)
 {
-    char fText[100] = "";
-    
     // if device does not exist
     if(!m_deviceStatistics.isValid())
     {
         // ... print warning message ...
-        sprintf(fText, "Device %s (%i/%i): does not exist\n", m_devReader.getDeviceName().c_str(), m_deviceNumber + 1, m_totalNumberOfDevices);
-        window.print(fText);
-        for(int i = 0; i < window.getWidth(); i++)
-            window.print('=');
-        window.print('\n');
+        window.print() << "Device " << m_devReader.getDeviceName() << " (" << (m_deviceNumber + 1) << "/" << m_totalNumberOfDevices << "): does not exist" << endl;
+        window.print() << string(window.getWidth(), '=') << endl;
         
         // ... and exit
         return;
@@ -84,32 +81,29 @@ void Device::print(Window& window)
     // print header
     string ip4 = m_dataFrameOld.getIpV4();
     if(!ip4.empty())
-        sprintf(fText, "Device %s [%s] (%i/%i):\n", m_devReader.getDeviceName().c_str(), ip4.c_str(), m_deviceNumber + 1, m_totalNumberOfDevices);
+        window.print() << "Device " << m_devReader.getDeviceName() << " [" << ip4 << "] (" << (m_deviceNumber + 1) << "/" << m_totalNumberOfDevices << "):" << endl;
     else
-        sprintf(fText, "Device %s (%i/%i):\n", m_devReader.getDeviceName().c_str(), m_deviceNumber + 1, m_totalNumberOfDevices);
-    window.print(fText);
-    for(int i = 0; i < window.getWidth(); i++)
-        window.print('=');
+        window.print() << "Device " << m_devReader.getDeviceName() << " (" << (m_deviceNumber + 1) << "/" << m_totalNumberOfDevices << "):" << endl;
+    window.print() << string(window.getWidth(), '=');
     
     // if graphs should be hidden ...
     if(SettingStore::get("multiple_devices"))
     {
-        window.print("Incoming:");
-        window.setX(window.getWidth() / 2);
-        window.print("Outgoing:\n");
+        window.print() << "Incoming:";
+        window.print(window.getWidth() / 2) << "Outgoing:" << endl;
         
         int statusY = window.getY();
         
         printStatisticsIn(window, 0, statusY);
         printStatisticsOut(window, window.getWidth() / 2, statusY);
         
-        window.print('\n');
+        window.print() << endl;
     }
     // ... or not
     else
     {
         // incoming traffic
-        window.print("Incoming:\n");
+        window.print() << "Incoming:" << endl;
         
         m_deviceGraphIn.setNumOfBars(window.getWidth() * 2 / 3);
         m_deviceGraphIn.setHeightOfBars((window.getHeight() - window.getY() - 1) / 2);
@@ -119,7 +113,7 @@ void Device::print(Window& window)
         printStatisticsIn(window, window.getWidth() * 2 / 3 + 2, window.getY() - 5);
         
         // outgoing traffic
-        window.print("Outgoing:\n");
+        window.print() << "Outgoing:" << endl;
         
         m_deviceGraphOut.setNumOfBars(window.getWidth() * 2 / 3);
         m_deviceGraphOut.setHeightOfBars(window.getHeight() - window.getY());
@@ -177,11 +171,7 @@ void Device::printTrafficValue(Window& window, int x, int y, const std::string& 
     string unitString = Statistics::getUnitString(trafficFormat, value);
     float unitFactor = Statistics::getUnitFactor(trafficFormat, value);
 
-    char fText[100] = "";
-    sprintf(fText, "%s: %.2f %s/s\n", description.c_str(), (float) value / unitFactor, unitString.c_str());
-
-    window.setXY(x, y);
-    window.print(fText);
+    window.print(x, y) << fixed << setprecision(2) << description << ": " << ((float) value / unitFactor) << " " << unitString << "/s" << endl;
 }
 
 void Device::printDataValue(Window& window, int x, int y, const std::string& description, long long value)
@@ -191,11 +181,7 @@ void Device::printDataValue(Window& window, int x, int y, const std::string& des
     string unitString = Statistics::getUnitString(dataFormat, value);
     float unitFactor = Statistics::getUnitFactor(dataFormat, value);
 
-    char fText[100] = "";
-    sprintf(fText, "%s: %.2f %s\n", description.c_str(), (float) value / unitFactor, unitString.c_str());
-
-    window.setXY(x, y);
-    window.print(fText);
+    window.print(x, y) << fixed << setprecision(2) << description << ": " << ((float) value / unitFactor) << " " << unitString << endl;
 }
 
 void Device::printStatisticsIn(Window& window, int x, int y)

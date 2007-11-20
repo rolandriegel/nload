@@ -39,7 +39,7 @@ class OptWindow : public Window, public Form::Slots
         void slot_fieldChanged(Field* field);
         
     private:
-        SubWindow m_sub_window;
+        SubWindow m_subWindow;
         Form m_form;
 
         std::map<Field*, std::string> m_labels;

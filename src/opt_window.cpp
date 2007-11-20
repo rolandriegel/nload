@@ -28,7 +28,7 @@
 using namespace std;
 
 OptWindow::OptWindow()
-    : Window(), Form::Slots(), m_sub_window(this), m_form(this)
+    : Window(), Form::Slots(), m_subWindow(this), m_form(this)
 {
 }
 
@@ -44,9 +44,9 @@ void OptWindow::show(int x, int y, int width, int height)
         hide();
     
     Window::show(x, y, width, height);
-    m_sub_window.show(BORDER_LEFT, BORDER_TOP, width - BORDER_LEFT - BORDER_RIGHT, height - BORDER_TOP - BORDER_BOTTOM);
+    m_subWindow.show(BORDER_LEFT, BORDER_TOP, width - BORDER_LEFT - BORDER_RIGHT, height - BORDER_TOP - BORDER_BOTTOM);
     
-    const int field_width = m_sub_window.getWidth() / 2;
+    const int field_width = m_subWindow.getWidth() / 2;
     int line = 0;
 
     map<string, Setting>& settings = SettingStore::getAll();
@@ -80,10 +80,10 @@ void OptWindow::show(int x, int y, int width, int height)
         }
         
         ++line;
-        line %= m_sub_window.getHeight() < 1 ? 1 : m_sub_window.getHeight();
+        line %= m_subWindow.getHeight() < 1 ? 1 : m_subWindow.getHeight();
     }
     
-    m_form.show(this, &m_sub_window);
+    m_form.show(this, &m_subWindow);
     
     m_visible = true;
 }
@@ -108,7 +108,7 @@ void OptWindow::hide()
 {
     m_form.hide();
     m_form.fields().clear();
-    m_sub_window.hide();
+    m_subWindow.hide();
     Window::hide();
 
     for(map<Field*, string>::const_iterator itLabel = m_labels.begin(); itLabel != m_labels.end(); ++itLabel)
@@ -180,15 +180,13 @@ void OptWindow::processKey(int request)
 
 void OptWindow::refresh()
 {
-    print("Options:\n", 0, 0);
-    for(int x = 0; x < getWidth(); x++)
-        print('=');
+    print(0, 0) << "Options:" << endl
+                << string(getWidth(), '=');
     
-    char fText[40] = "";
-    sprintf(fText, " <-- (-) page %i/%i (+) --> ", m_form.getPage() + 1, m_form.getPageCount());
-    print(fText, getWidth() - strlen(fText) - 1, 1);
+    string navigator = " <-- (-) page " + toString(m_form.getPage() + 1) + "/" + toString(m_form.getPageCount()) + " (+) --> ";
+    print(navigator, getWidth() - navigator.length() - 1, 1);
     
     wrefresh(m_window);
-    m_sub_window.refresh();
+    m_subWindow.refresh();
 }
 

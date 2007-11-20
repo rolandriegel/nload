@@ -428,7 +428,7 @@ int main(int argc, char *argv[])
         m_mainWindow.clear();
         
         // print device data
-        m_mainWindow.print();
+        m_mainWindow.printTraffic();
         
         // refresh the screen
         m_mainWindow.refresh();
