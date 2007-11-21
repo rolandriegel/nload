@@ -46,9 +46,6 @@ class Setting
         std::string mapToString() const;
         void assignThroughMap(const std::string& value);
 
-        std::istream& operator>>(std::istream& in);
-        std::ostream& operator<<(std::ostream& out) const;
-
         template<class T>
         operator T() { return fromString<T>(m_value); }
 
@@ -77,6 +74,9 @@ class Setting
         std::string m_value;
         std::map<std::string, std::string> m_mapping;
 };
+
+std::istream& operator>>(std::istream& in, Setting& setting);
+std::ostream& operator<<(std::ostream& out, const Setting& setting);
 
 #endif
 

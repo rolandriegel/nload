@@ -55,51 +55,43 @@ vector<string> split(const string& s, const string& separators)
 
 vector<string> splitQuoted(const string& s, const string& separators, const string& quotes)
 {
-    vector<string> words;
-
     if(s.empty())
-        return words;
+        return vector<string>();
 
-    bool quoted = false;
-    string::size_type pos = s.find_first_of(quotes);
+    vector<string> words(1);
+    string::size_type pos = s.find_first_of(separators + quotes);
     string::size_type posOld = 0;
-    while(pos != string::npos)
-    {
-        if(pos != posOld)
-        {
-            if(quoted)
-            {
-                words.push_back(s.substr(posOld, pos - posOld));
-            }
-            else
-            {
-                vector<string> unquoted = split(s.substr(posOld, pos - posOld), separators);
-                words.insert(words.end(), unquoted.begin(), unquoted.end());
-            }
-        }
+    bool quoted = false;
 
+    while(true)
+    {
+        words.back() += s.substr(posOld, pos - posOld);
         posOld = pos + 1;
-        quoted = !quoted;
 
-        if(posOld < s.length())
-            pos = s.find_first_of(quotes, posOld);
-        else
-            pos = string::npos;
-    }
+        if(pos == string::npos)
+            return words;
 
-    if(posOld < s.length())
-    {
-        if(quoted)
+        if(separators.find(s[pos]) != string::npos)
         {
-            words.push_back(s.substr(posOld));
+            // separator found
+
+            words.push_back(string());
+
+            pos = s.find_first_of(separators + quotes, posOld);
         }
         else
         {
-            vector<string> unquoted = split(s.substr(posOld, pos - posOld), separators);
-            words.insert(words.end(), unquoted.begin(), unquoted.end());
+            // quote found
+
+            posOld = pos + 1;
+
+            quoted = !quoted;
+
+            if(quoted)
+                pos = s.find_first_of(quotes, posOld);
+            else
+                pos = s.find_first_of(separators + quotes, posOld);
         }
     }
-
-    return words;
 }
 

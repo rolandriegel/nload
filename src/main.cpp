@@ -56,7 +56,7 @@
 #define STANDARD_DATA_FORMAT Statistics::megaByte
 #define STANDARD_HIDE_GRAPHS false
 #define STANDARD_MAX_DEFLECTION 10240
-#define STANDARD_SLEEP_INTERVAL 500
+#define STANDARD_REFRESH_INTERVAL 500
 #define STANDARD_TRAFFIC_FORMAT Statistics::kiloBit
 
 using namespace std;
@@ -66,19 +66,19 @@ static TrafficWindow m_mainWindow;
 
 int main(int argc, char *argv[])
 {
-    SettingStore::add(Setting("sleep_interval", "Refresh interval (ms)", STANDARD_SLEEP_INTERVAL));
-    SettingStore::add(Setting("multiple_devices", "Show multiple devices", STANDARD_HIDE_GRAPHS));
-    SettingStore::add(Setting("bar_max_in", "Max Incoming deflection (kBit/s)", STANDARD_MAX_DEFLECTION));
-    SettingStore::add(Setting("bar_max_out", "Max Outgoing deflection (kBit/s)", STANDARD_MAX_DEFLECTION));
-    SettingStore::add(Setting("average_window", "Window length for average (s)", STANDARD_AVERAGE_WINDOW));
-    SettingStore::add(Setting("traffic_format", "Unit for traffic numbers", STANDARD_TRAFFIC_FORMAT));
-    SettingStore::add(Setting("data_format", "Unit for data numbers", STANDARD_DATA_FORMAT));
+    SettingStore::add(Setting("AverageWindow", "Window length for average (s)", STANDARD_AVERAGE_WINDOW));
+    SettingStore::add(Setting("BarMaxIn", "Max Incoming deflection (kBit/s)", STANDARD_MAX_DEFLECTION));
+    SettingStore::add(Setting("BarMaxOut", "Max Outgoing deflection (kBit/s)", STANDARD_MAX_DEFLECTION));
+    SettingStore::add(Setting("DataFormat", "Unit for data numbers", STANDARD_DATA_FORMAT));
+    SettingStore::add(Setting("MultipleDevices", "Show multiple devices", STANDARD_HIDE_GRAPHS));
+    SettingStore::add(Setting("RefreshInterval", "Refresh interval (ms)", STANDARD_REFRESH_INTERVAL));
+    SettingStore::add(Setting("TrafficFormat", "Unit for traffic numbers", STANDARD_TRAFFIC_FORMAT));
 
     map<string, string> valueMapping;
 
     valueMapping[toString(false)] = "[ ]";
     valueMapping[toString(true)] = "[x]";
-    SettingStore::get("multiple_devices").setValueMapping(valueMapping);
+    SettingStore::get("MultipleDevices").setValueMapping(valueMapping);
     valueMapping.clear();
 
     valueMapping[toString(Statistics::humanReadableBit)] = "Human Readable (Bit)";
@@ -91,9 +91,21 @@ int main(int argc, char *argv[])
     valueMapping[toString(Statistics::megaByte)] = "MByte";
     valueMapping[toString(Statistics::gigaBit)] = "GBit";
     valueMapping[toString(Statistics::gigaByte)] = "GByte";
-    SettingStore::get("traffic_format").setValueMapping(valueMapping);
-    SettingStore::get("data_format").setValueMapping(valueMapping);
+    SettingStore::get("TrafficFormat").setValueMapping(valueMapping);
+    SettingStore::get("DataFormat").setValueMapping(valueMapping);
     valueMapping.clear();
+
+    // retrieve home directory
+    const char* homeDirArray = getenv("HOME");
+    if(!homeDirArray)
+    {
+        cerr << "Could not retrieve home directory." << endl;
+        exit(1);
+    }
+
+    string homeDir = homeDirArray;
+    SettingStore::readFromFile("/etc/nload.conf");
+    SettingStore::readFromFile(homeDir + "/.nload");
 
     list<string> devicesRequested;
     bool print_only_once = false;
@@ -110,7 +122,7 @@ int main(int argc, char *argv[])
         // has the user set a non-default average time window?
         else if(strcmp(argv[i], "-a") == 0)
         {
-            Setting& setting = SettingStore::get("average_window");
+            Setting& setting = SettingStore::get("AverageWindow");
             
             if(i < argc - 1 && isdigit(argv[ i + 1 ][0]) != 0)
             {
@@ -131,7 +143,7 @@ int main(int argc, char *argv[])
         // the incoming bandwidth bar?
         else if(strcmp(argv[i], "-i") == 0)
         {
-            Setting& setting = SettingStore::get("bar_max_in");
+            Setting& setting = SettingStore::get("BarMaxIn");
             
             if(i < argc - 1 && isdigit(argv[ i + 1 ][0]) != 0)
             {
@@ -152,7 +164,7 @@ int main(int argc, char *argv[])
         // the outgoing bandwidth bar?
         else if(strcmp(argv[i], "-o") == 0)
         {
-            Setting& setting = SettingStore::get("bar_max_out");
+            Setting& setting = SettingStore::get("BarMaxOut");
             
             if(i < argc - 1 && isdigit(argv[ i + 1 ][0]) != 0)
             {
@@ -172,7 +184,7 @@ int main(int argc, char *argv[])
         // has the user set a non-default refresh interval?
         else if(strcmp(argv[i], "-t") == 0)
         {
-            Setting& setting = SettingStore::get("sleep_interval");
+            Setting& setting = SettingStore::get("RefreshInterval");
             
             if(i < argc - 1 && isdigit(argv[ i + 1 ][0]) != 0)
             {
@@ -180,7 +192,7 @@ int main(int argc, char *argv[])
                 if(setting == 0)
                 {
                     print_only_once = true;
-                    setting = STANDARD_SLEEP_INTERVAL;
+                    setting = STANDARD_REFRESH_INTERVAL;
                 }
 
                 i++;
@@ -195,7 +207,7 @@ int main(int argc, char *argv[])
         // has the user set a non-default unit for traffic numbers?
         else if(strcmp(argv[i], "-u") == 0)
         {
-            Setting& setting = SettingStore::get("traffic_format");
+            Setting& setting = SettingStore::get("TrafficFormat");
             
             if(i < argc - 1 && isalpha(argv[ i + 1 ][0]) != 0)
             {
@@ -249,7 +261,7 @@ int main(int argc, char *argv[])
         // has the user set a non-default unit for numbers of amount of data?
         else if(strcmp(argv[i], "-U") == 0)
         {
-            Setting& setting = SettingStore::get("data_format");
+            Setting& setting = SettingStore::get("DataFormat");
             
             if(i < argc - 1 && isalpha(argv[ i + 1 ][0]) != 0)
             {
@@ -304,7 +316,7 @@ int main(int argc, char *argv[])
         // has the user chosen to display multiple devices and thus not to display graphs?
         else if(strcmp(argv[i], "-m") == 0)
         {
-            SettingStore::get("multiple_devices") = true;
+            SettingStore::get("MultipleDevices") = true;
         }
         // obsolete -b option
         else if(strcmp(argv[i], "-b") == 0)
@@ -376,16 +388,16 @@ int main(int argc, char *argv[])
 
     do
     {
-        // wait sleep_interval milliseconds (in steps of 100 ms)
+        // wait RefreshInterval milliseconds (in steps of 100 ms)
         struct timespec wantedTime;
         wantedTime.tv_sec = 0;
         
-        int restOfSleepInterval = SettingStore::get("sleep_interval");
+        int restOfRefreshInterval = SettingStore::get("RefreshInterval");
         
-        while(restOfSleepInterval > 0)
+        while(restOfRefreshInterval > 0)
         {
-            restOfSleepInterval -= 100;
-            wantedTime.tv_nsec = (restOfSleepInterval >= 0 ? 100 : 100 + restOfSleepInterval) * 1000000L;
+            restOfRefreshInterval -= 100;
+            wantedTime.tv_nsec = (restOfRefreshInterval >= 0 ? 100 : 100 + restOfRefreshInterval) * 1000000L;
             
             nanosleep(&wantedTime, 0);
             
@@ -407,12 +419,23 @@ int main(int argc, char *argv[])
                             m_mainWindow.resize(0, Screen::height() / 4, Screen::width(), Screen::height() - Screen::height() / 4);
                             m_optWindow.show(0, 0, Screen::width(), Screen::height() / 4);
                         }
-                        restOfSleepInterval = 0; // update the screen
+                        restOfRefreshInterval = 0; // update the screen
                         break;
                     case 'q':
                     case 'Q':
                         if(!m_optWindow.isVisible())
                             end();
+                        break;
+                    case 'r':
+                    case 'R':
+                        SettingStore::readFromFile("/etc/nload.conf");
+                        SettingStore::readFromFile(homeDir + "/.nload");
+                        if(m_optWindow.isVisible())
+                            m_optWindow.show(0, 0, Screen::width(), Screen::height() / 4);
+                        break;
+                    case 's':
+                    case 'S':
+                        SettingStore::writeToFile(homeDir + "/.nload");
                         break;
                     default:
                         if(m_optWindow.isVisible())
@@ -527,7 +550,7 @@ void printHelp(bool error)
         << "                Default is " << STANDARD_MAX_DEFLECTION << ".\n"
         << "-t interval     Determines the refresh interval of the display in milliseconds.\n"
         << "                If 0 print net load only once and exit.\n"
-        << "                Default is " << STANDARD_SLEEP_INTERVAL << ".\n"
+        << "                Default is " << STANDARD_REFRESH_INTERVAL << ".\n"
         << "-u h|b|k|m|g    Sets the type of unit used for the display of traffic numbers.\n"
         << "   H|B|K|M|G    h: auto, b: Bit/s, k: kBit/s, m: MBit/s etc.\n"
         << "                H: auto, B: Byte/s, K: kByte/s, M: MByte/s etc.\n"
@@ -538,7 +561,7 @@ void printHelp(bool error)
         << "                Default is to use all auto-detected devices.\n"
         << "--help\n"
         << "-h              Print this help.\n\n"
-        << "example: " << PACKAGE << " -t 200 -s 7 -i 1024 -o 128 -U h eth0 eth1\n\n"
+        << "example: " << PACKAGE << " -t 200 -i 1024 -o 128 -U h eth0 eth1\n\n"
         << "The options above can also be changed at run time by pressing the 'o' key.\n"
         << endl;
 }

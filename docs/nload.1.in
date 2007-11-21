@@ -1,6 +1,6 @@
 .\"
 .\" Man page for nload
-.\" Copyright (C) 2001 - 2003 by Roland Riegel <feedback@roland.riegel.de>
+.\" Copyright (C) 2001 - 2007 by Roland Riegel <feedback@roland.riegel.de>
 .\"
 .TH nload 1 "December 07, 2003" nload "Network monitoring tools"
 .SH NAME
@@ -36,7 +36,7 @@ When running
 .B nload,
 you can switch between the devices (which you gave
 .B nload
-on the command line) by pressing the left and right arrow keys. If the
+either on the command line or which were auto-detected) by pressing the left and right arrow keys. If the
 .B \-m
 command line parameter is given, the arrow keys switch as many devices back and forth as
 there are shown on the screen. If you want to quit, do so by pressing 'q' or 'Ctrl+C'.
@@ -92,8 +92,7 @@ Same as -u, but for an amount of data, e.g. Bit, kByte, GBit etc. (without "/s")
 The default is M.
 .TP
 .B devices
-Network devices to use. The default device is "eth0" on Linux, "fxp0" on
-BSD, "hme0" on Solaris and "lan0" on HP-UX.
+Network devices to use. The default is "all", which means to display all auto-detected devices.
 .TP
 .B \-h, \-\-help
 Show a short summary of these command line options.
@@ -106,16 +105,16 @@ command line, or, if none where specified, the default device. In this mode,
 the following key shortcuts are available.
 
 .TP
-.B 'o'
-Show the option window (see section 
-.B OPTION WINDOW
-below).
-
-.TP
 .B 'ArrowRight', 'ArrowDown', 'PageDown', 'Enter', 'Tab', 'n'
 Switch the display to the next network device, or, when started with the
 .B \-m
 flag, to the next page of devices.
+
+.TP
+.B 'o'
+Show the option window (see section 
+.B OPTION WINDOW
+below).
 
 .TP
 .B 'ArrowLeft', 'ArrowUp', 'PageUp', 'p'
@@ -128,6 +127,14 @@ flag, to the previous page of devices.
 .B 'q', 'Ctrl+C'
 Quit
 .BR nload .
+
+.TP
+.B 'r'
+Reload settings from the config files.
+
+.TP
+.B 's'
+Save current settings to the users config file.
 
 .SH OPTION WINDOW
 The parameters given to
@@ -148,7 +155,7 @@ Navigate within the edit fields.
 Navigate between the settings.
 
 .TP
-.B 'PageUp', 'PageDown', 'Tab'
+.B 'PageUp', 'PageDown', 'Space', 'Tab'
 Toggle between the different values possible for the current field.
 
 .TP
@@ -156,8 +163,18 @@ Toggle between the different values possible for the current field.
 Switch to the next / previous page of settings.
 
 .SH FILES
-.I /proc/net/dev
-is read by
+
+.TP
+.I /etc/nload.conf
+System-wide configuration file.
+
+.TP
+.I $(HOME)/.nload
+User-specific configuration file (overrides system-wide settings).
+
+.TP
+.I /sys/class/net/*/* /proc/net/dev
+are read by
 .B nload
 when running on Linux to get the network traffic data.
 
@@ -167,7 +184,7 @@ This manual page describes version @VERSION@ of
 
 For updates, look at the nload homepage:
 .br
-.B http://www.roland-riegel.de/nload/index_en.html
+.B http://www.roland-riegel.de/nload/
 
 .SH HELP
 If you need help, either contact me directly (see below) or write to the
@@ -180,7 +197,7 @@ after having subscribed at
 .BR https://lists.sourceforge.net/lists/listinfo/nload-user .
 
 .SH AUTHOR
-Copyright (C) 2001 - 2003 Roland Riegel <feedback@roland-riegel.de>
+Copyright (C) 2001 - 2007 Roland Riegel <feedback@roland-riegel.de>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

@@ -18,6 +18,8 @@
 #include "setting.h"
 #include "settingstore.h"
 
+#include <fstream>
+
 using namespace std;
 
 map<string, Setting> SettingStore::m_settings;
@@ -45,5 +47,50 @@ bool SettingStore::exists(const string& key)
 map<std::string, Setting>& SettingStore::getAll()
 {
     return m_settings;
+}
+
+bool SettingStore::readFromFile(const std::string& file)
+{
+    if(file.empty())
+        return false;
+
+    // open file
+    ifstream fin(file.c_str());
+    if(!fin.is_open())
+        return false;
+
+    // parse file
+    while(fin.good())
+    {
+        Setting setting;
+
+        fin >> setting;
+        if(setting.getId().empty())
+            break;
+
+        if(exists(setting.getId()))
+            get(setting.getId()).assignThroughMap(setting.getValue());
+        else
+            add(setting);
+    }
+
+    return !fin.fail();
+}
+
+bool SettingStore::writeToFile(const std::string& file)
+{
+    if(file.empty())
+        return false;
+
+    // open file
+    ofstream fout(file.c_str());
+    if(!fout.is_open())
+        return false;
+
+    // output settings
+    for(map<string, Setting>::const_iterator itSetting = m_settings.begin(); itSetting != m_settings.end(); ++itSetting)
+        fout << itSetting->second;
+
+    return fout.good();
 }
 

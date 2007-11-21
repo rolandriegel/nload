@@ -33,6 +33,9 @@ class SettingStore
 
         static std::map<std::string, Setting>& getAll();
 
+        static bool readFromFile(const std::string& file);
+        static bool writeToFile(const std::string& file);
+
     private:
         static std::map<std::string, Setting> m_settings;
 };

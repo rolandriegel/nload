@@ -86,6 +86,6 @@ void TrafficWindow::printTraffic()
 
 bool TrafficWindow::showMultipleDevices()
 {
-    return SettingStore::get("multiple_devices");
+    return SettingStore::get("MultipleDevices");
 }
 

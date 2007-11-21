@@ -182,16 +182,16 @@ void Statistics::calculateMinMax(const DataFrame& dataFrame, DataFrame& min, Dat
 
 unsigned int Statistics::getAverageWindow()
 {
-    unsigned int sleepInterval = SettingStore::get("sleep_interval");
-    unsigned int averageWindow = SettingStore::get("average_window");
+    unsigned int refreshInterval = SettingStore::get("RefreshInterval");
+    unsigned int averageWindow = SettingStore::get("AverageWindow");
 
-    return 1000.0 / sleepInterval * averageWindow;
+    return 1000.0 / refreshInterval * averageWindow;
 }
 
 unsigned int Statistics::getSecondWindow()
 {
-    unsigned int sleepInterval = SettingStore::get("sleep_interval");
-    unsigned int secondWindow = 1000.0 / sleepInterval;
+    unsigned int refreshInterval = SettingStore::get("RefreshInterval");
+    unsigned int secondWindow = 1000.0 / refreshInterval;
 
     return secondWindow > 0 ? secondWindow : 1;
 }

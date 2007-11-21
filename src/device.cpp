@@ -87,7 +87,7 @@ void Device::print(Window& window)
     window.print() << string(window.getWidth(), '=');
     
     // if graphs should be hidden ...
-    if(SettingStore::get("multiple_devices"))
+    if(SettingStore::get("MultipleDevices"))
     {
         window.print() << "Incoming:";
         window.print(window.getWidth() / 2) << "Outgoing:" << endl;
@@ -107,7 +107,7 @@ void Device::print(Window& window)
         
         m_deviceGraphIn.setNumOfBars(window.getWidth() * 2 / 3);
         m_deviceGraphIn.setHeightOfBars((window.getHeight() - window.getY() - 1) / 2);
-        m_deviceGraphIn.setMaxDeflection((long long) SettingStore::get("bar_max_in") * 1024 / 8);
+        m_deviceGraphIn.setMaxDeflection((long long) SettingStore::get("BarMaxIn") * 1024 / 8);
         m_deviceGraphIn.print(window, 0, window.getY());
         
         printStatisticsIn(window, window.getWidth() * 2 / 3 + 2, window.getY() - 5);
@@ -117,7 +117,7 @@ void Device::print(Window& window)
         
         m_deviceGraphOut.setNumOfBars(window.getWidth() * 2 / 3);
         m_deviceGraphOut.setHeightOfBars(window.getHeight() - window.getY());
-        m_deviceGraphOut.setMaxDeflection((long long) SettingStore::get("bar_max_out") * 1024 / 8);
+        m_deviceGraphOut.setMaxDeflection((long long) SettingStore::get("BarMaxOut") * 1024 / 8);
         m_deviceGraphOut.print(window, 0, window.getY());
         
         printStatisticsOut(window, window.getWidth() * 2 / 3 + 2, window.getY() - 4);
@@ -166,7 +166,7 @@ long long Device::fixOverflow(long long value, long long valueOld)
 
 void Device::printTrafficValue(Window& window, int x, int y, const std::string& description, long long value)
 {
-    Statistics::dataUnit trafficFormat = (Statistics::dataUnit) ((int) SettingStore::get("traffic_format"));
+    Statistics::dataUnit trafficFormat = (Statistics::dataUnit) ((int) SettingStore::get("TrafficFormat"));
 
     string unitString = Statistics::getUnitString(trafficFormat, value);
     float unitFactor = Statistics::getUnitFactor(trafficFormat, value);
@@ -176,7 +176,7 @@ void Device::printTrafficValue(Window& window, int x, int y, const std::string& 
 
 void Device::printDataValue(Window& window, int x, int y, const std::string& description, long long value)
 {
-    Statistics::dataUnit dataFormat = (Statistics::dataUnit) ((int) SettingStore::get("data_format"));
+    Statistics::dataUnit dataFormat = (Statistics::dataUnit) ((int) SettingStore::get("DataFormat"));
 
     string unitString = Statistics::getUnitString(dataFormat, value);
     float unitFactor = Statistics::getUnitFactor(dataFormat, value);

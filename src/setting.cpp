@@ -53,7 +53,7 @@ void Setting::assignThroughMap(const string& value)
     }
 }
 
-istream& Setting::operator>>(std::istream& in)
+istream& operator>>(istream& in, Setting& setting)
 {
     while(!in.eof())
     {
@@ -78,14 +78,14 @@ istream& Setting::operator>>(std::istream& in)
         // split line into id and value
         vector<string> words = splitQuoted(line, "=");
 
-        if(words.size() < 2)
+        if(words.size() < 2 || words[0].empty())
         {
             in.setstate(ios_base::failbit);
             return in;
         }
 
-        m_id = words[0];
-        m_value = words[1];
+        setting.setId(words[0]);
+        setting.assignThroughMap(words[1]);
 
         break;
     }
@@ -93,9 +93,9 @@ istream& Setting::operator>>(std::istream& in)
     return in;
 }
 
-ostream& Setting::operator<<(std::ostream& out) const
+ostream& operator<<(ostream& out, const Setting& setting)
 {
-    out << m_id << "=\"" << m_value << "\"" << endl;
+    out << setting.getId() << "=\"" << setting.mapToString() << "\"" << endl;
     return out;
 }
 
