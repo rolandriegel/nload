@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "setting.h"
+#include "settingfilter.h"
 #include "stringutils.h"
 
 #include <istream>
@@ -24,33 +25,74 @@
 
 using namespace std;
 
-string Setting::mapToString() const
+Setting::~Setting()
 {
-    map<string, string>::const_iterator itMapping = m_mapping.find(m_value);
-
-    if(itMapping == m_mapping.end())
-        return m_value;
-
-    return itMapping->second;
+    for(list<SettingFilter*>::const_iterator itFilter = m_filters.begin(); itFilter != m_filters.end(); ++itFilter)
+        delete *itFilter;
+    m_filters.clear();
 }
 
-void Setting::assignThroughMap(const string& value)
+void Setting::pushFilter(SettingFilter* filter)
 {
-    if(m_mapping.empty())
+    if(!filter)
+        return;
+
+    m_filters.push_back(filter);
+}
+
+void Setting::popFilter()
+{
+    if(m_filters.empty())
+        return;
+
+    delete m_filters.back();
+    m_filters.pop_back();
+}
+
+SettingFilter* Setting::findFilterWithId(const string& id)
+{
+    for(list<SettingFilter*>::const_iterator itFilter = m_filters.begin(); itFilter != m_filters.end(); ++itFilter)
     {
-        m_value = value;
+        if((*itFilter)->getId() == id)
+            return *itFilter;
     }
-    else
+
+    return 0;
+}
+
+const SettingFilter* Setting::findFilterWithId(const string& id) const
+{
+    for(list<SettingFilter*>::const_iterator itFilter = m_filters.begin(); itFilter != m_filters.end(); ++itFilter)
     {
-        for(map<string, string>::const_iterator itMapping = m_mapping.begin(); itMapping != m_mapping.end(); ++itMapping)
-        {
-            if(itMapping->second == value)
-            {
-                m_value = itMapping->first;
-                break;
-            }
-        }
+        if((*itFilter)->getId() == id)
+            return *itFilter;
     }
+
+    return 0;
+}
+
+string Setting::getThroughFilter() const
+{
+    string valueCopy = m_value;
+
+    for(list<SettingFilter*>::const_reverse_iterator itFilter = m_filters.rbegin(); itFilter != m_filters.rend(); ++itFilter)
+        (*itFilter)->filterRead(valueCopy);
+
+    return valueCopy;
+}
+
+bool Setting::setThroughFilter(const string& value)
+{
+    string valueCopy = value;
+
+    for(list<SettingFilter*>::iterator itFilter = m_filters.begin(); itFilter != m_filters.end(); ++itFilter)
+    {
+        if(!(*itFilter)->filterWrite(valueCopy))
+            return false;
+    }
+
+    m_value = valueCopy;
+    return true;
 }
 
 istream& operator>>(istream& in, Setting& setting)
@@ -85,7 +127,7 @@ istream& operator>>(istream& in, Setting& setting)
         }
 
         setting.setId(words[0]);
-        setting.assignThroughMap(words[1]);
+        setting.setThroughFilter(words[1]);
 
         break;
     }
@@ -95,7 +137,7 @@ istream& operator>>(istream& in, Setting& setting)
 
 ostream& operator<<(ostream& out, const Setting& setting)
 {
-    out << setting.getId() << "=\"" << setting.mapToString() << "\"" << endl;
+    out << setting.getId() << "=\"" << setting.getThroughFilter() << "\"" << endl;
     return out;
 }
 

@@ -17,6 +17,7 @@
 
 #include "opt_window.h"
 #include "setting.h"
+#include "settingfilter.h"
 #include "settingstore.h"
 #include "stringutils.h"
 
@@ -66,10 +67,12 @@ void OptWindow::show(int x, int y, int width, int height)
         label->setText((itSetting->second.getDescription() + ":").c_str());
         label->setFirstOnPage(line == 0);
 
-        field->setText(itSetting->second.mapToString().c_str());
-        if(!itSetting->second.getValueMapping().empty())
+        field->setText(itSetting->second.getThroughFilter().c_str());
+
+        const SettingFilterMap* mappingFilter = (SettingFilterMap*) itSetting->second.findFilterWithId("map");
+        if(mappingFilter)
         {
-            const map<string, string>& mapping = itSetting->second.getValueMapping();
+            const map<string, string>& mapping = mappingFilter->getMap();
 
             vector<string> elements;
             for(map<string, string>::const_iterator itMapping = mapping.begin(); itMapping != mapping.end(); ++itMapping)
@@ -100,7 +103,8 @@ void OptWindow::slot_fieldChanged(Field* field)
     if(itSetting == settings.end())
         return;
 
-    itSetting->second.assignThroughMap(trim(field->getText()));
+    itSetting->second.setThroughFilter(trim(field->getText()));
+    field->setText(itSetting->second.getThroughFilter());
 }
 
 // hide window and destroy it

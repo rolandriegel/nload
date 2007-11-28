@@ -13,6 +13,7 @@ nload_SOURCES = \
 	opt_window.cpp opt_window.h						\
 	screen.cpp screen.h								\
 	setting.cpp setting.h							\
+	settingfilter.cpp settingfilter.h               \
 	settingstore.cpp settingstore.h					\
 	statistics.cpp statistics.h						\
 	stringutils.cpp stringutils.h					\

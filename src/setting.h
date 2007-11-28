@@ -21,9 +21,10 @@
 #include "stringutils.h"
 
 #include <iosfwd>
-#include <map>
-#include <sstream>
+#include <list>
 #include <string>
+
+class SettingFilter;
 
 class Setting
 {
@@ -32,19 +33,22 @@ class Setting
         template<class T>
         Setting(const std::string& id = "", const std::string& description = "", const T& value = T())
             : m_id(id), m_description(description), m_value(toString(value)) {}
-        ~Setting() {}
+        ~Setting();
 
         const std::string& getId() const { return m_id; }
         const std::string& getDescription() const { return m_description; }
         const std::string& getValue() const { return m_value; }
-        const std::map<std::string, std::string>& getValueMapping() const { return m_mapping; }
 
         void setId(const std::string& id) { m_id = id; }
         void setDescription(const std::string& description) { m_description = description; }
-        void setValueMapping(const std::map<std::string, std::string>& mapping) { m_mapping = mapping; }
 
-        std::string mapToString() const;
-        void assignThroughMap(const std::string& value);
+        void pushFilter(SettingFilter* filter);
+        void popFilter();
+        SettingFilter* findFilterWithId(const std::string& id);
+        const SettingFilter* findFilterWithId(const std::string& id) const;
+
+        std::string getThroughFilter() const;
+        bool setThroughFilter(const std::string& value);
 
         template<class T>
         operator T() { return fromString<T>(m_value); }
@@ -72,7 +76,8 @@ class Setting
         std::string m_id;
         std::string m_description;
         std::string m_value;
-        std::map<std::string, std::string> m_mapping;
+
+        std::list<SettingFilter*> m_filters;
 };
 
 std::istream& operator>>(std::istream& in, Setting& setting);

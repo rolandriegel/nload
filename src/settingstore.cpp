@@ -69,7 +69,7 @@ bool SettingStore::readFromFile(const std::string& file)
             break;
 
         if(exists(setting.getId()))
-            get(setting.getId()).assignThroughMap(setting.getValue());
+            get(setting.getId()).setThroughFilter(setting.getValue());
         else
             add(setting);
     }

@@ -40,6 +40,7 @@
 #include "main.h"
 #include "screen.h"
 #include "setting.h"
+#include "settingfilter.h"
 #include "settingstore.h"
 
 #include <cstdlib>
@@ -76,9 +77,14 @@ int main(int argc, char *argv[])
 
     map<string, string> valueMapping;
 
+    SettingStore::get("AverageWindow").pushFilter(new SettingFilterMin(5));
+    SettingStore::get("BarMaxIn").pushFilter(new SettingFilterMin(10));
+    SettingStore::get("BarMaxOut").pushFilter(new SettingFilterMin(10));
+    SettingStore::get("RefreshInterval").pushFilter(new SettingFilterMin(50));
+
     valueMapping[toString(false)] = "[ ]";
     valueMapping[toString(true)] = "[x]";
-    SettingStore::get("MultipleDevices").setValueMapping(valueMapping);
+    SettingStore::get("MultipleDevices").pushFilter(new SettingFilterMap(valueMapping));
     valueMapping.clear();
 
     valueMapping[toString(Statistics::humanReadableBit)] = "Human Readable (Bit)";
@@ -91,8 +97,8 @@ int main(int argc, char *argv[])
     valueMapping[toString(Statistics::megaByte)] = "MByte";
     valueMapping[toString(Statistics::gigaBit)] = "GBit";
     valueMapping[toString(Statistics::gigaByte)] = "GByte";
-    SettingStore::get("TrafficFormat").setValueMapping(valueMapping);
-    SettingStore::get("DataFormat").setValueMapping(valueMapping);
+    SettingStore::get("TrafficFormat").pushFilter(new SettingFilterMap(valueMapping));
+    SettingStore::get("DataFormat").pushFilter(new SettingFilterMap(valueMapping));
     valueMapping.clear();
 
     // retrieve home directory
