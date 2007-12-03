@@ -51,8 +51,11 @@
  ***************************************************************************/
 
 #include "devreader-hpux.h"
+#include "stringutils.h"
 
-#include <config.h>
+#ifdef HAVE_CONFIG_H
+    #include <config.h>
+#endif
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -87,7 +90,7 @@ DevReaderHpux::~DevReaderHpux()
 list<string> DevReaderHpux::findAllDevices()
 {
     // TODO: implement device scanning for HPUX
-    return list<string>();
+    return list<string>(1, "lan0");
 }
 
 void DevReaderHpux::readFromDevice(DataFrame& dataFrame)
@@ -111,21 +114,19 @@ void DevReaderHpux::readFromDevice(DataFrame& dataFrame)
     dl_attach_req_t *attach_req;
     mib_ifEntry     *mib_ptr;
     
-    char *ppa_no = NULL;
     unsigned int ppa = 0;
     int fd = 0, flags = 0, ppa_count = 0, count = 0, found = 0;
     
     do
     {
         //Make sure interface name begins with lan
-        if (strspn(m_dev, "lan") < 3)
+        if(m_deviceName.length() < 3 || m_deviceName.substr(0, 3) != "lan")
             break;
         
         //Get the PPA from the interface name
-        ppa_no = (char*) malloc(strlen(m_dev) - 3);
-        strcpy(ppa_no, m_dev + 3);
-        ppa = atoi(ppa_no);
-        free(ppa_no);
+        ppa = fromString<int>(m_deviceName.substr(3));
+        if(ppa == 0 && m_deviceName != "lan0")
+            break;
         
         if((fd = open("/dev/dlpi", O_RDWR)) < 0)
         {
@@ -148,13 +149,13 @@ void DevReaderHpux::readFromDevice(DataFrame& dataFrame)
         flags = 0;
         ctrl_area[0] = 0;
         
-        if (getmsg(fd, &ctrl_buf, &data_buf, &flags) < 0)
+        if(getmsg(fd, &ctrl_buf, &data_buf, &flags) < 0)
         {
             perror("getmsg DL_HP_PPA_REQ");
             break;
         }
         
-        if (ppa_ack->dl_length == 0)
+        if(ppa_ack->dl_length == 0)
         {
             fprintf(stderr, "Error: No PPAs available\n");
             break;
@@ -189,7 +190,7 @@ void DevReaderHpux::readFromDevice(DataFrame& dataFrame)
         }
         
         ctrl_area[0] = 0;
-        if (getmsg(fd, &ctrl_buf, &data_buf, &flags) < 0)
+        if(getmsg(fd, &ctrl_buf, &data_buf, &flags) < 0)
         {
             perror("getmsg DL_ATTACH_REQ");
             break;
@@ -206,12 +207,12 @@ void DevReaderHpux::readFromDevice(DataFrame& dataFrame)
             break;
         }
         
-        if (getmsg(fd, &ctrl_buf, NULL, &flags) < 0)
+        if(getmsg(fd, &ctrl_buf, NULL, &flags) < 0)
         {
             perror("getmsg DL_GET_STATISTICS_REQ");
             break;
         }
-        if (get_statistics_ack->dl_primitive != DL_GET_STATISTICS_ACK)
+        if(get_statistics_ack->dl_primitive != DL_GET_STATISTICS_ACK)
             fprintf(stderr, "Error: Wrong primitive\n");
 
         mib_ptr = (mib_ifEntry *)((u_char *) ctrl_area + get_statistics_ack->dl_stat_offset);
