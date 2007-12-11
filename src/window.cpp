@@ -17,8 +17,6 @@
 
 #include "window.h"
 
-#include <curses.h>
-
 using namespace std;
 
 Window::WindowStreamBuf::WindowStreamBuf(Window& window)
@@ -30,7 +28,7 @@ Window::WindowStreamBuf::~WindowStreamBuf()
 {
 }
 
-Window::WindowStreamBuf::int_type Window::WindowStreamBuf::xsputn(const char_type* str, std::streamsize n)
+streamsize Window::WindowStreamBuf::xsputn(const char_type* str, streamsize n)
 {
     m_window.print(string(str, n));
     return n;

@@ -23,6 +23,9 @@
 #include <string>
 
 #include <curses.h>
+#undef clear
+#undef erase
+#undef refresh
 
 class Form;
 
@@ -36,7 +39,7 @@ class Window
                 ~WindowStreamBuf();
 
             protected:
-                int_type xsputn(const char_type* str, std::streamsize n);
+                std::streamsize xsputn(const char_type* str, std::streamsize n);
                 int_type overflow(int_type c = traits_type::eof());
 
             private:

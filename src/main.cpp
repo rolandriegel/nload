@@ -52,6 +52,9 @@
 #include <time.h>
 #include <curses.h>
 #include <signal.h>
+#undef clear
+#undef erase
+#undef refresh
 
 #define STANDARD_AVERAGE_WINDOW 300
 #define STANDARD_DATA_FORMAT Statistics::megaByte
@@ -567,7 +570,7 @@ void printHelp(bool error)
         << "                Default is to use all auto-detected devices.\n"
         << "--help\n"
         << "-h              Print this help.\n\n"
-        << "example: " << PACKAGE << " -t 200 -i 1024 -o 128 -U h eth0 eth1\n\n"
+        << "example: " << PACKAGE << " -t 200 -i 1024 -o 128 -U h\n\n"
         << "The options above can also be changed at run time by pressing the 'o' key.\n"
         << endl;
 }

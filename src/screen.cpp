@@ -16,7 +16,11 @@
  ***************************************************************************/
 
 #include "screen.h"
+
 #include <curses.h>
+#undef clear
+#undef erase
+#undef refresh
 
 int Screen::width()
 {

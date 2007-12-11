@@ -20,6 +20,9 @@
 
 #include <curses.h>
 #include <form.h>
+#undef clear
+#undef erase
+#undef refresh
 
 #include <string>
 #include <vector>
