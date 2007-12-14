@@ -131,14 +131,14 @@ void Statistics::calculateAverage(const DataFrame& dataFrameFrom, const DataFram
     if(timeSpan <= 0)
         return;
 
-    result.setTotalDataIn((dataFrameTo.getTotalDataIn() - dataFrameFrom.getTotalDataIn()) / timeSpan);
-    result.setTotalDataOut((dataFrameTo.getTotalDataOut() - dataFrameFrom.getTotalDataOut()) / timeSpan);
-    result.setTotalPacketsIn((dataFrameTo.getTotalPacketsIn() - dataFrameFrom.getTotalPacketsIn()) / timeSpan);
-    result.setTotalPacketsOut((dataFrameTo.getTotalPacketsOut() - dataFrameFrom.getTotalPacketsOut()) / timeSpan);
-    result.setTotalErrorsIn((dataFrameTo.getTotalErrorsIn() - dataFrameFrom.getTotalErrorsIn()) / timeSpan);
-    result.setTotalErrorsOut((dataFrameTo.getTotalErrorsOut() - dataFrameFrom.getTotalErrorsOut()) / timeSpan);
-    result.setTotalDropsIn((dataFrameTo.getTotalDropsIn() - dataFrameFrom.getTotalDropsIn()) / timeSpan);
-    result.setTotalDropsOut((dataFrameTo.getTotalDropsOut() - dataFrameFrom.getTotalDropsOut()) / timeSpan);
+    result.setTotalDataIn((long long)((dataFrameTo.getTotalDataIn() - dataFrameFrom.getTotalDataIn()) / timeSpan));
+    result.setTotalDataOut((long long)((dataFrameTo.getTotalDataOut() - dataFrameFrom.getTotalDataOut()) / timeSpan));
+    result.setTotalPacketsIn((long long)((dataFrameTo.getTotalPacketsIn() - dataFrameFrom.getTotalPacketsIn()) / timeSpan));
+    result.setTotalPacketsOut((long long)((dataFrameTo.getTotalPacketsOut() - dataFrameFrom.getTotalPacketsOut()) / timeSpan));
+    result.setTotalErrorsIn((long long)((dataFrameTo.getTotalErrorsIn() - dataFrameFrom.getTotalErrorsIn()) / timeSpan));
+    result.setTotalErrorsOut((long long)((dataFrameTo.getTotalErrorsOut() - dataFrameFrom.getTotalErrorsOut()) / timeSpan));
+    result.setTotalDropsIn((long long)((dataFrameTo.getTotalDropsIn() - dataFrameFrom.getTotalDropsIn()) / timeSpan));
+    result.setTotalDropsOut((long long)((dataFrameTo.getTotalDropsOut() - dataFrameFrom.getTotalDropsOut()) / timeSpan));
 }
 
 void Statistics::calculateMinMax(const DataFrame& dataFrame, DataFrame& min, DataFrame& max)
@@ -185,13 +185,13 @@ unsigned int Statistics::getAverageWindow()
     unsigned int refreshInterval = SettingStore::get("RefreshInterval");
     unsigned int averageWindow = SettingStore::get("AverageWindow");
 
-    return 1000.0 / refreshInterval * averageWindow;
+    return (unsigned int) (1000.0 / refreshInterval * averageWindow);
 }
 
 unsigned int Statistics::getSecondWindow()
 {
     unsigned int refreshInterval = SettingStore::get("RefreshInterval");
-    unsigned int secondWindow = 1000.0 / refreshInterval;
+    unsigned int secondWindow = (unsigned int) (1000.0 / refreshInterval);
 
     return secondWindow > 0 ? secondWindow : 1;
 }
