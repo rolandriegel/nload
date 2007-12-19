@@ -87,6 +87,8 @@ bool SettingStore::writeToFile(const std::string& file)
     if(!fout.is_open())
         return false;
 
+    fout << "Version=\"1\"\n";
+
     // output settings
     for(map<string, Setting>::const_iterator itSetting = m_settings.begin(); itSetting != m_settings.end(); ++itSetting)
         fout << itSetting->second;
