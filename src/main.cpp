@@ -81,12 +81,14 @@ int main(int argc, char *argv[])
     SettingStore::add(Setting("RefreshInterval", "Refresh interval (ms)", STANDARD_REFRESH_INTERVAL));
     SettingStore::add(Setting("TrafficFormat", "Unit for traffic numbers", STANDARD_TRAFFIC_FORMAT));
 
-    map<string, string> valueMapping;
-
     SettingStore::get("AverageWindow").pushFilter(new SettingFilterMin(5));
     SettingStore::get("BarMaxIn").pushFilter(new SettingFilterMin(10));
     SettingStore::get("BarMaxOut").pushFilter(new SettingFilterMin(10));
     SettingStore::get("RefreshInterval").pushFilter(new SettingFilterMin(50));
+
+    SettingStore::get("Devices").pushFilter(new SettingFilterDefault("all"));
+
+    map<string, string> valueMapping;
 
     valueMapping[toString(false)] = "[ ]";
     valueMapping[toString(true)] = "[x]";

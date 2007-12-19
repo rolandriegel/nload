@@ -16,6 +16,24 @@ class SettingFilter
         virtual void filterRead(std::string& value) = 0;
 };
 
+class SettingFilterDefault : public SettingFilter
+{
+    public:
+        SettingFilterDefault(const std::string& def);
+        ~SettingFilterDefault();
+
+        std::string getId() const;
+
+        void setDefault(const std::string& def);
+        const std::string& getDefault() const;
+
+        bool filterWrite(std::string& valueNew);
+        void filterRead(std::string& value);
+        
+    private:
+        std::string m_default;
+};
+
 class SettingFilterMap : public SettingFilter
 {
     public:

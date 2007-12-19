@@ -4,6 +4,42 @@
 
 using namespace std;
 
+SettingFilterDefault::SettingFilterDefault(const string& def)
+    : m_default(def)
+{
+}
+
+SettingFilterDefault::~SettingFilterDefault()
+{
+}
+
+string SettingFilterDefault::getId() const
+{
+    return "default";
+}
+
+void SettingFilterDefault::setDefault(const string& def)
+{
+    m_default = def;
+}
+
+const string& SettingFilterDefault::getDefault() const
+{
+    return m_default;
+}
+
+bool SettingFilterDefault::filterWrite(string& valueNew)
+{
+    if(valueNew.empty())
+        valueNew = m_default;
+
+    return true;
+}
+
+void SettingFilterDefault::filterRead(string& value)
+{
+}
+
 SettingFilterMap::SettingFilterMap(const map<string, string>& filterMap)
     : m_filterMap(filterMap)
 {
