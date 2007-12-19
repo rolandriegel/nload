@@ -31,11 +31,6 @@ TrafficWindow::~TrafficWindow()
 {
 }
 
-vector<Device*>& TrafficWindow::devices()
-{
-    return m_devices;
-}
-
 void TrafficWindow::processKey(int key)
 {
     switch(key)
@@ -44,42 +39,41 @@ void TrafficWindow::processKey(int key)
         case KEY_DOWN:
         case KEY_NPAGE:
         case KEY_ENTER:
-        case 'n':
         case '\n':
         case '\t':
         case '\015':
             m_curDev += showMultipleDevices() ? getHeight() / 9 : 1;
-            if((unsigned int) m_curDev >= m_devices.size())
-                m_curDev = 0;
             break;
         case KEY_LEFT:
         case KEY_UP:
         case KEY_PPAGE:
-        case 'p':
             m_curDev -= showMultipleDevices() ? getHeight() / 9 : 1;
-            if(m_curDev < 0)
-                m_curDev = m_devices.size() - 1;
             break;
     }
-    if(showMultipleDevices() && (unsigned int) getHeight() / 9 >= m_devices.size())
-        m_curDev = 0;
 }
 
-void TrafficWindow::printTraffic()
+void TrafficWindow::printTraffic(const vector<Device*>& devices)
 {
-    // update all devices and print the data of the current one
-    for(int i = 0; (unsigned int) i < m_devices.size(); i++)
+    if((unsigned int) m_curDev >= devices.size() || m_curDev < 0)
+        m_curDev = 0;
+
+    // print data of the current device(s)
+    if(!showMultipleDevices())
     {
-        m_devices[i]->update();
-        if(!showMultipleDevices())
+        devices[m_curDev]->print(*this);
+    }
+    else
+    {
+        if((unsigned int) getHeight() / 9 >= devices.size())
+            m_curDev = 0;
+
+        int i = m_curDev;
+        while(getHeight() - getY() >= 9)
         {
-            if(i == m_curDev)
-                m_devices[i]->print(*this);
-        }
-        else
-        {
-            if(i >= m_curDev && getHeight() - getY() >= 9)
-                m_devices[i]->print(*this);
+            devices[i++]->print(*this);
+
+            if((unsigned int) i >= devices.size())
+                break;
         }
     }
 }

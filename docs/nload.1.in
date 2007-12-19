@@ -70,11 +70,10 @@ Same as -i but for the graph indicating the outgoing bandwidth usage.
 .TP
 .B \-t interval
 Determines the refresh interval of the display in milliseconds.
-If interval is 0 print net load once and exit.
 The default value of interval is 500.
 
 PLEASE NOTE:
-Specifying refresh intervals shorter than about 200 milliseconds makes traffic
+Specifying refresh intervals shorter than about 100 milliseconds makes traffic
 calculation very unprecise. Also the display may flicker using such short
 refresh intervals.
 .B nload
@@ -105,45 +104,45 @@ command line, or, if none where specified, the default device. In this mode,
 the following key shortcuts are available.
 
 .TP
-.B 'ArrowRight', 'ArrowDown', 'PageDown', 'Enter', 'Tab', 'n'
+.B 'ArrowRight', 'ArrowDown', 'PageDown', 'Enter', 'Tab'
 Switch the display to the next network device, or, when started with the
 .B \-m
 flag, to the next page of devices.
 
 .TP
-.B 'o'
-Show the option window (see section 
-.B OPTION WINDOW
-below).
-
-.TP
-.B 'ArrowLeft', 'ArrowUp', 'PageUp', 'p'
+.B 'ArrowLeft', 'ArrowUp', 'PageUp'
 Switch the display to the previous network device, or, when started with
 the
 .B \-m
 flag, to the previous page of devices.
 
 .TP
+.B 'F2'
+Show the option window (see section 
+.B OPTION WINDOW
+below).
+
+.TP
+.B 'F5'
+Save current settings to the users config file.
+
+.TP
+.B 'F6'
+Reload settings from the config files.
+
+.TP
 .B 'q', 'Ctrl+C'
 Quit
 .BR nload .
 
-.TP
-.B 'r'
-Reload settings from the config files.
-
-.TP
-.B 's'
-Save current settings to the users config file.
-
 .SH OPTION WINDOW
 The parameters given to
 .B nload
-on the command line can be adjusted during run time by pressing the 'o' key. A
+on the command line can be adjusted during run time by pressing the 'F2' key. A
 small window appears on the top of the screen, listing the available settings.
 
 .TP
-.B 'o'
+.B 'F2'
 Show/hide the option window.
 
 .TP
@@ -155,11 +154,11 @@ Navigate within the edit fields.
 Navigate between the settings.
 
 .TP
-.B 'PageUp', 'PageDown', 'Space', 'Tab'
+.B 'PageUp', 'PageDown', 'Tab'
 Toggle between the different values possible for the current field.
 
 .TP
-.B '+', 'n' / '-', 'p'
+.B '+' / '-'
 Switch to the next / previous page of settings.
 
 .SH FILES

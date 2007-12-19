@@ -158,7 +158,6 @@ void OptWindow::processKey(int request)
                 request = REQ_PREV_CHOICE;
                 break;
             case KEY_NPAGE:
-            case ' ':
             case '\t':
                 request = REQ_NEXT_CHOICE;
                 break;
@@ -169,11 +168,9 @@ void OptWindow::processKey(int request)
                 request = REQ_END_LINE;
                 break;
             case '+':
-            case 'n':
                 request = REQ_NEXT_PAGE;
                 break;
             case '-':
-            case 'p':
                 request = REQ_PREV_PAGE;
                 break;
         }

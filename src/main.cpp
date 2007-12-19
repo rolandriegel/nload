@@ -68,12 +68,15 @@ using namespace std;
 static OptWindow m_optWindow;
 static TrafficWindow m_mainWindow;
 
+static bool quit = false;
+
 int main(int argc, char *argv[])
 {
     SettingStore::add(Setting("AverageWindow", "Window length for average (s)", STANDARD_AVERAGE_WINDOW));
     SettingStore::add(Setting("BarMaxIn", "Max Incoming deflection (kBit/s)", STANDARD_MAX_DEFLECTION));
     SettingStore::add(Setting("BarMaxOut", "Max Outgoing deflection (kBit/s)", STANDARD_MAX_DEFLECTION));
     SettingStore::add(Setting("DataFormat", "Unit for data numbers", STANDARD_DATA_FORMAT));
+    SettingStore::add(Setting("Devices", "Devices to show", "all"));
     SettingStore::add(Setting("MultipleDevices", "Show multiple devices", STANDARD_HIDE_GRAPHS));
     SettingStore::add(Setting("RefreshInterval", "Refresh interval (ms)", STANDARD_REFRESH_INTERVAL));
     SettingStore::add(Setting("TrafficFormat", "Unit for traffic numbers", STANDARD_TRAFFIC_FORMAT));
@@ -115,9 +118,6 @@ int main(int argc, char *argv[])
     string homeDir = homeDirArray;
     SettingStore::readFromFile("/etc/nload.conf");
     SettingStore::readFromFile(homeDir + "/.nload");
-
-    list<string> devicesRequested;
-    bool print_only_once = false;
 
     // parse the command line
     for(int i = 1; i < argc; i++)
@@ -199,10 +199,7 @@ int main(int argc, char *argv[])
             {
                 setting = atoi(argv[ i + 1 ]);
                 if(setting == 0)
-                {
-                    print_only_once = true;
                     setting = STANDARD_REFRESH_INTERVAL;
-                }
 
                 i++;
             }
@@ -338,64 +335,32 @@ int main(int argc, char *argv[])
         // assume unknown parameter to be the network device
         else
         {
-            devicesRequested.push_back(argv[i]);
+            Setting& devices = SettingStore::get("Devices");
+
+            if(string(argv[i]) == "all")
+                devices = "all";
+            else
+                devices = devices.getValue() + " " + argv[i];
         }
     }
 
     // auto-detect network devices
     DevReaderFactory::findAllDevices();
-    const map<string, DevReader*>& devicesDetected = DevReaderFactory::getAllDevReaders();
+    const map<string, DevReader*>& deviceReaders = DevReaderFactory::getAllDevReaders();
 
-    map<string, DevReader*> deviceReaders;
-    if(devicesRequested.empty() || devicesRequested.front() == "all")
+    // create one instance of the Device class per device
+    map<string, Device*> deviceHandlers;
+    for(map<string, DevReader*>::const_iterator itDevice = deviceReaders.begin(); itDevice != deviceReaders.end(); ++itDevice)
     {
-        // use all detected devices
-        deviceReaders = devicesDetected;
-    }
-    else
-    {
-        // check if requested devices are available
-        for(list<string>::const_iterator itRequested = devicesRequested.begin(); itRequested != devicesRequested.end(); ++itRequested)
-        {
-            map<string, DevReader*>::const_iterator detectedDevice = devicesDetected.find(*itRequested);
-            if(detectedDevice != devicesDetected.end())
-            {
-                deviceReaders[*itRequested] = detectedDevice->second;
-            }
-            else
-            {
-                cerr << "no such device: " << *itRequested << endl;
-            }
-        }
-    }
+        Device* device = new Device(*itDevice->second);
+        device->update();
 
-    if(devicesRequested.size() > deviceReaders.size())
-    {
-        cerr << "some devices not found, aborting" << endl;
-        return 0;
-    }
-    if(deviceReaders.empty())
-    {
-        cerr << "no devices left, aborting" << endl;
-        return 0;
+        deviceHandlers[itDevice->first] = device;
     }
 
     init();
 
-    // create one instance of the Dev class per device
-    unsigned int deviceIndex = 0;
-    for(map<string, DevReader*>::const_iterator itDevice = deviceReaders.begin(); itDevice != deviceReaders.end(); ++itDevice)
-    {
-        Device* device = new Device(*itDevice->second);
-        device->setDeviceNumber(deviceIndex++);
-        device->setTotalNumberOfDevices(deviceReaders.size());
-
-        device->update();
-
-        m_mainWindow.devices().push_back(device);
-    }
-
-    do
+    while(!quit)
     {
         // wait RefreshInterval milliseconds (in steps of 100 ms)
         struct timespec wantedTime;
@@ -403,7 +368,7 @@ int main(int argc, char *argv[])
         
         int restOfRefreshInterval = SettingStore::get("RefreshInterval");
         
-        while(restOfRefreshInterval > 0)
+        while(restOfRefreshInterval > 0 && !quit)
         {
             restOfRefreshInterval -= 100;
             wantedTime.tv_nsec = (restOfRefreshInterval >= 0 ? 100 : 100 + restOfRefreshInterval) * 1000000L;
@@ -414,53 +379,87 @@ int main(int argc, char *argv[])
             int key;
             while((key = getch()) != ERR)
             {
-                switch(key)
+                if(m_optWindow.isVisible())
                 {
-                    case 'o':
-                    case 'O':
-                        if(m_optWindow.isVisible())
-                        {
-                            m_optWindow.hide();
-                            m_mainWindow.resize(0, 0, Screen::width(), Screen::height());
-                        }
-                        else
-                        {
+                    if(key == KEY_F(2))
+                    {
+                        m_optWindow.hide();
+                        m_mainWindow.resize(0, 0, Screen::width(), Screen::height());
+                        restOfRefreshInterval = 0; // update the screen
+                    }
+                    else
+                    {
+                        m_optWindow.processKey(key);
+                    }
+                }
+                else
+                {
+                    switch(key)
+                    {
+                        case KEY_F(2):
                             m_mainWindow.resize(0, Screen::height() / 4, Screen::width(), Screen::height() - Screen::height() / 4);
                             m_optWindow.show(0, 0, Screen::width(), Screen::height() / 4);
-                        }
-                        restOfRefreshInterval = 0; // update the screen
-                        break;
-                    case 'q':
-                    case 'Q':
-                        if(!m_optWindow.isVisible())
-                            end();
-                        break;
-                    case 'r':
-                    case 'R':
-                        SettingStore::readFromFile("/etc/nload.conf");
-                        SettingStore::readFromFile(homeDir + "/.nload");
-                        if(m_optWindow.isVisible())
-                            m_optWindow.show(0, 0, Screen::width(), Screen::height() / 4);
-                        break;
-                    case 's':
-                    case 'S':
-                        SettingStore::writeToFile(homeDir + "/.nload");
-                        break;
-                    default:
-                        if(m_optWindow.isVisible())
-                            m_optWindow.processKey(key);
-                        else
+                            restOfRefreshInterval = 0; // update the screen
+                            break;
+                        case KEY_F(5):
+                            SettingStore::writeToFile(homeDir + "/.nload");
+                            break;
+                        case KEY_F(6):
+                            SettingStore::readFromFile("/etc/nload.conf");
+                            SettingStore::readFromFile(homeDir + "/.nload");
+                            break;
+                        case 'q':
+                        case 'Q':
+                            quit = true;
+                            break;
+                        default:
                             m_mainWindow.processKey(key);
-                        break;
+                    }
                 }
             }
         }
+
+        if(quit)
+            break;
         
+        vector<string> devicesRequested = split(SettingStore::get("Devices"), " ");
+        vector<Device*> devicesToShow;
+
+        if(!devicesRequested.empty() && devicesRequested.front() != "all")
+        {
+            // check if requested devices are available
+            for(vector<string>::const_iterator itRequested = devicesRequested.begin(); itRequested != devicesRequested.end(); ++itRequested)
+            {
+                map<string, Device*>::const_iterator itDetectedDevice = deviceHandlers.find(*itRequested);
+                if(itDetectedDevice != deviceHandlers.end())
+                    devicesToShow.push_back(itDetectedDevice->second);
+            }
+        }
+
+        if(devicesToShow.empty())
+        {
+            // use all detected devices
+            for(map<string, Device*>::const_iterator itDevice = deviceHandlers.begin(); itDevice != deviceHandlers.end(); ++itDevice)
+                devicesToShow.push_back(itDevice->second);
+        }
+
+        // enumerate devices for display
+        unsigned int deviceIndex = 0;
+        for(vector<Device*>::const_iterator itDevice = devicesToShow.begin(); itDevice != devicesToShow.end(); ++itDevice)
+        {
+            (*itDevice)->setDeviceNumber(deviceIndex++);
+            (*itDevice)->setTotalNumberOfDevices(devicesToShow.size());
+        }
+
+        // update all devices
+        for(map<string, Device*>::const_iterator itDevice = deviceHandlers.begin(); itDevice != deviceHandlers.end(); ++itDevice)
+            itDevice->second->update();
+
         // clear the screen
         m_mainWindow.clear();
         
         // print device data
-        m_mainWindow.printTraffic();
+        m_mainWindow.printTraffic(devicesToShow);
         
         // refresh the screen
         m_mainWindow.refresh();
@@ -468,9 +467,14 @@ int main(int argc, char *argv[])
         if(m_optWindow.isVisible())
             m_optWindow.refresh(); // always show cursor in option dialog
         
-    } while(print_only_once != true); // do this endless except the user said "-t 0"
+    }
 
-    end();
+    finish();
+    
+    for(map<string, Device*>::const_iterator itDevice = deviceHandlers.begin(); itDevice != deviceHandlers.end(); ++itDevice)
+        delete itDevice->second;
+    deviceHandlers.clear();
+    
     return 0;
 }
 
@@ -504,14 +508,7 @@ void finish()
 
 void end(int signal)
 {
-    finish();
-    
-    vector<Device*>& devices = m_mainWindow.devices();
-    for(vector<Device*>::const_iterator i = devices.begin(); i != devices.end(); ++i)
-        delete *i;
-    devices.clear();
-    
-    exit(0);
+    quit = true;
 }
 
 void terminalResized(int signal)
@@ -558,7 +555,6 @@ void printHelp(bool error)
         << "                usage.\n"
         << "                Default is " << STANDARD_MAX_DEFLECTION << ".\n"
         << "-t interval     Determines the refresh interval of the display in milliseconds.\n"
-        << "                If 0 print net load only once and exit.\n"
         << "                Default is " << STANDARD_REFRESH_INTERVAL << ".\n"
         << "-u h|b|k|m|g    Sets the type of unit used for the display of traffic numbers.\n"
         << "   H|B|K|M|G    h: auto, b: Bit/s, k: kBit/s, m: MBit/s etc.\n"

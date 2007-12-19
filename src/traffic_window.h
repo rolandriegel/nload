@@ -31,14 +31,10 @@ class TrafficWindow : public Window
         ~TrafficWindow();
         
         void processKey(int key);
-        void printTraffic();
-        
-        std::vector<Device*>& devices();
+        void printTraffic(const std::vector<Device*>& devices);
         
     private:
         bool showMultipleDevices();
-        
-        std::vector<Device*> m_devices;
         
         int m_curDev;
 };
