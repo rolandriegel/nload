@@ -57,11 +57,11 @@
 #undef refresh
 
 #define STANDARD_AVERAGE_WINDOW 300
-#define STANDARD_DATA_FORMAT Statistics::megaByte
+#define STANDARD_DATA_FORMAT Statistics::humanReadableByte
 #define STANDARD_HIDE_GRAPHS false
 #define STANDARD_MAX_DEFLECTION 10240
 #define STANDARD_REFRESH_INTERVAL 500
-#define STANDARD_TRAFFIC_FORMAT Statistics::kiloBit
+#define STANDARD_TRAFFIC_FORMAT Statistics::humanReadableBit
 
 using namespace std;
 
@@ -548,7 +548,7 @@ void printHelp(bool error)
         << "-a period       Sets the length in seconds of the time window for average\n"
         << "                calculation.\n"
         << "                Default is " << STANDARD_AVERAGE_WINDOW << ".\n"
-        << "-i max_scaling  Specifies the 100%% mark in kBit/s of the graph indicating the\n"
+        << "-i max_scaling  Specifies the 100% mark in kBit/s of the graph indicating the\n"
         << "                incoming bandwidth usage. Ignored if max_scaling is 0 or the\n"
         << "                switch -m is given.\n"
         << "                Default is " << STANDARD_MAX_DEFLECTION << ".\n"
@@ -561,15 +561,17 @@ void printHelp(bool error)
         << "-u h|b|k|m|g    Sets the type of unit used for the display of traffic numbers.\n"
         << "   H|B|K|M|G    h: auto, b: Bit/s, k: kBit/s, m: MBit/s etc.\n"
         << "                H: auto, B: Byte/s, K: kByte/s, M: MByte/s etc.\n"
-        << "                Default is k.\n"
+        << "                Default is h.\n"
         << "-U h|b|k|m|g    Same as -u, but for a total amount of data (without \"/s\").\n"
-        << "   H|B|K|M|G    Default is M.\n"
+        << "   H|B|K|M|G    Default is H.\n"
         << "devices         Network devices to use.\n"
         << "                Default is to use all auto-detected devices.\n"
         << "--help\n"
         << "-h              Print this help.\n\n"
-        << "example: " << PACKAGE << " -t 200 -i 1024 -o 128 -U h\n\n"
-        << "The options above can also be changed at run time by pressing the 'o' key.\n"
+
+        << "example: " << PACKAGE << " -t 200 -i 1024 -o 128 -U M\n\n"
+
+        << "The options above can also be changed at run time by pressing the 'F2' key.\n"
         << endl;
 }
 
