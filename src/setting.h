@@ -29,9 +29,10 @@ class SettingFilter;
 class Setting
 {
     public:
-        Setting(const std::string& id = "", const std::string& description = "", const std::string& value = "") {}
+        Setting(const std::string& id = "", const std::string& description = "")
+            : m_id(id), m_description(description), m_value() {}
         template<class T>
-        Setting(const std::string& id = "", const std::string& description = "", const T& value = T())
+        Setting(const std::string& id, const std::string& description, const T& value)
             : m_id(id), m_description(description), m_value(toString(value)) {}
         ~Setting();
 
