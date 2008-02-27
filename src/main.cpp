@@ -87,6 +87,7 @@ int main(int argc, char *argv[])
     SettingStore::get("RefreshInterval").pushFilter(new SettingFilterMin(50));
 
     SettingStore::get("Devices").pushFilter(new SettingFilterDefault("all"));
+    SettingStore::get("Devices").pushFilter(new SettingFilterExclusive("all"));
 
     map<string, string> valueMapping;
 
@@ -122,6 +123,7 @@ int main(int argc, char *argv[])
     SettingStore::readFromFile(homeDir + "/.nload");
 
     // parse the command line
+    bool deleteDevicesRequested = true;
     for(int i = 1; i < argc; i++)
     {
         // does the user want help?
@@ -339,10 +341,13 @@ int main(int argc, char *argv[])
         {
             Setting& devices = SettingStore::get("Devices");
 
-            if(string(argv[i]) == "all")
-                devices = "all";
-            else
-                devices = devices.getValue() + " " + argv[i];
+            if(deleteDevicesRequested)
+            {
+                devices = "";
+                deleteDevicesRequested = false;
+            }
+
+            devices.setThroughFilter(trim(devices.getThroughFilter() + " " + argv[i]));
         }
     }
 
@@ -423,8 +428,8 @@ int main(int argc, char *argv[])
 
         if(quit)
             break;
-        
-        vector<string> devicesRequested = split(SettingStore::get("Devices"), " ");
+
+        vector<string> devicesRequested = split(trim(SettingStore::get("Devices").getThroughFilter()), " ");
         vector<Device*> devicesToShow;
 
         if(!devicesRequested.empty() && devicesRequested.front() != "all")

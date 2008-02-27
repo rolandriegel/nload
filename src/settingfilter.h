@@ -50,6 +50,26 @@ class SettingFilterDefault : public SettingFilter
         std::string m_default;
 };
 
+class SettingFilterExclusive : public SettingFilter
+{
+    public:
+        SettingFilterExclusive(const std::string& exclusive);
+        ~SettingFilterExclusive();
+
+        std::string getId() const;
+
+        void setExclusive(const std::string& exclusive);
+        const std::string& getExclusive() const;
+
+        bool filterWrite(std::string& valueNew);
+        void filterRead(std::string& value);
+        
+    private:
+        void substituteExclusive(std::string& value);
+
+        std::string m_exclusive;
+};
+
 class SettingFilterMap : public SettingFilter
 {
     public:

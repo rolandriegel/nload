@@ -56,6 +56,50 @@ void SettingFilterDefault::filterRead(string& value)
 {
 }
 
+SettingFilterExclusive::SettingFilterExclusive(const string& exclusive)
+    : m_exclusive(exclusive)
+{
+}
+
+SettingFilterExclusive::~SettingFilterExclusive()
+{
+}
+
+string SettingFilterExclusive::getId() const
+{
+    return "exclusive";
+}
+
+void SettingFilterExclusive::setExclusive(const string& exclusive)
+{
+    m_exclusive = exclusive;
+}
+
+const string& SettingFilterExclusive::getExclusive() const
+{
+    return m_exclusive;
+}
+
+bool SettingFilterExclusive::filterWrite(string& valueNew)
+{
+    substituteExclusive(valueNew);
+    return true;
+}
+
+void SettingFilterExclusive::filterRead(string& value)
+{
+    substituteExclusive(value);
+}
+
+void SettingFilterExclusive::substituteExclusive(string& value)
+{
+    if(value.find(m_exclusive + " ") == 0 ||
+       value.find(string(" ") + m_exclusive) == value.length() - (m_exclusive.length() + 1) ||
+       value.find(string(" ") + m_exclusive + " ") != string::npos
+      )
+        value = m_exclusive;
+}
+
 SettingFilterMap::SettingFilterMap(const map<string, string>& filterMap)
     : m_filterMap(filterMap)
 {
