@@ -1,4 +1,10 @@
 
+2008-02-27 Roland Riegel <feedback@roland-riegel.de>
+
+	* If devices are given on the command line, display only these
+
+	* Use --sysconfdir as given to configure
+
 2008-02-02 Roland Riegel <feedback@roland-riegel.de>
 
 	* Abort configure script if ncurses is not found

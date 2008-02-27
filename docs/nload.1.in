@@ -2,7 +2,7 @@
 .\" Man page for nload
 .\" Copyright (C) 2001 - 2008 by Roland Riegel <feedback@roland.riegel.de>
 .\"
-.TH nload 1 "February 02, 2008" nload "Network monitoring tools"
+.TH nload 1 "February 27, 2008" nload "Network monitoring tools"
 .SH NAME
 nload \- displays the current network usage
 
