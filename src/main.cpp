@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
     }
 
     string homeDir = homeDirArray;
-    SettingStore::readFromFile("/etc/nload.conf");
+    SettingStore::readFromFile(SYSCONFDIR "/nload.conf");
     SettingStore::readFromFile(homeDir + "/.nload");
 
     // parse the command line
