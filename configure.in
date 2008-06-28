@@ -1,7 +1,7 @@
 dnl Helder Correia <helder.correia@netcabo.pt>
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([nload], [0.7.1], [feedback@roland-riegel.de])
+AC_INIT([nload], [0.7.2], [feedback@roland-riegel.de])
 
 AC_CANONICAL_HOST
 
