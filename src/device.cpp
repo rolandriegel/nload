@@ -23,6 +23,7 @@
 #include "window.h"
 
 #include <iomanip>
+#include <limits.h>
 
 using namespace std;
 

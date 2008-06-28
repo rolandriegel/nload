@@ -52,6 +52,7 @@
 #include <time.h>
 #include <curses.h>
 #include <signal.h>
+#include <string.h>
 #undef clear
 #undef erase
 #undef refresh
