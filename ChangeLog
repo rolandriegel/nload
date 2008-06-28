@@ -1,4 +1,8 @@
 
+2008-06-28 Roland Riegel <feedback@roland-riegel.de>
+
+	* Really fix compilation with g++ 4.3
+
 2008-02-27 Roland Riegel <feedback@roland-riegel.de>
 
 	* If devices are given on the command line, display only these
