@@ -84,7 +84,7 @@ float Statistics::getUnitFactor(dataUnit unit, long long value)
             factor *= 1024 * 1024 * 1024;
             for(int i = 3; i >= 0; --i)
             {
-                if(value * (unit % 2 == 0 ? 8 : 1) >= factor)
+                if(value >= factor)
                     return factor;
 
                 factor /= 1024;
