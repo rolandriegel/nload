@@ -81,13 +81,12 @@ float Statistics::getUnitFactor(dataUnit unit, long long value)
     {
         case humanReadableBit:
         case humanReadableByte:
-            factor *= 1024 * 1024 * 1024;
-            for(int i = 3; i >= 0; --i)
+            for(int i = 0; i < 3; ++i)
             {
-                if(value >= factor)
+                if(value / factor < 1024)
                     return factor;
 
-                factor /= 1024;
+                factor *= 1024;
             }
             return factor;
         case bit:
@@ -109,19 +108,22 @@ float Statistics::getUnitFactor(dataUnit unit, long long value)
 
 string Statistics::getUnitString(dataUnit unit, long long value)
 {
-    string description = (unit % 2 == 0 ? "Bit" : "Byte");
+    const string description = (unit % 2 == 0 ? "Bit" : "Byte");
+    const string units[] = { "", "k", "M", "G" };
 
     switch(unit)
     {
         case humanReadableBit:
         case humanReadableByte:
-            if(value >= 1024 * 1024 * 1024 / (unit % 2 == 0 ? 8 : 1))
-                return 'G' + description;
-            if(value >= 1024 * 1024 / (unit % 2 == 0 ? 8 : 1))
-                return 'M' + description;
-            if(value >= 1024 / (unit % 2 == 0 ? 8 : 1))
-                return 'k' + description;
-            return description;
+            value *= (unit % 2 == 0 ? 8 : 1);
+            for(int i = 0; i < 3; ++i)
+            {
+                if(value < 1024)
+                    return units[i] + description;
+
+                value /= 1024;
+            }
+            return units[3] + description;
         case bit:
         case byte:
             return description;
