@@ -59,14 +59,14 @@ The default is 300.
 .TP
 .B \-i max_scaling
 Specifies the 100% mark in kBit/s of the graph indicating the incoming bandwidth usage.
-Ignored if max_scaling is 0 or the switch -m is given. The default value for max_scaling
+Ignored if max_scaling is 0 or the switch \-m is given. The default value for max_scaling
 is 10240.
 .TP
 .B \-m
 Show multiple devices at a time; do not show the traffic graphs.
 .TP
 .B \-o max_scaling
-Same as -i but for the graph indicating the outgoing bandwidth usage.
+Same as \-i but for the graph indicating the outgoing bandwidth usage.
 .TP
 .B \-t interval
 Determines the refresh interval of the display in milliseconds.
@@ -87,7 +87,7 @@ The upper case letters mean the corresponding units in Bytes (instead of Bits).
 The default is k.
 .TP
 .B \-U h|H|b|B|k|K|m|M|g|G
-Same as -u, but for an amount of data, e.g. Bit, kByte, GBit etc. (without "/s").
+Same as \-u, but for an amount of data, e.g. Bit, kByte, GBit etc. (without "/s").
 The default is M.
 .TP
 .B devices
