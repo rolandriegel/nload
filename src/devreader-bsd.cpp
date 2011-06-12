@@ -94,6 +94,8 @@ list<string> DevReaderBsd::findAllDevices()
         interfaceNames.push_back(string(sdl->sdl_data));
     }
 
+    free(buf);
+
     return interfaceNames;
 }
 
