@@ -502,7 +502,7 @@ void init()
     cbreak();
     
     // create main window
-    m_mainWindow.show(0, 0, 0, 0);
+    m_mainWindow.show(0, 0, Screen::width(), Screen::height());
 }
 
 void finish()
