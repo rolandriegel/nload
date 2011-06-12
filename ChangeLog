@@ -1,13 +1,29 @@
 
+2011-06-11 Roland Riegel <feedback@roland-riegel.de>
+
+	* Fix calculation of traffic and data units (thanks to Kirby Zhou, see also Debian bug #586943)
+
+	* Fix memory leak in BSD network device detection
+
+	* Workaround for faulty newwin() in ncurses 5.8
+
+	* Correctly escape minus signs in man page
+
+	* Tag 0.7.3 release
+
 2008-06-28 Roland Riegel <feedback@roland-riegel.de>
 
 	* Really fix compilation with g++ 4.3
+
+	* Tag 0.7.2 release
 
 2008-02-27 Roland Riegel <feedback@roland-riegel.de>
 
 	* If devices are given on the command line, display only these
 
 	* Use --sysconfdir as given to configure
+
+	* Tag 0.7.1 release
 
 2008-02-02 Roland Riegel <feedback@roland-riegel.de>
 

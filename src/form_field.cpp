@@ -2,7 +2,7 @@
                                form_field.cpp
                              -------------------
     begin                : Tue Jul 30 2002
-    copyright            : (C) 2002 - 2008 by Roland Riegel
+    copyright            : (C) 2002 - 2011 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 

@@ -2,7 +2,7 @@
                                   device.h
                              -------------------
     begin                : Wed Aug 1 2001
-    copyright            : (C) 2001 - 2008 by Roland Riegel
+    copyright            : (C) 2001 - 2011 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
