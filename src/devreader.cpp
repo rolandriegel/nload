@@ -71,7 +71,6 @@ DataFrame DevReader::getNewDataFrame()
 
 string DevReader::getDeviceIp4Address()
 {
-    struct sockaddr_in* sin;
     struct ifreq ifr;
     int sk;
     
@@ -91,11 +90,12 @@ string DevReader::getDeviceIp4Address()
     /* make the request */
     if(!ioctl(sk, SIOCGIFADDR, &ifr))
     {
-        sin = (struct sockaddr_in *) (&ifr.ifr_addr);
+        struct sockaddr_in sin;
+        memcpy(&sin, &ifr.ifr_addr, sizeof(sin));
         
         /* only use the IP number if the address family is really IPv4 */
-        if(sin->sin_family == AF_INET)
-            deviceIp = inet_ntoa(sin->sin_addr);
+        if(sin.sin_family == AF_INET)
+            deviceIp = inet_ntoa(sin.sin_addr);
     }
     
     /* close the temporary socket */
