@@ -2,7 +2,7 @@
                                   device.h
                              -------------------
     begin                : Wed Aug 1 2001
-    copyright            : (C) 2001 - 2011 by Roland Riegel
+    copyright            : (C) 2001 - 2012 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -40,10 +40,10 @@ class Device
         
     private:
         void fixOverflows(DataFrame& dataFrame, const DataFrame& dataFrameOld);
-        long long fixOverflow(long long value, long long valueOld);
+        unsigned long long fixOverflow(unsigned long long value, unsigned long long valueOld);
 
-        void printTrafficValue(Window& window, int x, int y, const std::string& description, long long value);
-        void printDataValue(Window& window, int x, int y, const std::string& description, long long value);
+        void printTrafficValue(Window& window, int x, int y, const std::string& description, unsigned long long value);
+        void printDataValue(Window& window, int x, int y, const std::string& description, unsigned long long value);
         void printStatisticsIn(Window& window, int x, int y);
         void printStatisticsOut(Window& window, int x, int y);
 

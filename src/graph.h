@@ -2,7 +2,7 @@
                                   graph.h
                              -------------------
     begin                : Sat Sep 29 2001
-    copyright            : (C) 2001 - 2011 by Roland Riegel
+    copyright            : (C) 2001 - 2012 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -30,16 +30,16 @@ class Graph
         
         void setNumOfBars(unsigned int numOfBars);
         void setHeightOfBars(unsigned int heightOfBars);
-        void setMaxDeflection(long long maxDeflection);
+        void setMaxDeflection(unsigned long long maxDeflection);
         
-        void update(long long value);
+        void update(unsigned long long value);
         void print(Window& window, int x, int y);
         void resetTrafficData();
 
     private:
         unsigned int m_heightOfBars;
-        long long m_maxDeflection;
-        std::list<long long> m_values;
+        unsigned long long m_maxDeflection;
+        std::list<unsigned long long> m_values;
 };
 
 #endif

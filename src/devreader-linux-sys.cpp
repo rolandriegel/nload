@@ -88,7 +88,7 @@ void DevReaderLinuxSys::readFromDevice(DataFrame& dataFrame)
     dataFrame.setValid(true);
 }
 
-long long DevReaderLinuxSys::readULongSysEntry(const string& entry)
+unsigned long long DevReaderLinuxSys::readULongSysEntry(const string& entry)
 {
     string sysEntryPath = "/sys/class/net/";
     sysEntryPath += m_deviceName;
@@ -99,7 +99,7 @@ long long DevReaderLinuxSys::readULongSysEntry(const string& entry)
     if(!sysEntry.is_open())
         return 0;
 
-    long long num = 0;
+    unsigned long long num = 0;
     sysEntry >> num;
     if(sysEntry.fail())
         return 0;

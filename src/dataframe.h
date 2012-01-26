@@ -38,29 +38,29 @@ class DataFrame
         const std::string& getIpV4() const { return m_ipv4; }
         void setIpV4(const std::string& ipv4) { m_ipv4 = ipv4; }
 
-        long long getTotalDataIn() const { return m_totalDataIn; }
-        void setTotalDataIn(long long totalDataIn) { m_totalDataIn = totalDataIn; }
+        unsigned long long getTotalDataIn() const { return m_totalDataIn; }
+        void setTotalDataIn(unsigned long long totalDataIn) { m_totalDataIn = totalDataIn; }
 
-        long long getTotalDataOut() const { return m_totalDataOut; }
-        void setTotalDataOut(long long totalDataOut) { m_totalDataOut = totalDataOut; }
+        unsigned long long getTotalDataOut() const { return m_totalDataOut; }
+        void setTotalDataOut(unsigned long long totalDataOut) { m_totalDataOut = totalDataOut; }
 
-        long long getTotalPacketsIn() const { return m_totalPacketsIn; }
-        void setTotalPacketsIn(long long totalPacketsIn) { m_totalPacketsIn = totalPacketsIn; }
+        unsigned long long getTotalPacketsIn() const { return m_totalPacketsIn; }
+        void setTotalPacketsIn(unsigned long long totalPacketsIn) { m_totalPacketsIn = totalPacketsIn; }
 
-        long long getTotalPacketsOut() const { return m_totalPacketsOut; }
-        void setTotalPacketsOut(long long totalPacketsOut) { m_totalPacketsOut = totalPacketsOut; }
+        unsigned long long getTotalPacketsOut() const { return m_totalPacketsOut; }
+        void setTotalPacketsOut(unsigned long long totalPacketsOut) { m_totalPacketsOut = totalPacketsOut; }
 
-        long long getTotalErrorsIn() const { return m_totalErrorsIn; }
-        void setTotalErrorsIn(long long totalErrorsIn) { m_totalErrorsIn = totalErrorsIn; }
+        unsigned long long getTotalErrorsIn() const { return m_totalErrorsIn; }
+        void setTotalErrorsIn(unsigned long long totalErrorsIn) { m_totalErrorsIn = totalErrorsIn; }
 
-        long long getTotalErrorsOut() const { return m_totalErrorsOut; }
-        void setTotalErrorsOut(long long totalErrorsOut) { m_totalErrorsOut = totalErrorsOut; }
+        unsigned long long getTotalErrorsOut() const { return m_totalErrorsOut; }
+        void setTotalErrorsOut(unsigned long long totalErrorsOut) { m_totalErrorsOut = totalErrorsOut; }
 
-        long long getTotalDropsIn() const { return m_totalDropsIn; }
-        void setTotalDropsIn(long long totalDropsIn) { m_totalDropsIn = totalDropsIn; }
+        unsigned long long getTotalDropsIn() const { return m_totalDropsIn; }
+        void setTotalDropsIn(unsigned long long totalDropsIn) { m_totalDropsIn = totalDropsIn; }
 
-        long long getTotalDropsOut() const { return m_totalDropsOut; }
-        void setTotalDropsOut(long long totalDropsOut) { m_totalDropsOut = totalDropsOut; }
+        unsigned long long getTotalDropsOut() const { return m_totalDropsOut; }
+        void setTotalDropsOut(unsigned long long totalDropsOut) { m_totalDropsOut = totalDropsOut; }
 
         unsigned long getTimeStampSeconds() const { return m_timeStampSeconds; }
         void setTimeStampSeconds(unsigned long seconds) { m_timeStampSeconds = seconds; }
@@ -71,14 +71,14 @@ class DataFrame
     private:
         std::string m_deviceName;
         std::string m_ipv4;
-        long long m_totalDataIn;
-        long long m_totalDataOut;
-        long long m_totalPacketsIn;
-        long long m_totalPacketsOut;
-        long long m_totalErrorsIn;
-        long long m_totalErrorsOut;
-        long long m_totalDropsIn;
-        long long m_totalDropsOut;
+        unsigned long long m_totalDataIn;
+        unsigned long long m_totalDataOut;
+        unsigned long long m_totalPacketsIn;
+        unsigned long long m_totalPacketsOut;
+        unsigned long long m_totalErrorsIn;
+        unsigned long long m_totalErrorsOut;
+        unsigned long long m_totalDropsIn;
+        unsigned long long m_totalDropsOut;
         unsigned long m_timeStampSeconds;
         unsigned long m_timeStampMicroseconds;
         bool m_valid;

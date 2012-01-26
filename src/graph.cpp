@@ -2,7 +2,7 @@
                                  graph.cpp
                              -------------------
     begin                : Sat Sep 29 2001
-    copyright            : (C) 2001 - 2011 by Roland Riegel
+    copyright            : (C) 2001 - 2012 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -44,13 +44,13 @@ void Graph::setHeightOfBars(unsigned int heightOfBars)
     m_heightOfBars = heightOfBars;
 }
 
-void Graph::setMaxDeflection(long long maxDeflection)
+void Graph::setMaxDeflection(unsigned long long maxDeflection)
 {
     m_maxDeflection = maxDeflection;
 }
 
 // new traffic measurement has been made => update the graph's value list
-void Graph::update(long long value)
+void Graph::update(unsigned long long value)
 {
     // [new_value] = Bytes/s
     
@@ -71,18 +71,28 @@ void Graph::print(Window& window, int x, int y)
     for(unsigned int l = 0; l < m_heightOfBars; l++)
     {
         // for each line cycle through the rows
-        for(list<long long>::reverse_iterator r = m_values.rbegin(); r != m_values.rend() ; r++)
+        for(list<unsigned long long>::reverse_iterator r = m_values.rbegin(); r != m_values.rend() ; r++)
         {
-            long long trafficPerLine = m_maxDeflection / m_heightOfBars;
-            long long restOfTraffic = ((*r) - (m_heightOfBars - l - 1) * trafficPerLine) % trafficPerLine;
-            if((float) (*r) / m_maxDeflection >= (float) (m_heightOfBars - l) / m_heightOfBars)
-                window.print('#');
-            else if(restOfTraffic >= 0.7 * trafficPerLine)
-                window.print('|');
-            else if(restOfTraffic >= 0.3 * trafficPerLine)
-                window.print('.');
-            else
+            unsigned long long trafficPerLine = m_maxDeflection / m_heightOfBars;
+            unsigned long long lowerLimit = m_maxDeflection * (m_heightOfBars - l - 1) / m_heightOfBars;
+
+            if(*r < lowerLimit)
+            {
                 window.print(' ');
+            }
+            else 
+            {
+                unsigned long long restOfTraffic = *r - lowerLimit;
+
+                if(restOfTraffic >= trafficPerLine)
+                    window.print('#');
+                else if(restOfTraffic >= trafficPerLine * 7 / 10)
+                    window.print('|');
+                else if(restOfTraffic >= trafficPerLine * 3 / 10)
+                    window.print('.');
+                else
+                    window.print(' ');
+            }
         }
         window.print('\n');
         window.setX(x);

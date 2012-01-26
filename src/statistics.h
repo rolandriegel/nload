@@ -2,7 +2,7 @@
                                statistics.h
                              -------------------
     begin                : Fri Nov 16 2007
-    copyright            : (C) 2007 - 2011 by Roland Riegel
+    copyright            : (C) 2007 - 2012 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -43,58 +43,58 @@ class Statistics
         Statistics() {}
         ~Statistics() {}
 
-        static float getUnitFactor(dataUnit unit, long long value);
-        static std::string getUnitString(dataUnit unit, long long value);
+        static float getUnitFactor(dataUnit unit, unsigned long long value);
+        static std::string getUnitString(dataUnit unit, unsigned long long value);
         
         void insertDataFrame(const DataFrame& dataFrame);
         void reset();
 
         bool isValid() const { return !m_dataFrames.empty(); }
 
-        long long getDataInTotal() const { return m_dataFrames.empty() ? 0 : m_dataFrames.back().getTotalDataIn(); }
-        long long getDataOutTotal() const { return m_dataFrames.empty() ? 0 : m_dataFrames.back().getTotalDataOut(); }
-        long long getPacketsInTotal() const { return m_dataFrames.empty() ? 0 : m_dataFrames.back().getTotalPacketsIn(); }
-        long long getPacketsOutTotal() const { return m_dataFrames.empty() ? 0 : m_dataFrames.back().getTotalPacketsOut(); }
-        long long getErrorsInTotal() const { return m_dataFrames.empty() ? 0 : m_dataFrames.back().getTotalErrorsIn(); }
-        long long getErrorsOutTotal() const { return m_dataFrames.empty() ? 0 : m_dataFrames.back().getTotalErrorsOut(); }
-        long long getDropsInTotal() const { return m_dataFrames.empty() ? 0 : m_dataFrames.back().getTotalDropsIn(); }
-        long long getDropsOutTotal() const { return m_dataFrames.empty() ? 0 : m_dataFrames.back().getTotalDropsOut(); }
+        unsigned long long getDataInTotal() const { return m_dataFrames.empty() ? 0 : m_dataFrames.back().getTotalDataIn(); }
+        unsigned long long getDataOutTotal() const { return m_dataFrames.empty() ? 0 : m_dataFrames.back().getTotalDataOut(); }
+        unsigned long long getPacketsInTotal() const { return m_dataFrames.empty() ? 0 : m_dataFrames.back().getTotalPacketsIn(); }
+        unsigned long long getPacketsOutTotal() const { return m_dataFrames.empty() ? 0 : m_dataFrames.back().getTotalPacketsOut(); }
+        unsigned long long getErrorsInTotal() const { return m_dataFrames.empty() ? 0 : m_dataFrames.back().getTotalErrorsIn(); }
+        unsigned long long getErrorsOutTotal() const { return m_dataFrames.empty() ? 0 : m_dataFrames.back().getTotalErrorsOut(); }
+        unsigned long long getDropsInTotal() const { return m_dataFrames.empty() ? 0 : m_dataFrames.back().getTotalDropsIn(); }
+        unsigned long long getDropsOutTotal() const { return m_dataFrames.empty() ? 0 : m_dataFrames.back().getTotalDropsOut(); }
 
-        long long getDataInPerSecond() const { return m_second.getTotalDataIn(); }
-        long long getDataOutPerSecond() const { return m_second.getTotalDataOut(); }
-        long long getPacketsInPerSecond() const { return m_second.getTotalPacketsIn(); }
-        long long getPacketsOutPerSecond() const { return m_second.getTotalPacketsOut(); }
-        long long getErrorsInPerSecond() const { return m_second.getTotalErrorsIn(); }
-        long long getErrorsOutPerSecond() const { return m_second.getTotalErrorsOut(); }
-        long long getDropsInPerSecond() const { return m_second.getTotalDropsIn(); }
-        long long getDropsOutPerSecond() const { return m_second.getTotalDropsOut(); }
+        unsigned long long getDataInPerSecond() const { return m_second.getTotalDataIn(); }
+        unsigned long long getDataOutPerSecond() const { return m_second.getTotalDataOut(); }
+        unsigned long long getPacketsInPerSecond() const { return m_second.getTotalPacketsIn(); }
+        unsigned long long getPacketsOutPerSecond() const { return m_second.getTotalPacketsOut(); }
+        unsigned long long getErrorsInPerSecond() const { return m_second.getTotalErrorsIn(); }
+        unsigned long long getErrorsOutPerSecond() const { return m_second.getTotalErrorsOut(); }
+        unsigned long long getDropsInPerSecond() const { return m_second.getTotalDropsIn(); }
+        unsigned long long getDropsOutPerSecond() const { return m_second.getTotalDropsOut(); }
 
-        long long getDataInAverage() const { return m_average.getTotalDataIn(); }
-        long long getDataOutAverage() const { return m_average.getTotalDataOut(); }
-        long long getPacketsInAverage() const { return m_average.getTotalPacketsIn(); }
-        long long getPacketsOutAverage() const { return m_average.getTotalPacketsOut(); }
-        long long getErrorsInAverage() const { return m_average.getTotalErrorsIn(); }
-        long long getErrorsOutAverage() const { return m_average.getTotalErrorsOut(); }
-        long long getDropsInAverage() const { return m_average.getTotalDropsIn(); }
-        long long getDropsOutAverage() const { return m_average.getTotalDropsOut(); }
+        unsigned long long getDataInAverage() const { return m_average.getTotalDataIn(); }
+        unsigned long long getDataOutAverage() const { return m_average.getTotalDataOut(); }
+        unsigned long long getPacketsInAverage() const { return m_average.getTotalPacketsIn(); }
+        unsigned long long getPacketsOutAverage() const { return m_average.getTotalPacketsOut(); }
+        unsigned long long getErrorsInAverage() const { return m_average.getTotalErrorsIn(); }
+        unsigned long long getErrorsOutAverage() const { return m_average.getTotalErrorsOut(); }
+        unsigned long long getDropsInAverage() const { return m_average.getTotalDropsIn(); }
+        unsigned long long getDropsOutAverage() const { return m_average.getTotalDropsOut(); }
 
-        long long getDataInMin() const { return m_min.getTotalDataIn(); }
-        long long getDataOutMin() const { return m_min.getTotalDataOut(); }
-        long long getPacketsInMin() const { return m_min.getTotalPacketsIn(); }
-        long long getPacketsOutMin() const { return m_min.getTotalPacketsOut(); }
-        long long getErrorsInMin() const { return m_min.getTotalErrorsIn(); }
-        long long getErrorsOutMin() const { return m_min.getTotalErrorsOut(); }
-        long long getDropsInMin() const { return m_min.getTotalDropsIn(); }
-        long long getDropsOutMin() const { return m_min.getTotalDropsOut(); }
+        unsigned long long getDataInMin() const { return m_min.getTotalDataIn(); }
+        unsigned long long getDataOutMin() const { return m_min.getTotalDataOut(); }
+        unsigned long long getPacketsInMin() const { return m_min.getTotalPacketsIn(); }
+        unsigned long long getPacketsOutMin() const { return m_min.getTotalPacketsOut(); }
+        unsigned long long getErrorsInMin() const { return m_min.getTotalErrorsIn(); }
+        unsigned long long getErrorsOutMin() const { return m_min.getTotalErrorsOut(); }
+        unsigned long long getDropsInMin() const { return m_min.getTotalDropsIn(); }
+        unsigned long long getDropsOutMin() const { return m_min.getTotalDropsOut(); }
 
-        long long getDataInMax() const { return m_max.getTotalDataIn(); }
-        long long getDataOutMax() const { return m_max.getTotalDataOut(); }
-        long long getPacketsInMax() const { return m_max.getTotalPacketsIn(); }
-        long long getPacketsOutMax() const { return m_max.getTotalPacketsOut(); }
-        long long getErrorsInMax() const { return m_max.getTotalErrorsIn(); }
-        long long getErrorsOutMax() const { return m_max.getTotalErrorsOut(); }
-        long long getDropsInMax() const { return m_max.getTotalDropsIn(); }
-        long long getDropsOutMax() const { return m_max.getTotalDropsOut(); }
+        unsigned long long getDataInMax() const { return m_max.getTotalDataIn(); }
+        unsigned long long getDataOutMax() const { return m_max.getTotalDataOut(); }
+        unsigned long long getPacketsInMax() const { return m_max.getTotalPacketsIn(); }
+        unsigned long long getPacketsOutMax() const { return m_max.getTotalPacketsOut(); }
+        unsigned long long getErrorsInMax() const { return m_max.getTotalErrorsIn(); }
+        unsigned long long getErrorsOutMax() const { return m_max.getTotalErrorsOut(); }
+        unsigned long long getDropsInMax() const { return m_max.getTotalDropsIn(); }
+        unsigned long long getDropsOutMax() const { return m_max.getTotalDropsOut(); }
 
     private:
         void calculateAverage(const DataFrame& dataFrameFrom, const DataFrame& dataFrameTo, DataFrame& result);

@@ -36,7 +36,7 @@ class DevReaderLinuxSys : public DevReader
         void readFromDevice(DataFrame& dataFrame);
 
     private:
-        long long readULongSysEntry(const std::string& entry);
+        unsigned long long readULongSysEntry(const std::string& entry);
 };
 
 #endif

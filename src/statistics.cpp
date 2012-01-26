@@ -2,7 +2,7 @@
                                statistics.cpp
                              -------------------
     begin                : Fri Nov 16 2007
-    copyright            : (C) 2007 - 2011 by Roland Riegel
+    copyright            : (C) 2007 - 2012 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -73,7 +73,7 @@ void Statistics::reset()
     m_dataFrames.clear();
 }
 
-float Statistics::getUnitFactor(dataUnit unit, long long value)
+float Statistics::getUnitFactor(dataUnit unit, unsigned long long value)
 {
     float factor = 1.0 / (unit % 2 == 0 ? 8 : 1);
     
@@ -106,7 +106,7 @@ float Statistics::getUnitFactor(dataUnit unit, long long value)
     }
 }
 
-string Statistics::getUnitString(dataUnit unit, long long value)
+string Statistics::getUnitString(dataUnit unit, unsigned long long value)
 {
     const string description = (unit % 2 == 0 ? "Bit" : "Byte");
     const string units[] = { "", "k", "M", "G" };
@@ -149,14 +149,14 @@ void Statistics::calculateAverage(const DataFrame& dataFrameFrom, const DataFram
     if(timeSpan <= 0)
         return;
 
-    result.setTotalDataIn((long long)((dataFrameTo.getTotalDataIn() - dataFrameFrom.getTotalDataIn()) / timeSpan));
-    result.setTotalDataOut((long long)((dataFrameTo.getTotalDataOut() - dataFrameFrom.getTotalDataOut()) / timeSpan));
-    result.setTotalPacketsIn((long long)((dataFrameTo.getTotalPacketsIn() - dataFrameFrom.getTotalPacketsIn()) / timeSpan));
-    result.setTotalPacketsOut((long long)((dataFrameTo.getTotalPacketsOut() - dataFrameFrom.getTotalPacketsOut()) / timeSpan));
-    result.setTotalErrorsIn((long long)((dataFrameTo.getTotalErrorsIn() - dataFrameFrom.getTotalErrorsIn()) / timeSpan));
-    result.setTotalErrorsOut((long long)((dataFrameTo.getTotalErrorsOut() - dataFrameFrom.getTotalErrorsOut()) / timeSpan));
-    result.setTotalDropsIn((long long)((dataFrameTo.getTotalDropsIn() - dataFrameFrom.getTotalDropsIn()) / timeSpan));
-    result.setTotalDropsOut((long long)((dataFrameTo.getTotalDropsOut() - dataFrameFrom.getTotalDropsOut()) / timeSpan));
+    result.setTotalDataIn((unsigned long long)((dataFrameTo.getTotalDataIn() - dataFrameFrom.getTotalDataIn()) / timeSpan));
+    result.setTotalDataOut((unsigned long long)((dataFrameTo.getTotalDataOut() - dataFrameFrom.getTotalDataOut()) / timeSpan));
+    result.setTotalPacketsIn((unsigned long long)((dataFrameTo.getTotalPacketsIn() - dataFrameFrom.getTotalPacketsIn()) / timeSpan));
+    result.setTotalPacketsOut((unsigned long long)((dataFrameTo.getTotalPacketsOut() - dataFrameFrom.getTotalPacketsOut()) / timeSpan));
+    result.setTotalErrorsIn((unsigned long long)((dataFrameTo.getTotalErrorsIn() - dataFrameFrom.getTotalErrorsIn()) / timeSpan));
+    result.setTotalErrorsOut((unsigned long long)((dataFrameTo.getTotalErrorsOut() - dataFrameFrom.getTotalErrorsOut()) / timeSpan));
+    result.setTotalDropsIn((unsigned long long)((dataFrameTo.getTotalDropsIn() - dataFrameFrom.getTotalDropsIn()) / timeSpan));
+    result.setTotalDropsOut((unsigned long long)((dataFrameTo.getTotalDropsOut() - dataFrameFrom.getTotalDropsOut()) / timeSpan));
 }
 
 void Statistics::calculateMinMax(const DataFrame& dataFrame, DataFrame& min, DataFrame& max)
