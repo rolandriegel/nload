@@ -23,7 +23,6 @@
 #include "window.h"
 
 #include <iomanip>
-#include <limits.h>
 
 using namespace std;
 
@@ -154,15 +153,21 @@ void Device::fixOverflows(DataFrame& dataFrame, const DataFrame& dataFrameOld)
 
 long long Device::fixOverflow(long long value, long long valueOld)
 {
-    if(value > UINT_MAX)
+    if(value > 0xffffffffLL)
         return value;
+    if(value < 0)
+        return 0;
 
-    if(value < (valueOld % UINT_MAX))
+    if(value < (valueOld & 0xffffffffLL))
+    {
         // overflow happend (again)
-        return ((valueOld / UINT_MAX) + 1) * UINT_MAX + value;
+        valueOld += 0x100000000LL;
+    }
 
     // no overflow happend, keep previous ones
-    return (valueOld / UINT_MAX) * UINT_MAX + value;
+    valueOld &= 0x7fffffff00000000LL;
+    value |= valueOld;
+    return value;
 }
 
 void Device::printTrafficValue(Window& window, int x, int y, const std::string& description, long long value)
