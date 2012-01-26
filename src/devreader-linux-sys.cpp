@@ -9,6 +9,7 @@
 
 #include "devreader-linux-sys.h"
 
+#include <fstream>
 #include <string>
 #include <list>
 
@@ -87,38 +88,23 @@ void DevReaderLinuxSys::readFromDevice(DataFrame& dataFrame)
     dataFrame.setValid(true);
 }
 
-unsigned long DevReaderLinuxSys::readULongSysEntry(const string& entry)
+long long DevReaderLinuxSys::readULongSysEntry(const string& entry)
 {
     string sysEntryPath = "/sys/class/net/";
     sysEntryPath += m_deviceName;
     sysEntryPath += '/';
     sysEntryPath += entry;
     
-    FILE* sysEntry;
-    if(!(sysEntry = fopen(sysEntryPath.c_str(), "r")))
+    ifstream sysEntry(sysEntryPath.c_str());
+    if(!sysEntry.is_open())
         return 0;
-    
-    char content[32];
-    size_t contentLength = 0;
-    contentLength = fread(content, sizeof(content[0]), sizeof(content) / sizeof(content[0]), sysEntry);
-    fclose(sysEntry);
 
-    if(contentLength > 0)
-    {
-        unsigned long num = 0;
-     
-        if(contentLength >= sizeof(content) / sizeof(content[0]))
-            contentLength = sizeof(content) / sizeof(content[0]) - 1;
-        
-        content[contentLength] = 0;
-        num = strtoul(content, 0, 10);
-
-        return num;
-    }
-    else
-    {
+    long long num = 0;
+    sysEntry >> num;
+    if(sysEntry.fail())
         return 0;
-    }
+
+    return num;
 }
 
 

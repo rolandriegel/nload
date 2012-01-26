@@ -108,15 +108,15 @@ void DevReaderLinuxProc::readFromDevice(DataFrame& dataFrame)
             continue;
 
         // read device data
-        unsigned int bytesIn = 0;
-        unsigned int packetsIn = 0;
-        unsigned int errorsIn = 0;
-        unsigned int dropsIn = 0;
-        unsigned int bytesOut = 0;
-        unsigned int packetsOut = 0;
-        unsigned int errorsOut = 0;
-        unsigned int dropsOut = 0;
-        unsigned int dummy = 0;
+        long long bytesIn = 0;
+        long long packetsIn = 0;
+        long long errorsIn = 0;
+        long long dropsIn = 0;
+        long long bytesOut = 0;
+        long long packetsOut = 0;
+        long long errorsOut = 0;
+        long long dropsOut = 0;
+        long long dummy = 0;
 
         istringstream sin(trim(line.substr(posEnd + 1)));
 

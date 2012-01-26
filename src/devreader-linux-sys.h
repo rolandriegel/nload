@@ -2,7 +2,7 @@
                              devreader-linux-sys.h
                              ---------------------
     begin                : Fri Nov 16 2007
-    copyright            : (C) 2007 - 2011 by Roland Riegel
+    copyright            : (C) 2007 - 2012 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -36,7 +36,7 @@ class DevReaderLinuxSys : public DevReader
         void readFromDevice(DataFrame& dataFrame);
 
     private:
-        unsigned long readULongSysEntry(const std::string& entry);
+        long long readULongSysEntry(const std::string& entry);
 };
 
 #endif
