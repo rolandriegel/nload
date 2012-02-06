@@ -2,7 +2,7 @@
                               traffic_window.h
                              -------------------
     begin                : Thu Jul 04 2002
-    copyright            : (C) 2002 - 2011 by Roland Riegel
+    copyright            : (C) 2002 - 2012 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 

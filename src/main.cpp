@@ -2,7 +2,7 @@
                                   main.cpp
                              -------------------
     begin                : Wed Jul 25 2001
-    copyright            : (C) 2001 - 2011 by Roland Riegel 
+    copyright            : (C) 2001 - 2012 by Roland Riegel 
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
@@ -17,7 +17,7 @@
 /*
  * nload
  * real time monitor for network traffic
- * Copyright (C) 2001 - 2011 Roland Riegel <feedback@roland-riegel.de>
+ * Copyright (C) 2001 - 2012 Roland Riegel <feedback@roland-riegel.de>
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -541,7 +541,7 @@ void printHelp(bool error)
     (error ? cerr : cout)
         << "\n"
         << PACKAGE << " version " << VERSION << "\n"
-        << "Copyright (C) 2001 - 2011 by Roland Riegel <feedback@roland-riegel.de>\n"
+        << "Copyright (C) 2001 - 2012 by Roland Riegel <feedback@roland-riegel.de>\n"
         << PACKAGE << " comes with ABSOLUTELY NO WARRANTY. This is free software, and you are\n"
         << "welcome to redistribute it under certain conditions. For more details see the\n"
         << "GNU General Public License Version 2 (http://www.gnu.org/copyleft/gpl.html).\n\n"

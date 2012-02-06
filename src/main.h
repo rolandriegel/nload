@@ -2,7 +2,7 @@
                                    main.h
                              -------------------
     begin                : Wed Jul 25 2001
-    copyright            : (C) 2001 - 2011 by Roland Riegel
+    copyright            : (C) 2001 - 2012 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 

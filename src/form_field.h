@@ -2,7 +2,7 @@
                                 form_field.h
                              -------------------
     begin                : Sat Jul 27 2002
-    copyright            : (C) 2002 - 2011 by Roland Riegel
+    copyright            : (C) 2002 - 2012 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 

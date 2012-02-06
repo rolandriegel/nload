@@ -2,7 +2,7 @@
                                settingstore.h
                              -------------------
     begin                : Tue Nov 06 2007
-    copyright            : (C) 2007 - 2011 by Roland Riegel
+    copyright            : (C) 2007 - 2012 by Roland Riegel
     email                : feedback@roland-riegel.de
  ***************************************************************************/
 
