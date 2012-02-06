@@ -1,4 +1,8 @@
 
+2012-02-06 Roland Riegel <feedback@roland-riegel.de>
+
+	* Newer Linux kernels use 64 bit counters, which caused traffic to increase by 4GB on every refresh (see Debian bug #651848)
+
 2011-06-11 Roland Riegel <feedback@roland-riegel.de>
 
 	* Fix calculation of traffic and data units (thanks to Kirby Zhou, see also Debian bug #586943)
