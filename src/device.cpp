@@ -163,7 +163,7 @@ unsigned long long Device::fixOverflow(unsigned long long value, unsigned long l
     }
 
     // no overflow happend, keep previous ones
-    valueOld &= 0x7fffffff00000000ULL;
+    valueOld &= 0xffffffff00000000ULL;
     value |= valueOld;
     return value;
 }
