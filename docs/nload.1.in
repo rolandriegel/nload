@@ -1,8 +1,8 @@
 .\"
 .\" Man page for nload
-.\" Copyright (C) 2001 - 2011 by Roland Riegel <feedback@roland.riegel.de>
+.\" Copyright (C) 2001 - 2012 by Roland Riegel <feedback@roland.riegel.de>
 .\"
-.TH nload 1 "June 12, 2011" nload "Network monitoring tools"
+.TH nload 1 "February 06, 2012" nload "Network monitoring tools"
 .SH NAME
 nload \- displays the current network usage
 
@@ -196,7 +196,7 @@ after having subscribed at
 .BR https://lists.sourceforge.net/lists/listinfo/nload-user .
 
 .SH AUTHOR
-Copyright (C) 2001 - 2011 Roland Riegel <feedback@roland-riegel.de>
+Copyright (C) 2001 - 2012 Roland Riegel <feedback@roland-riegel.de>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
