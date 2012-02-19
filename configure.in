@@ -53,7 +53,8 @@ case $host_os in
         AC_CHECK_LIB(socket, main)
         AC_CHECK_LIB(nsl, main)
         
-        INCLUDES="${INCLUDES} -I/usr/local/include/ncurses"
+        INCLUDES="${INCLUDES} -I/usr/local/include/ncurses -I/usr/include/ncurses"
+        LIBS="${LIBS} -L/usr/gnu/lib"
         AC_SUBST(INCLUDES)
         ;;
     *hpux*)
