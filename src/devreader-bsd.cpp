@@ -91,7 +91,7 @@ list<string> DevReaderBsd::findAllDevices()
         if(sdl->sdl_family != AF_LINK)
             continue;
         
-        interfaceNames.push_back(string(sdl->sdl_data));
+        interfaceNames.push_back(string(sdl->sdl_data, sdl->sdl_nlen));
     }
 
     free(buf);
