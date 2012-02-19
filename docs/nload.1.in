@@ -164,12 +164,15 @@ Switch to the next / previous page of settings.
 .SH FILES
 
 .TP
-.I /etc/nload.conf
-System-wide configuration file.
+.I $(HOME)/.nload
+User-specific configuration file (overrides system-wide settings). Press
+.B 'F5'
+from within nload to save the current settings to this file.
 
 .TP
-.I $(HOME)/.nload
-User-specific configuration file (overrides system-wide settings).
+.I /etc/nload.conf
+System-wide configuration file. It uses the same syntax as the user-specific
+configuration file.
 
 .TP
 .I /sys/class/net/*/* /proc/net/dev
