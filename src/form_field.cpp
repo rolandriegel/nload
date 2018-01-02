@@ -152,7 +152,7 @@ void Form::show(Window* main_window, SubWindow* sub_window)
     if(m_form)
         return;
 
-    m_curses_fields = new FIELD* [ m_fields.size() ];
+    m_curses_fields = new FIELD* [m_fields.size() + 1];
     vector<Field*>::const_iterator r = m_fields.begin(); 
     int i = 0;
     while(r != m_fields.end())
