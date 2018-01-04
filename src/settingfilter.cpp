@@ -211,3 +211,35 @@ SettingFilter::FilterResult SettingFilterMax::filterWrite(string& valueNew)
     return ResultSuccessContinue;
 }
 
+SettingFilterAllowValue::SettingFilterAllowValue(string value)
+    : m_allowedValue(value)
+{
+}
+
+SettingFilterAllowValue::~SettingFilterAllowValue()
+{
+}
+
+string SettingFilterAllowValue::getId() const
+{
+    return "allow";
+}
+
+void SettingFilterAllowValue::setAllowedValue(string value)
+{
+    m_allowedValue = value;
+}
+
+string SettingFilterAllowValue::getAllowedValue() const
+{
+    return m_allowedValue;
+}
+
+SettingFilter::FilterResult SettingFilterAllowValue::filterWrite(std::string& valueNew)
+{
+    if(valueNew == m_allowedValue)
+        return ResultSuccessQuit;
+
+    return ResultSuccessContinue;
+}
+

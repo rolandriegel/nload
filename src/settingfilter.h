@@ -135,5 +135,22 @@ class SettingFilterMax : public SettingFilter
         int m_max;
 };
 
+class SettingFilterAllowValue : public SettingFilter
+{
+    public:
+        SettingFilterAllowValue(std::string value);
+        ~SettingFilterAllowValue();
+
+        std::string getId() const;
+
+        void setAllowedValue(std::string value);
+        std::string getAllowedValue() const;
+
+        FilterResult filterWrite(std::string& valueNew);
+
+    private:
+        std::string m_allowedValue;
+};
+
 #endif
 
