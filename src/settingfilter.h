@@ -24,12 +24,26 @@
 class SettingFilter
 {
     public:
+        enum FilterResult
+        {
+            ResultSuccessContinue,
+            ResultSuccessQuit,
+            ResultFailure
+        };
+
         virtual ~SettingFilter() {}
 
         virtual std::string getId() const = 0;
 
-        virtual bool filterWrite(std::string& valueNew) = 0;
-        virtual void filterRead(std::string& value) = 0;
+        virtual FilterResult filterWrite(std::string& valueNew)
+        {
+            return ResultSuccessContinue;
+        }
+
+        virtual FilterResult filterRead(std::string& value)
+        {
+            return ResultSuccessContinue;
+        }
 };
 
 class SettingFilterDefault : public SettingFilter
@@ -43,8 +57,7 @@ class SettingFilterDefault : public SettingFilter
         void setDefault(const std::string& def);
         const std::string& getDefault() const;
 
-        bool filterWrite(std::string& valueNew);
-        void filterRead(std::string& value);
+        FilterResult filterWrite(std::string& valueNew);
         
     private:
         std::string m_default;
@@ -61,8 +74,8 @@ class SettingFilterExclusive : public SettingFilter
         void setExclusive(const std::string& exclusive);
         const std::string& getExclusive() const;
 
-        bool filterWrite(std::string& valueNew);
-        void filterRead(std::string& value);
+        FilterResult filterWrite(std::string& valueNew);
+        FilterResult filterRead(std::string& value);
         
     private:
         void substituteExclusive(std::string& value);
@@ -81,8 +94,8 @@ class SettingFilterMap : public SettingFilter
         void setMap(const std::map<std::string, std::string>& filterMap);
         const std::map<std::string, std::string>& getMap() const;
 
-        bool filterWrite(std::string& valueNew);
-        void filterRead(std::string& value);
+        FilterResult filterWrite(std::string& valueNew);
+        FilterResult filterRead(std::string& value);
         
     private:
         std::map<std::string, std::string> m_filterMap;
@@ -99,8 +112,7 @@ class SettingFilterMin : public SettingFilter
         void setMin(int min);
         int getMin() const;
 
-        bool filterWrite(std::string& valueNew);
-        void filterRead(std::string& value);
+        FilterResult filterWrite(std::string& valueNew);
         
     private:
         int m_min;
@@ -117,8 +129,7 @@ class SettingFilterMax : public SettingFilter
         void setMax(int max);
         int getMax() const;
 
-        bool filterWrite(std::string& valueNew);
-        void filterRead(std::string& value);
+        FilterResult filterWrite(std::string& valueNew);
         
     private:
         int m_max;

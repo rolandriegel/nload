@@ -76,7 +76,10 @@ string Setting::getThroughFilter() const
     string valueCopy = m_value;
 
     for(list<SettingFilter*>::const_reverse_iterator itFilter = m_filters.rbegin(); itFilter != m_filters.rend(); ++itFilter)
-        (*itFilter)->filterRead(valueCopy);
+    {
+        if((*itFilter)->filterRead(valueCopy) == SettingFilter::ResultSuccessQuit)
+            break;
+    }
 
     return valueCopy;
 }
@@ -87,7 +90,10 @@ bool Setting::setThroughFilter(const string& value)
 
     for(list<SettingFilter*>::iterator itFilter = m_filters.begin(); itFilter != m_filters.end(); ++itFilter)
     {
-        if(!(*itFilter)->filterWrite(valueCopy))
+        SettingFilter::FilterResult result = (*itFilter)->filterWrite(valueCopy);
+        if(result == SettingFilter::ResultSuccessQuit)
+            break;
+        else if(result == SettingFilter::ResultFailure)
             return false;
     }
 

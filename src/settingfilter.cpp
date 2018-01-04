@@ -44,16 +44,12 @@ const string& SettingFilterDefault::getDefault() const
     return m_default;
 }
 
-bool SettingFilterDefault::filterWrite(string& valueNew)
+SettingFilter::FilterResult SettingFilterDefault::filterWrite(string& valueNew)
 {
     if(valueNew.empty())
         valueNew = m_default;
 
-    return true;
-}
-
-void SettingFilterDefault::filterRead(string& value)
-{
+    return ResultSuccessContinue;
 }
 
 SettingFilterExclusive::SettingFilterExclusive(const string& exclusive)
@@ -80,15 +76,16 @@ const string& SettingFilterExclusive::getExclusive() const
     return m_exclusive;
 }
 
-bool SettingFilterExclusive::filterWrite(string& valueNew)
+SettingFilter::FilterResult SettingFilterExclusive::filterWrite(string& valueNew)
 {
     substituteExclusive(valueNew);
-    return true;
+    return ResultSuccessContinue;
 }
 
-void SettingFilterExclusive::filterRead(string& value)
+SettingFilter::FilterResult SettingFilterExclusive::filterRead(string& value)
 {
     substituteExclusive(value);
+    return ResultSuccessContinue;
 }
 
 void SettingFilterExclusive::substituteExclusive(string& value)
@@ -124,28 +121,30 @@ const map<string, string>& SettingFilterMap::getMap() const
     return m_filterMap;
 }
 
-bool SettingFilterMap::filterWrite(string& valueNew)
+SettingFilter::FilterResult SettingFilterMap::filterWrite(string& valueNew)
 {
     for(map<string, string>::const_iterator itMapping = m_filterMap.begin(); itMapping != m_filterMap.end(); ++itMapping)
     {
         if(itMapping->second == valueNew)
         {
             valueNew = itMapping->first;
-            return true;
+            return ResultSuccessContinue;
         }
     }
 
-    return false;
+    return ResultFailure;
 }
 
-void SettingFilterMap::filterRead(string& value)
+SettingFilter::FilterResult SettingFilterMap::filterRead(string& value)
 {
-    if(m_filterMap.empty())
-        return;
-
     map<string, string>::const_iterator itMapping = m_filterMap.find(value);
     if(itMapping != m_filterMap.end())
+    {
         value = itMapping->second;
+        return ResultSuccessContinue;
+    }
+
+    return ResultFailure;
 }
 
 SettingFilterMin::SettingFilterMin(int min)
@@ -172,16 +171,12 @@ int SettingFilterMin::getMin() const
     return m_min;
 }
 
-bool SettingFilterMin::filterWrite(string& valueNew)
+SettingFilter::FilterResult SettingFilterMin::filterWrite(string& valueNew)
 {
     if(fromString<int>(valueNew) < m_min)
         valueNew = toString(m_min);
 
-    return true;
-}
-
-void SettingFilterMin::filterRead(string& value)
-{
+    return ResultSuccessContinue;
 }
 
 SettingFilterMax::SettingFilterMax(int max)
@@ -208,15 +203,11 @@ int SettingFilterMax::getMax() const
     return m_max;
 }
 
-bool SettingFilterMax::filterWrite(string& valueNew)
+SettingFilter::FilterResult SettingFilterMax::filterWrite(string& valueNew)
 {
     if(fromString<int>(valueNew) > m_max)
         valueNew = toString(m_max);
 
-    return true;
-}
-
-void SettingFilterMax::filterRead(string& value)
-{
+    return ResultSuccessContinue;
 }
 
