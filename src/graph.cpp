@@ -20,6 +20,8 @@
 #include "settingstore.h"
 #include "window.h"
 
+#include <algorithm>
+
 using namespace std;
 
 Graph::Graph()
@@ -44,6 +46,7 @@ void Graph::setHeightOfBars(unsigned int heightOfBars)
     m_heightOfBars = heightOfBars;
 }
 
+// sets the maximum of the graph's bars
 void Graph::setMaxDeflection(unsigned long long maxDeflection)
 {
     m_maxDeflection = maxDeflection;
@@ -60,6 +63,16 @@ void Graph::update(unsigned long long value)
     // delete the last #-bar of the list, but keep at least one
     if(m_values.size() > 1)
         m_values.pop_back();
+}
+
+// calculate maximum of graph's current values
+unsigned long long Graph::calcMaxDeflection()
+{
+    list<unsigned long long>::const_iterator maxIt = max_element(m_values.begin(), m_values.end());
+    if(maxIt == m_values.end())
+        return 0;
+
+    return *maxIt;
 }
 
 // print the graph with the upper left corner at the coordinates (x, y)

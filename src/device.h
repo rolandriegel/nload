@@ -42,8 +42,13 @@ class Device
         void fixOverflows(DataFrame& dataFrame, const DataFrame& dataFrameOld);
         unsigned long long fixOverflow(unsigned long long value, unsigned long long valueOld);
 
+        unsigned long long roundUpMaxDeflection(unsigned long long value);
+
         void printTrafficValue(Window& window, int x, int y, const std::string& description, unsigned long long value);
         void printDataValue(Window& window, int x, int y, const std::string& description, unsigned long long value);
+        std::string formatTrafficValue(unsigned long value, int precision);
+        std::string formatDataValue(unsigned long long value, int precision);
+
         void printStatisticsIn(Window& window, int x, int y);
         void printStatisticsOut(Window& window, int x, int y);
 

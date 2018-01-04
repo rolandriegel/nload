@@ -83,7 +83,9 @@ int main(int argc, char *argv[])
     SettingStore::add(Setting("TrafficFormat", "Unit for traffic numbers", STANDARD_TRAFFIC_FORMAT));
 
     SettingStore::get("AverageWindow").pushFilter(new SettingFilterMin(5));
+    SettingStore::get("BarMaxIn").pushFilter(new SettingFilterAllowValue("0"));
     SettingStore::get("BarMaxIn").pushFilter(new SettingFilterMin(10));
+    SettingStore::get("BarMaxOut").pushFilter(new SettingFilterAllowValue("0"));
     SettingStore::get("BarMaxOut").pushFilter(new SettingFilterMin(10));
     SettingStore::get("RefreshInterval").pushFilter(new SettingFilterMin(50));
 
@@ -555,8 +557,8 @@ void printHelp(bool error)
         << "                calculation.\n"
         << "                Default is " << STANDARD_AVERAGE_WINDOW << ".\n"
         << "-i max_scaling  Specifies the 100% mark in kBit/s of the graph indicating the\n"
-        << "                incoming bandwidth usage. Ignored if max_scaling is 0 or the\n"
-        << "                switch -m is given.\n"
+        << "                incoming bandwidth usage. Use 0 for automatic scaling.\n"
+        << "                Ignored if the switch -m is given.\n"
         << "                Default is " << STANDARD_MAX_DEFLECTION << ".\n"
         << "-m              Show multiple devices at a time; no traffic graphs.\n"
         << "-o max_scaling  Same as -i but for the graph indicating the outgoing bandwidth\n"

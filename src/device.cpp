@@ -23,6 +23,7 @@
 #include "window.h"
 
 #include <iomanip>
+#include <sstream>
 
 using namespace std;
 
@@ -102,22 +103,30 @@ void Device::print(Window& window)
     // ... or not
     else
     {
+        unsigned long long maxDeflectionIn = (unsigned long long) SettingStore::get("BarMaxIn") * 1024 / 8;
+        unsigned long long maxDeflectionOut = (unsigned long long) SettingStore::get("BarMaxOut") * 1024 / 8;
+
+        if(maxDeflectionIn < 1)
+            maxDeflectionIn = roundUpMaxDeflection(m_deviceGraphIn.calcMaxDeflection());
+        if(maxDeflectionOut < 1)
+            maxDeflectionOut = roundUpMaxDeflection(m_deviceGraphOut.calcMaxDeflection());
+
         // incoming traffic
-        window.print() << "Incoming:" << endl;
+        window.print() << "Incoming (100% @ " << formatTrafficValue(maxDeflectionIn, 0) << "):" << endl;
         
         m_deviceGraphIn.setNumOfBars(window.getWidth() * 2 / 3);
         m_deviceGraphIn.setHeightOfBars((window.getHeight() - window.getY() - 1) / 2);
-        m_deviceGraphIn.setMaxDeflection((unsigned long long) SettingStore::get("BarMaxIn") * 1024 / 8);
+        m_deviceGraphIn.setMaxDeflection(maxDeflectionIn);
         m_deviceGraphIn.print(window, 0, window.getY());
         
         printStatisticsIn(window, window.getWidth() * 2 / 3 + 2, window.getY() - 5);
         
         // outgoing traffic
-        window.print() << "Outgoing:" << endl;
+        window.print() << "Outgoing (100% @ " << formatTrafficValue(maxDeflectionOut, 0) << "):" << endl;
         
         m_deviceGraphOut.setNumOfBars(window.getWidth() * 2 / 3);
         m_deviceGraphOut.setHeightOfBars(window.getHeight() - window.getY());
-        m_deviceGraphOut.setMaxDeflection((unsigned long long) SettingStore::get("BarMaxOut") * 1024 / 8);
+        m_deviceGraphOut.setMaxDeflection(maxDeflectionOut);
         m_deviceGraphOut.print(window, 0, window.getY());
         
         printStatisticsOut(window, window.getWidth() * 2 / 3 + 2, window.getY() - 4);
@@ -168,24 +177,54 @@ unsigned long long Device::fixOverflow(unsigned long long value, unsigned long l
     return value;
 }
 
+unsigned long long Device::roundUpMaxDeflection(unsigned long long value)
+{
+    unsigned long long rounded = 2 * 1024; // 2 kByte/s
+    while (rounded < value)
+    {
+        if((rounded << 1) < rounded)
+            return value;
+
+        rounded <<= 1;
+    }
+
+    return rounded;
+}
+
 void Device::printTrafficValue(Window& window, int x, int y, const std::string& description, unsigned long long value)
+{
+    window.print(x, y) << description << ": " << formatTrafficValue(value, 2) << endl;
+}
+
+void Device::printDataValue(Window& window, int x, int y, const std::string& description, unsigned long long value)
+{
+    window.print(x, y) << description << ": " << formatDataValue(value, 2) << endl;
+}
+
+string Device::formatTrafficValue(unsigned long value, int precision)
 {
     Statistics::dataUnit trafficFormat = (Statistics::dataUnit) ((int) SettingStore::get("TrafficFormat"));
 
     string unitString = Statistics::getUnitString(trafficFormat, value);
     float unitFactor = Statistics::getUnitFactor(trafficFormat, value);
 
-    window.print(x, y) << fixed << setprecision(2) << description << ": " << ((float) value / unitFactor) << " " << unitString << "/s" << endl;
+    ostringstream oss;
+    oss << fixed << setprecision(precision) << ((float) value / unitFactor) << " " << unitString << "/s";
+
+    return oss.str();
 }
 
-void Device::printDataValue(Window& window, int x, int y, const std::string& description, unsigned long long value)
+string Device::formatDataValue(unsigned long long value, int precision)
 {
     Statistics::dataUnit dataFormat = (Statistics::dataUnit) ((int) SettingStore::get("DataFormat"));
 
     string unitString = Statistics::getUnitString(dataFormat, value);
     float unitFactor = Statistics::getUnitFactor(dataFormat, value);
 
-    window.print(x, y) << fixed << setprecision(2) << description << ": " << ((float) value / unitFactor) << " " << unitString << endl;
+    ostringstream oss;
+    oss << fixed << setprecision(precision) << ((float) value / unitFactor) << " " << unitString << endl;
+
+    return oss.str();
 }
 
 void Device::printStatisticsIn(Window& window, int x, int y)

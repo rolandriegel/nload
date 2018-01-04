@@ -36,6 +36,8 @@ class Graph
         void print(Window& window, int x, int y);
         void resetTrafficData();
 
+        unsigned long long calcMaxDeflection();
+
     private:
         unsigned int m_heightOfBars;
         unsigned long long m_maxDeflection;
