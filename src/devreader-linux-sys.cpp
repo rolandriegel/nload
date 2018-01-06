@@ -45,6 +45,7 @@ list<string> DevReaderLinuxSys::findAllDevices()
     list<string> interfaceNames;
     DIR* sysDir = opendir("/sys/class/net");
     struct dirent* sysDirEntry = 0;
+    struct stat sysStat;
 
     if(!sysDir)
         return interfaceNames;
@@ -54,6 +55,10 @@ list<string> DevReaderLinuxSys::findAllDevices()
         string interfaceName(sysDirEntry->d_name);
         
         if(interfaceName[0] == '.')
+            continue;
+
+        if(stat(("/sys/class/net/" + interfaceName).c_str(), &sysStat) < 0 ||
+           !S_ISDIR(sysStat.st_mode))
             continue;
                 
         interfaceNames.push_back(interfaceName);
