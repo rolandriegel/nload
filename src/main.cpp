@@ -469,7 +469,10 @@ int main(int argc, char *argv[])
         m_mainWindow.clear();
         
         // print device data
-        m_mainWindow.printTraffic(devicesToShow);
+        if(!devicesToShow.empty())
+            m_mainWindow.printTraffic(devicesToShow);
+        else
+            m_mainWindow.print() << "No devices detected!" << endl;
         
         // refresh the screen
         m_mainWindow.refresh();

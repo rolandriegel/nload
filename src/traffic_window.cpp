@@ -54,6 +54,9 @@ void TrafficWindow::processKey(int key)
 
 void TrafficWindow::printTraffic(const vector<Device*>& devices)
 {
+    if(devices.empty())
+        return;
+
     if((unsigned int) m_curDev >= devices.size() || m_curDev < 0)
         m_curDev = 0;
 
