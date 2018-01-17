@@ -17,7 +17,7 @@ docs/nload.1
 src/Makefile
 ])
 
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([foreign])
 
 dnl Checks for programs.
 AC_PROG_CXX
