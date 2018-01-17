@@ -29,6 +29,7 @@ AC_PROG_INSTALL
 dnl System dependant jobs
 AM_CONDITIONAL(HAVE_LINUX, false)
 AM_CONDITIONAL(HAVE_BSD, false)
+AM_CONDITIONAL(HAVE_DARWIN, false)
 AM_CONDITIONAL(HAVE_SOLARIS, false)
 AM_CONDITIONAL(HAVE_HPUX, false)
 case $host_os in
@@ -39,9 +40,17 @@ case $host_os in
         AC_CHECK_FUNCS([memset])
         ;;
     *bsd*)
-        AC_DEFINE(HAVE_BSD, 1, [Define to 1 if your build target is BSD.])
+        AC_DEFINE(HAVE_BSD, 1, [Define to 1 if your build target is BSD or Darwin.])
         AM_CONDITIONAL(HAVE_BSD, true)
         
+        AC_FUNC_MALLOC
+        ;;
+    *darwin*)
+        AC_DEFINE(HAVE_BSD, 1, [Define to 1 if your build target is BSD or Darwin.])
+        AC_DEFINE(HAVE_DARWIN, 1, [Define to 1 if your build target is Darwin.])
+        AM_CONDITIONAL(HAVE_BSD, true)
+        AM_CONDITIONAL(HAVE_DARWIN, true)
+
         AC_FUNC_MALLOC
         ;;
     *solaris*)
