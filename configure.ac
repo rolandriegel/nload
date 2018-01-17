@@ -108,12 +108,6 @@ fi
 dnl Forward sysconfdir to the preprocessor
 CPPFLAGS="$CPPFLAGS -DSYSCONFDIR='\"\$(sysconfdir)\"'"
 
-dnl Adds extra arguments to configure script.
-AC_ARG_ENABLE(debug,
-              AC_HELP_STRING([--enable-debug], [do not strip debugging symbols (default no)]),
-	          test "$enableval" = "no" && LDFLAGS="$LDFLAGS -s",
-	          LDFLAGS="$LDFLAGS -s")
-
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
 AC_CHECK_FUNCS([gettimeofday inet_ntoa socket])
