@@ -18,8 +18,15 @@
 #ifndef FORM_FIELD_H
 #define FORM_FIELD_H
 
+#include <config.h>
 #include <curses.h>
+
+#if defined(HAVE_FORM_H)
 #include <form.h>
+#elif defined(HAVE_NCURSES_FORM_H)
+#include <ncurses/form.h>
+#endif
+
 #undef clear
 #undef erase
 #undef refresh
