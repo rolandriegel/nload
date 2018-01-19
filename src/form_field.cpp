@@ -26,6 +26,11 @@ Field::Field(int x, int y, int width, int height) : m_field(0)
     set_field_opts(m_field, field_opts(m_field) | O_BLANK | O_PASSOK);
 
     m_enumElementsArray = 0;
+
+    setVisible(true);
+    setEnabled(true);
+    setFixed(false);
+    setFirstOnPage(false);
 }
 
 Field::~Field()
