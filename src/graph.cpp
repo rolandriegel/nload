@@ -78,11 +78,11 @@ unsigned long long Graph::calcMaxDeflection()
 // print the graph with the upper left corner at the coordinates (x, y)
 void Graph::print(Window& window, int x, int y)
 {
-    window.setXY(x, y);
-    
     // cycle through through the lines
     for(unsigned int l = 0; l < m_heightOfBars; l++)
     {
+        window.setXY(x, y++);
+
         // for each line cycle through the rows
         for(list<unsigned long long>::reverse_iterator r = m_values.rbegin(); r != m_values.rend() ; r++)
         {
@@ -107,10 +107,7 @@ void Graph::print(Window& window, int x, int y)
                     window.print(' ');
             }
         }
-        window.print('\n');
-        window.setX(x);
     }
-    
 }
 
 // reset all traffic values in the graph to zero

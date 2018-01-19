@@ -20,8 +20,10 @@
 #include "graph.h"
 #include "setting.h"
 #include "settingstore.h"
+#include "stringutils.h"
 #include "window.h"
 
+#include <algorithm>
 #include <iomanip>
 #include <sstream>
 
@@ -68,41 +70,82 @@ void Device::update()
 // print the device's data
 void Device::print(Window& window)
 {
-    // if device does not exist
-    if(!m_deviceStatistics.isValid())
+    int width = window.getWidth();
+    int height = window.getHeight();
+
+    // print header
+    if(height > 2)
     {
-        // ... print warning message ...
-        window.print() << "Device " << m_devReader.getDeviceName() << " (" << (m_deviceNumber + 1) << "/" << m_totalNumberOfDevices << "): does not exist" << endl;
-        window.print() << string(window.getWidth(), '=') << endl;
-        
-        // ... and exit
+        if(m_deviceStatistics.isValid())
+        {
+            string ip4 = m_dataFrameOld.getIpV4();
+            if(!ip4.empty())
+                window.print() << "Device " << m_devReader.getDeviceName() << " [" << ip4 << "] (" << (m_deviceNumber + 1) << "/" << m_totalNumberOfDevices << "):" << endl;
+            else
+                window.print() << "Device " << m_devReader.getDeviceName() << " (" << (m_deviceNumber + 1) << "/" << m_totalNumberOfDevices << "):" << endl;
+            window.print() << string(width, '=');
+        }
+        else
+        {
+            // if device does not exist print warning message
+            window.print() << "Device " << m_devReader.getDeviceName() << " (" << (m_deviceNumber + 1) << "/" << m_totalNumberOfDevices << "): does not exist" << endl;
+            window.print() << string(width, '=') << endl;
+
+            // and exit
+            return;
+        }
+    }
+    if(width < 25 || height < 8)
+    {
+        window.print() << "Please enlarge console for viewing device information." << endl;
         return;
     }
     
-    // print header
-    string ip4 = m_dataFrameOld.getIpV4();
-    if(!ip4.empty())
-        window.print() << "Device " << m_devReader.getDeviceName() << " [" << ip4 << "] (" << (m_deviceNumber + 1) << "/" << m_totalNumberOfDevices << "):" << endl;
-    else
-        window.print() << "Device " << m_devReader.getDeviceName() << " (" << (m_deviceNumber + 1) << "/" << m_totalNumberOfDevices << "):" << endl;
-    window.print() << string(window.getWidth(), '=');
-    
+    // format statistics
+    vector<string> statLinesIn;
+    vector<string> statLinesOut;
+
+    generateStatisticsIn(statLinesIn);
+    generateStatisticsOut(statLinesOut);
+
+    size_t statLineInMaxLength = max_element(statLinesIn.begin(), statLinesIn.end(), sizeLess())->size();
+    size_t statLineOutMaxLength = max_element(statLinesOut.begin(), statLinesOut.end(), sizeLess())->size();
+    int statLineMaxLength = statLineInMaxLength > statLineOutMaxLength ? statLineInMaxLength : statLineOutMaxLength;
+
     // if graphs should be hidden ...
     if(SettingStore::get("MultipleDevices"))
     {
         window.print() << "Incoming:";
-        window.print(window.getWidth() / 2) << "Outgoing:" << endl;
+        window.print(width / 2) << "Outgoing:" << endl;
         
         int statusY = window.getY();
         
-        printStatisticsIn(window, 0, statusY);
-        printStatisticsOut(window, window.getWidth() / 2, statusY);
+        printStatistics(window, statLinesIn, 0, statusY);
+        printStatistics(window, statLinesOut, width / 2, statusY);
         
         window.print() << endl;
     }
     // ... or not
     else
     {
+        // calculate layout
+        int lines = height - window.getY();
+        int linesForIn = (lines + 1) / 2;
+        int linesForOut = lines - linesForIn;
+        int dirInY = window.getY();
+        int dirOutY = dirInY + linesForIn;
+
+        int statisticsX = width - statLineMaxLength - 1;
+        statisticsX -= statisticsX % 5;
+
+        if(linesForOut <= 5)
+        {
+            linesForIn = lines;
+            linesForOut = 0;
+            dirOutY = height;
+        }
+
+        // calculate deflection of graphs
         unsigned long long maxDeflectionIn = (unsigned long long) SettingStore::get("BarMaxIn") * 1024 / 8;
         unsigned long long maxDeflectionOut = (unsigned long long) SettingStore::get("BarMaxOut") * 1024 / 8;
 
@@ -111,25 +154,40 @@ void Device::print(Window& window)
         if(maxDeflectionOut < 1)
             maxDeflectionOut = roundUpMaxDeflection(m_deviceGraphOut.calcMaxDeflection());
 
-        // incoming traffic
-        window.print() << "Incoming (100% @ " << formatTrafficValue(maxDeflectionIn, 0) << "):" << endl;
-        
-        m_deviceGraphIn.setNumOfBars(window.getWidth() * 2 / 3);
-        m_deviceGraphIn.setHeightOfBars((window.getHeight() - window.getY() - 1) / 2);
-        m_deviceGraphIn.setMaxDeflection(maxDeflectionIn);
-        m_deviceGraphIn.print(window, 0, window.getY());
-        
-        printStatisticsIn(window, window.getWidth() * 2 / 3 + 2, window.getY() - 5);
-        
-        // outgoing traffic
-        window.print() << "Outgoing (100% @ " << formatTrafficValue(maxDeflectionOut, 0) << "):" << endl;
-        
-        m_deviceGraphOut.setNumOfBars(window.getWidth() * 2 / 3);
-        m_deviceGraphOut.setHeightOfBars(window.getHeight() - window.getY());
-        m_deviceGraphOut.setMaxDeflection(maxDeflectionOut);
-        m_deviceGraphOut.print(window, 0, window.getY());
-        
-        printStatisticsOut(window, window.getWidth() * 2 / 3 + 2, window.getY() - 4);
+        // print incoming data
+        if(linesForIn > 5)
+        {
+            window.print(0, dirInY) << "Incoming (100% @ " << formatTrafficValue(maxDeflectionIn, 0) << "):" << endl;
+
+            if(statisticsX > 1)
+            {
+                m_deviceGraphIn.setNumOfBars(statisticsX - 1);
+                m_deviceGraphIn.setHeightOfBars(linesForIn - 1);
+                m_deviceGraphIn.setMaxDeflection(maxDeflectionIn);
+                m_deviceGraphIn.print(window, 0, dirInY + 1);
+            }
+
+            if(width > statLineMaxLength)
+                printStatistics(window, statLinesIn, statisticsX, dirInY + linesForIn - 5);
+        }
+
+
+        // print outgoing data
+        if(linesForOut > 5)
+        {
+            window.print(0, dirOutY) << "Outgoing (100% @ " << formatTrafficValue(maxDeflectionOut, 0) << "):" << endl;
+
+            if(statisticsX > 1)
+            {
+                m_deviceGraphOut.setNumOfBars(statisticsX - 1);
+                m_deviceGraphOut.setHeightOfBars(linesForOut - 1);
+                m_deviceGraphOut.setMaxDeflection(maxDeflectionOut);
+                m_deviceGraphOut.print(window, 0, dirOutY + 1);
+            }
+
+            if(width > statLineMaxLength)
+                printStatistics(window, statLinesOut, statisticsX, dirOutY + linesForOut - 5);
+        }
     }
 }
 
@@ -191,16 +249,6 @@ unsigned long long Device::roundUpMaxDeflection(unsigned long long value)
     return rounded;
 }
 
-void Device::printTrafficValue(Window& window, int x, int y, const std::string& description, unsigned long long value)
-{
-    window.print(x, y) << description << ": " << formatTrafficValue(value, 2) << endl;
-}
-
-void Device::printDataValue(Window& window, int x, int y, const std::string& description, unsigned long long value)
-{
-    window.print(x, y) << description << ": " << formatDataValue(value, 2) << endl;
-}
-
 string Device::formatTrafficValue(unsigned long value, int precision)
 {
     Statistics::dataUnit trafficFormat = (Statistics::dataUnit) ((int) SettingStore::get("TrafficFormat"));
@@ -227,39 +275,29 @@ string Device::formatDataValue(unsigned long long value, int precision)
     return oss.str();
 }
 
-void Device::printStatisticsIn(Window& window, int x, int y)
+void Device::generateStatisticsIn(vector<string>& statisticLines)
 {
-    // print current traffic
-    printTrafficValue(window, x, y, "Curr", m_deviceStatistics.getDataInPerSecond());
-    
-    // print average traffic
-    printTrafficValue(window, x, y + 1, "Avg", m_deviceStatistics.getDataInAverage());
-    
-    // print min traffic since nload start
-    printTrafficValue(window, x, y + 2, "Min", m_deviceStatistics.getDataInMin());
-    
-    // print max traffic since nload start
-    printTrafficValue(window, x, y + 3, "Max", m_deviceStatistics.getDataInMax());
-    
-    // print total traffic since last system reboot
-    printDataValue(window, x, y + 4, "Ttl", m_deviceStatistics.getDataInTotal());
+    statisticLines.push_back("Cur: " + formatTrafficValue(m_deviceStatistics.getDataInPerSecond(), 2));
+    statisticLines.push_back("Avg: " + formatTrafficValue(m_deviceStatistics.getDataInAverage(), 2));
+    statisticLines.push_back("Min: " + formatTrafficValue(m_deviceStatistics.getDataInMin(), 2));
+    statisticLines.push_back("Max: " + formatTrafficValue(m_deviceStatistics.getDataInMax(), 2));
+    statisticLines.push_back("Ttl: " + formatDataValue(m_deviceStatistics.getDataInTotal(), 2));
 }
 
-void Device::printStatisticsOut(Window& window, int x, int y)
+void Device::generateStatisticsOut(vector<string>& statisticLines)
 {
-    // print current traffic
-    printTrafficValue(window, x, y, "Curr", m_deviceStatistics.getDataOutPerSecond());
-    
-    // print average traffic
-    printTrafficValue(window, x, y + 1, "Avg", m_deviceStatistics.getDataOutAverage());
-    
-    // print min traffic since nload start
-    printTrafficValue(window, x, y + 2, "Min", m_deviceStatistics.getDataOutMin());
-    
-    // print max traffic since nload start
-    printTrafficValue(window, x, y + 3, "Max", m_deviceStatistics.getDataOutMax());
-    
-    // print total traffic since last system reboot
-    printDataValue(window, x, y + 4, "Ttl", m_deviceStatistics.getDataOutTotal());
+    statisticLines.push_back("Cur: " + formatTrafficValue(m_deviceStatistics.getDataOutPerSecond(), 2));
+    statisticLines.push_back("Avg: " + formatTrafficValue(m_deviceStatistics.getDataOutAverage(), 2));
+    statisticLines.push_back("Min: " + formatTrafficValue(m_deviceStatistics.getDataOutMin(), 2));
+    statisticLines.push_back("Max: " + formatTrafficValue(m_deviceStatistics.getDataOutMax(), 2));
+    statisticLines.push_back("Ttl: " + formatDataValue(m_deviceStatistics.getDataOutTotal(), 2));
+}
+
+void Device::printStatistics(Window& window, const vector<string>& statisticLines, int x, int y)
+{
+    for(vector<string>::const_iterator itLine = statisticLines.begin(); itLine != statisticLines.end(); ++itLine)
+    {
+        window.print(x, y++) << *itLine;
+    }
 }
 

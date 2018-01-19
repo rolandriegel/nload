@@ -44,13 +44,11 @@ class Device
 
         unsigned long long roundUpMaxDeflection(unsigned long long value);
 
-        void printTrafficValue(Window& window, int x, int y, const std::string& description, unsigned long long value);
-        void printDataValue(Window& window, int x, int y, const std::string& description, unsigned long long value);
         std::string formatTrafficValue(unsigned long value, int precision);
         std::string formatDataValue(unsigned long long value, int precision);
-
-        void printStatisticsIn(Window& window, int x, int y);
-        void printStatisticsOut(Window& window, int x, int y);
+        void generateStatisticsIn(std::vector<std::string>& statisticLines);
+        void generateStatisticsOut(std::vector<std::string>& statisticLines);
+        void printStatistics(Window& window, const std::vector<std::string>& statisticLines, int x, int y);
 
         int m_deviceNumber;
         int m_totalNumberOfDevices;

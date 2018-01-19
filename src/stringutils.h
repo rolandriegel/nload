@@ -45,5 +45,13 @@ T fromString(const std::string& s)
     return t;
 }
 
+struct sizeLess
+{
+    template<class T> bool operator()(const T& a, const T& b) const
+    {
+        return a.size() < b.size();
+    }
+};
+
 #endif
 
