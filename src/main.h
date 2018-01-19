@@ -23,6 +23,7 @@
 
 int main(int argc, char *argv[]);
 
+void showOptions(bool show);
 void init();
 void finish();
 void end(int signal = 0);

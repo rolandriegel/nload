@@ -393,8 +393,7 @@ int main(int argc, char *argv[])
                 {
                     if(key == KEY_F(2))
                     {
-                        m_optWindow.hide();
-                        m_mainWindow.resize(0, 0, Screen::width(), Screen::height());
+                        showOptions(false);
                         restOfRefreshInterval = 0; // update the screen
                     }
                     else
@@ -407,8 +406,7 @@ int main(int argc, char *argv[])
                     switch(key)
                     {
                         case KEY_F(2):
-                            m_mainWindow.resize(0, Screen::height() / 4, Screen::width(), Screen::height() - Screen::height() / 4);
-                            m_optWindow.show(0, 0, Screen::width(), Screen::height() / 4);
+                            showOptions(true);
                             restOfRefreshInterval = 0; // update the screen
                             break;
                         case KEY_F(5):
@@ -465,21 +463,25 @@ int main(int argc, char *argv[])
         for(map<string, Device*>::const_iterator itDevice = deviceHandlers.begin(); itDevice != deviceHandlers.end(); ++itDevice)
             itDevice->second->update();
 
-        // clear the screen
-        m_mainWindow.clear();
-        
-        // print device data
-        if(!devicesToShow.empty())
-            m_mainWindow.printTraffic(devicesToShow);
-        else
-            m_mainWindow.print() << "No devices detected!" << endl;
-        
-        // refresh the screen
-        m_mainWindow.refresh();
+        if(m_mainWindow.isVisible())
+        {
+            // clear the screen
+            m_mainWindow.clear();
+
+            // print device data
+            if(!devicesToShow.empty())
+                m_mainWindow.printTraffic(devicesToShow);
+            else
+                m_mainWindow.print() << "No devices detected!" << endl;
+
+            // refresh the screen
+            m_mainWindow.refresh();
+        }
         
         if(m_optWindow.isVisible())
+        {
             m_optWindow.refresh(); // always show cursor in option dialog
-        
+        }
     }
 
     finish();
@@ -489,6 +491,35 @@ int main(int argc, char *argv[])
     deviceHandlers.clear();
     
     return 0;
+}
+
+void showOptions(bool show)
+{
+    if(show)
+    {
+        m_optWindow.hide();
+
+        int optWindowHeight = Screen::height() / 4;
+        if(optWindowHeight >= 4)
+        {
+            m_mainWindow.resize(0, optWindowHeight, Screen::width(), Screen::height() - optWindowHeight);
+            m_optWindow.show(0, 0, Screen::width(), optWindowHeight);
+        }
+        else
+        {
+            m_mainWindow.hide();
+            m_optWindow.show(0, 0, Screen::width(), Screen::height());
+        }
+    }
+    else
+    {
+        m_optWindow.hide();
+
+        if(m_mainWindow.isVisible())
+            m_mainWindow.resize(0, 0, Screen::width(), Screen::height());
+        else
+            m_mainWindow.show(0, 0, Screen::width(), Screen::height());
+    }
 }
 
 void init()
@@ -512,6 +543,8 @@ void init()
 
 void finish()
 {
+    // destroy option window
+    m_optWindow.hide();
     // destroy main window
     m_mainWindow.hide();
     
@@ -528,16 +561,10 @@ void terminalResized(int signal)
 {
     bool optWindowWasVisible = m_optWindow.isVisible();
 
-    m_optWindow.hide();
-
     finish();   
     init();
     
-    if(optWindowWasVisible)
-    {
-        m_mainWindow.resize(0, Screen::height() / 4, Screen::width(), Screen::height() - Screen::height() / 4);
-        m_optWindow.show(0, 0, Screen::width(), Screen::height() / 4);
-    }
+    showOptions(optWindowWasVisible);
 }
 
 void printHelp(bool error)
