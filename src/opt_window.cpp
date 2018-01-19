@@ -21,8 +21,8 @@
 #include "settingstore.h"
 #include "stringutils.h"
 
-#define BORDER_LEFT 1
-#define BORDER_RIGHT 1
+#define BORDER_LEFT 0
+#define BORDER_RIGHT 0
 #define BORDER_TOP 2
 #define BORDER_BOTTOM 1
 
