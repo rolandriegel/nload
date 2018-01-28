@@ -108,7 +108,7 @@ void Window::refresh()
 void Window::clear()
 {
     if(m_window)
-        wclear(m_window);
+        werase(m_window);
 }
 
 // move and resize window
