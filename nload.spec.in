@@ -3,7 +3,7 @@ Name           : @PACKAGE@
 Version        : @VERSION@
 Release        : 1
 Copyright      : GPL
-Url            : http://www.roland-riegel.de/nload/index_en.html
+Url            : http://www.roland-riegel.de/nload/
 Packager       : Helder Correia <helder.correia@netcabo.pt>
 Group          : Applications/System
 Source         : %{name}-%{version}.tar.gz
