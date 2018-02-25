@@ -3,14 +3,19 @@
 bin_PROGRAMS = nload
 
 nload_SOURCES = \
+	app.cpp app.h									\
+	appcontrol.h									\
 	dataframe.h										\
 	device.cpp device.h								\
+	deviceview.cpp deviceview.h						\
 	devreader.cpp devreader.h						\
 	devreaderfactory.cpp devreaderfactory.h			\
 	form_field.cpp form_field.h						\
 	graph.cpp graph.h								\
 	main.cpp main.h									\
 	opt_window.cpp opt_window.h						\
+	output.h										\
+	output-ncurses.cpp output-ncurses.h				\
 	screen.cpp screen.h								\
 	setting.cpp setting.h							\
 	settingfilter.cpp settingfilter.h               \

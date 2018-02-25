@@ -18,43 +18,21 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#ifndef DEVICE_H
-#define DEVICE_H
+#ifndef OUTPUT_H
+#define OUTPUT_H
 
-#include "dataframe.h"
-#include "statistics.h"
-
-#include <string>
-
-class DevReader;
-class Window;
-
-class Device
+class Output
 {
     public:
-        explicit Device(DevReader* devReader);
-        ~Device();
+        virtual ~Output() {}
 
-        bool exists() const;
+        virtual void process() = 0;
+        virtual bool processSignal(int signal) { return false; }
 
-        const std::string& getName() const;
-        const std::string& getIpV4Address() const;
+        virtual void output() = 0;
 
-        const Statistics& getStatistics() const;
-
-        void update();
-        
-    private:
-        void fixOverflows(DataFrame& dataFrame, const DataFrame& dataFrameOld);
-        unsigned long long fixOverflow(unsigned long long value, unsigned long long valueOld);
-
-        DevReader* m_devReader;
-
-        std::string m_name;
-        std::string m_ipv4;
-
-        Statistics m_deviceStatistics;
-        DataFrame m_dataFrameOld;
+    protected:
+        Output() {}
 };
 
 #endif

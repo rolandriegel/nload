@@ -18,43 +18,36 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#ifndef DEVICE_H
-#define DEVICE_H
+#ifndef APP_H
+#define APP_H
 
-#include "dataframe.h"
-#include "statistics.h"
+#include "appcontrol.h"
 
 #include <string>
+#include <vector>
 
-class DevReader;
-class Window;
+class Output;
 
-class Device
+class App : public AppControl
 {
     public:
-        explicit Device(DevReader* devReader);
-        ~Device();
+        App();
+        ~App();
 
-        bool exists() const;
+        int run(const std::vector<std::string>& arguments);
 
-        const std::string& getName() const;
-        const std::string& getIpV4Address() const;
+        void processSignal(int signal);
 
-        const Statistics& getStatistics() const;
+        virtual void loadSettings();
+        virtual void saveSettings();
 
-        void update();
-        
+        virtual void quit();
+
     private:
-        void fixOverflows(DataFrame& dataFrame, const DataFrame& dataFrameOld);
-        unsigned long long fixOverflow(unsigned long long value, unsigned long long valueOld);
+        bool m_quit;
+        std::vector<Output*> m_outputs;
 
-        DevReader* m_devReader;
-
-        std::string m_name;
-        std::string m_ipv4;
-
-        Statistics m_deviceStatistics;
-        DataFrame m_dataFrameOld;
+        void printHelp(bool error);
 };
 
 #endif

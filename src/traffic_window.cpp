@@ -1,24 +1,28 @@
-/***************************************************************************
-                             traffic_window.cpp
-                             -------------------
-    begin                : Thu Jul 04 2002
-    copyright            : (C) 2002 - 2012 by Roland Riegel
-    email                : feedback@roland-riegel.de
- ***************************************************************************/
+/*
+ * nload
+ * real time monitor for network traffic
+ * Copyright (C) 2001 - 2018 by Roland Riegel <feedback@roland-riegel.de>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+#include "traffic_window.h"
 
-#include "device.h"
+#include "deviceview.h"
 #include "setting.h"
 #include "settingstore.h"
-#include "traffic_window.h"
 
 using namespace std;
 
@@ -52,30 +56,30 @@ void TrafficWindow::processKey(int key)
     }
 }
 
-void TrafficWindow::printTraffic(const vector<Device*>& devices)
+void TrafficWindow::printTraffic(const vector<DeviceView*>& deviceViews)
 {
-    if(devices.empty())
+    if(deviceViews.empty())
         return;
 
-    if((unsigned int) m_curDev >= devices.size() || m_curDev < 0)
+    if((unsigned int) m_curDev >= deviceViews.size() || m_curDev < 0)
         m_curDev = 0;
 
     // print data of the current device(s)
     if(!showMultipleDevices())
     {
-        devices[m_curDev]->print(*this);
+        deviceViews[m_curDev]->print(*this);
     }
     else
     {
-        if((unsigned int) getHeight() / 9 >= devices.size())
+        if((unsigned int) getHeight() / 9 >= deviceViews.size())
             m_curDev = 0;
 
         int i = m_curDev;
         while(getHeight() - getY() >= 9)
         {
-            devices[i++]->print(*this);
+            deviceViews[i++]->print(*this);
 
-            if((unsigned int) i >= devices.size())
+            if((unsigned int) i >= deviceViews.size())
                 break;
         }
     }

@@ -18,43 +18,21 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#ifndef DEVICE_H
-#define DEVICE_H
+#ifndef APPCONTROL_H
+#define APPCONTROL_H
 
-#include "dataframe.h"
-#include "statistics.h"
-
-#include <string>
-
-class DevReader;
-class Window;
-
-class Device
+class AppControl
 {
     public:
-        explicit Device(DevReader* devReader);
-        ~Device();
+        virtual ~AppControl() {}
 
-        bool exists() const;
+        virtual void loadSettings() = 0;
+        virtual void saveSettings() = 0;
 
-        const std::string& getName() const;
-        const std::string& getIpV4Address() const;
+        virtual void quit() = 0;
 
-        const Statistics& getStatistics() const;
-
-        void update();
-        
-    private:
-        void fixOverflows(DataFrame& dataFrame, const DataFrame& dataFrameOld);
-        unsigned long long fixOverflow(unsigned long long value, unsigned long long valueOld);
-
-        DevReader* m_devReader;
-
-        std::string m_name;
-        std::string m_ipv4;
-
-        Statistics m_deviceStatistics;
-        DataFrame m_dataFrameOld;
+    protected:
+        AppControl() {}
 };
 
 #endif
