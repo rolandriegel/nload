@@ -15,6 +15,7 @@ nload_SOURCES = \
 	main.cpp main.h									\
 	opt_window.cpp opt_window.h						\
 	output.h										\
+	output-file.cpp output-file.h					\
 	output-ncurses.cpp output-ncurses.h				\
 	screen.cpp screen.h								\
 	setting.cpp setting.h							\

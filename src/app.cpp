@@ -27,6 +27,7 @@
 #include "device.h"
 #include "devreader.h"
 #include "devreaderfactory.h"
+#include "output-file.h"
 #include "output-ncurses.h"
 #include "setting.h"
 #include "settingfilter.h"
@@ -40,6 +41,7 @@
 #include <signal.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 
 #define STANDARD_AVERAGE_WINDOW 300
 #define STANDARD_DATA_FORMAT Statistics::humanReadableByte
@@ -107,6 +109,7 @@ int App::run(const vector<string>& arguments)
     // parse the command line
     bool deleteDevicesRequested = true;
     bool printHelpAndExit = false;
+    string outputFile;
     for(vector<string>::const_iterator itArg = arguments.begin(); itArg != arguments.end(); ++itArg)
     {
         vector<string>::const_iterator itNextArg = itArg + 1;
@@ -323,6 +326,18 @@ int App::run(const vector<string>& arguments)
         {
             SettingStore::get("MultipleDevices") = true;
         }
+        else if(*itArg == "-f")
+        {
+            if(!haveNextArg)
+            {
+                cerr << "Missing argument for the -f parameter." << endl;
+                printHelpAndExit = true;
+                break;
+            }
+
+            outputFile = *itNextArg;
+            ++itArg;
+        }
         // obsolete -b option
         else if(*itArg == "-b")
         {
@@ -366,7 +381,14 @@ int App::run(const vector<string>& arguments)
         devices.push_back(device);
     }
 
-    m_outputs.push_back(new OutputNcurses(this, devices));
+    // create output instances
+    if(outputFile.empty() == false)
+        m_outputs.push_back(new OutputFile(this, devices, outputFile));
+
+    if(isatty(STDOUT_FILENO))
+        m_outputs.push_back(new OutputNcurses(this, devices));
+    else
+        m_outputs.push_back(new OutputFile(this, devices, "-"));
 
     while(!m_quit)
     {
@@ -502,6 +524,7 @@ void App::printHelp(bool error)
         << "                Default is h.\n"
         << "-U h|b|k|m|g    Same as -u, but for a total amount of data (without \"/s\").\n"
         << "   H|B|K|M|G    Default is H.\n"
+        << "-f filename     Append traffic data to the named file.\n"
         << "devices         Network devices to use.\n"
         << "                Default is to use all auto-detected devices.\n"
         << "--help\n"

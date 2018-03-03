@@ -79,6 +79,22 @@ void Statistics::reset()
     m_dataFrames.clear();
 }
 
+unsigned long Statistics::getLatestTimeStampSeconds() const
+{
+    if(m_dataFrames.empty())
+        return 0;
+
+    return m_dataFrames.back().getTimeStampSeconds();
+}
+
+unsigned long Statistics::getLatestTimeStampMicroseconds() const
+{
+    if(m_dataFrames.empty())
+        return 0;
+
+    return m_dataFrames.back().getTimeStampMicroseconds();
+}
+
 float Statistics::getUnitFactor(dataUnit unit, unsigned long long value)
 {
     float factor = 1.0 / (unit % 2 == 0 ? 8 : 1);

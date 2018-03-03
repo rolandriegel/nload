@@ -52,6 +52,9 @@ class Statistics
         void insertDataFrame(const DataFrame& dataFrame);
         void reset();
 
+        unsigned long getLatestTimeStampSeconds() const;
+        unsigned long getLatestTimeStampMicroseconds() const;
+
         bool isValid() const { return !m_dataFrames.empty(); }
 
         unsigned long long getDataInTotal() const { return m_dataFrames.empty() ? 0 : m_dataFrames.back().getTotalDataIn(); }
