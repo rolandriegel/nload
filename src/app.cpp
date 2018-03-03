@@ -210,9 +210,9 @@ int App::run(const vector<string>& arguments)
         {
             Setting& setting = SettingStore::get("TrafficFormat");
             
-            if(haveNextArg && itArg->length() == 1)
+            if(haveNextArg && itNextArg->length() == 1)
             {
-                switch((*itArg)[0])
+                switch((*itNextArg)[0])
                 {
                     case 'H':
                         setting = Statistics::humanReadableByte;
@@ -267,9 +267,9 @@ int App::run(const vector<string>& arguments)
         {
             Setting& setting = SettingStore::get("DataFormat");
             
-            if(haveNextArg && itArg->length() == 1)
+            if(haveNextArg && itNextArg->length() == 1)
             {
-                switch((*itArg)[0])
+                switch((*itNextArg)[0])
                 {
                     case 'H':
                         setting = Statistics::humanReadableByte;
