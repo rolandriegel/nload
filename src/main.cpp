@@ -29,12 +29,15 @@
 
 using namespace std;
 
-static App application;
+static App* m_application = 0;
 
 static void signalHandler(int signal);
 
 int main(int argc, char *argv[])
 {
+    App application;
+    m_application = &application;
+
     // handle interrrupt signal
     signal(SIGINT, signalHandler);
     signal(SIGTERM, signalHandler);
@@ -44,11 +47,11 @@ int main(int argc, char *argv[])
     for(int i = 1; i < argc; ++i)
         arguments.push_back(argv[i]);
 
-    return application.run(arguments);
+    return m_application->run(arguments);
 }
 
 void signalHandler(int signal)
 {
-    application.processSignal(signal);
+    m_application->processSignal(signal);
 }
 

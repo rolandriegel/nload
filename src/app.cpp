@@ -53,15 +53,7 @@ using namespace std;
 App::App()
     : m_quit(false)
 {
-}
-
-App::~App()
-{
-}
-
-
-int App::run(const vector<string>& arguments)
-{
+    // create setting infrastructure
     SettingStore::add(Setting("AverageWindow", "Window length for average (s)", STANDARD_AVERAGE_WINDOW));
     SettingStore::add(Setting("BarMaxIn", "Max Incoming deflection (kBit/s)", STANDARD_MAX_DEFLECTION));
     SettingStore::add(Setting("BarMaxOut", "Max Outgoing deflection (kBit/s)", STANDARD_MAX_DEFLECTION));
@@ -104,7 +96,14 @@ int App::run(const vector<string>& arguments)
 
     // load system and user settings
     loadSettings();
+}
 
+App::~App()
+{
+}
+
+int App::run(const vector<string>& arguments)
+{
     // parse the command line
     bool deleteDevicesRequested = true;
     bool printHelpAndExit = false;
