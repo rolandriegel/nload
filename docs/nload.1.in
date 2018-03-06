@@ -188,16 +188,6 @@ For updates, look at the nload homepage:
 .br
 .B http://www.roland-riegel.de/nload/
 
-.SH HELP
-If you need help, either contact me directly (see below) or write to the
-nload-user mailing list at
-.br
-.B nload-user@lists.sourceforge.net
-.br
-after having subscribed at
-.br
-.BR https://lists.sourceforge.net/lists/listinfo/nload-user .
-
 .SH AUTHOR
 Copyright (C) 2001 - 2018 Roland Riegel <feedback@roland-riegel.de>
 
