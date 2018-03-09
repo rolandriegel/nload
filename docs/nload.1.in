@@ -90,6 +90,11 @@ The default is k.
 Same as \-u, but for an amount of data, e.g. Bit, kByte, GBit etc. (without "/s").
 The default is M.
 .TP
+.B \-f filename
+Appends traffic data to the named file. See the section
+.B TRAFFIC LOGGING FORMAT
+below for an explanation of the logged information.
+.TP
 .B devices
 Network devices to use. The default is "all", which means to display all auto-detected devices.
 .TP
@@ -160,6 +165,80 @@ Toggle between the different values possible for the current field.
 .TP
 .B '+' / '-'
 Switch to the next / previous page of settings.
+
+.SH TRAFFIC LOGGING FORMAT
+
+Traffic is logged as a simple text table, with each line describing the traffic status of a single network device at a specific time.
+The first line of output serves as a table header naming each column of data. Columns are separated by a single space character. The meaning of each column is described below.
+
+.TP
+.B Date
+The date of the log entry in YYYY-MM-DD format, where YYYY is the four-digit year, MM the two-digit month (01-12) and DD the two-digit day (01-31).
+
+.TP
+.B Time
+The time of the log entry in HH:MM:SS format, where HH, MM and SS are the two-digit hours (00-23), minutes (00-59) and seconds (00-60).
+
+.TP
+.B DeviceName
+The name of the network device for which this log entry applies.
+
+.TP
+.B DataInTotal
+The number of bytes received since boot.
+
+.TP
+.B DataOutTotal
+The number of bytes transmitted since boot.
+
+.TP
+.B DataInPerSecond
+The number of bytes currently being received per second.
+
+.TP
+.B DataOutPerSecond
+The number of bytes currently being transmitted per second.
+
+.TP
+.B DataInAverage
+The number of bytes being received in average, calculated by using the time interval specified with the
+.B -a
+parameter or configured in the configuration file.
+
+.TP
+.B DataOutAverge
+The number of bytes being transmitted in average, calculated by using the time interval specified with the
+.B -a
+parameter or configured in the configuration file.
+
+.TP
+.B DataInMin
+The absolute minimum number of bytes received per second, calculated since starting
+.BR nload .
+
+.TP
+.B DataOutMin
+The absolute minimum number of bytes transmitted per second, calculated since starting
+.BR nload .
+
+.TP
+.B DataInMax
+The absolute maximum number of bytes received per second, calculated since starting
+.BR nload .
+
+.TP
+.B DataOutMax
+The absolute maximum number of bytes transmitted per second, calculated since starting
+.BR nload .
+
+.TP
+.B TimeSeconds
+The date and time of the log entry as seconds since the Unix Epoch, 1970-01-01 00:00:00 +0000 (UTC).
+
+.TP
+.B TimeMicroSeconds
+The microseconds part of the date and time in
+.BR TimeSeconds .
 
 .SH FILES
 
