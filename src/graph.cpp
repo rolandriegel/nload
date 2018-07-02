@@ -101,9 +101,9 @@ void Graph::print(Window& window, int x, int y)
                 unsigned long long restOfTraffic = *r - lowerLimit;
 
                 if(restOfTraffic >= trafficPerLine)
-                    window.print('#');
-                else if(restOfTraffic >= trafficPerLine * 7 / 10)
                     window.print('|');
+                else if(restOfTraffic >= trafficPerLine * 7 / 10)
+                    window.print(':');
                 else if(restOfTraffic >= trafficPerLine * 3 / 10)
                     window.print('.');
                 else
