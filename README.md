@@ -1,7 +1,7 @@
 # nload
 **Real time network traffic monitor for the text console**
 
-![](http://www.roland-riegel.de/nload/screenshots/shot1.png)
+![](http://github.com/logic-wei/nload/raw/master/screenshots/shot_2018-7-2.png)
 
 ## Introduction
 
