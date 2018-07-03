@@ -15,7 +15,7 @@ BuildRequires  : ncurses-devel >= 5.0
 %description
 %{name} is a console application which monitors network traffic and bandwidth
 usage in real time. It visualizes the in and outgoing traffic using two graphs
-and provides additional info like total amount of transfered data and min/max
+and provides additional info like total amount of transferred data and min/max
 network usage.
 
 

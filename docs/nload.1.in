@@ -29,7 +29,7 @@ nload \- displays the current network usage
 .B nload
 is a console application which monitors network traffic and bandwidth usage in real time.
 It visualizes the in- and outgoing traffic using two graphs and provides additional info
-like the total amount of transfered data and min/max network usage.
+like the total amount of transferred data and min/max network usage.
 
 .SH USAGE
 When running
