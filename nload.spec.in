@@ -41,7 +41,7 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %doc AUTHORS COPYING ChangeLog README.md
 %attr(0755,root,root) %{_bindir}/%{name}
-%{_mandir}/man1/%{name}.1.gz
+%{_mandir}/man1/%{name}.1*
 
 
 %changelog
