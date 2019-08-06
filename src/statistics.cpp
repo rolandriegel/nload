@@ -98,7 +98,7 @@ unsigned long Statistics::getLatestTimeStampMicroseconds() const
 float Statistics::getUnitFactor(dataUnit unit, unsigned long long value)
 {
     float factor = 1.0 / (unit % 2 == 0 ? 8 : 1);
-    
+
     switch(unit)
     {
         case humanReadableBit:
@@ -111,18 +111,36 @@ float Statistics::getUnitFactor(dataUnit unit, unsigned long long value)
                 factor *= 1024;
             }
             return factor;
+        case humanReadableSiBit:
+        case humanReadableSiByte:
+            for(int i = 0; i < 3; i++) {
+                if(value / factor < 1000)
+                    return factor;
+
+                factor *= 1000;
+            }
+            return factor;
         case bit:
         case byte:
             return factor;
+        case kibiBit:
+        case kibiByte:
+            return factor * 1024;
+        case mebiBit:
+        case mebiByte:
+            return factor * 1024 * 1024;
+        case gibiBit:
+        case gibiByte:
+            return factor * 1024 * 1024 * 1024;
         case kiloBit:
         case kiloByte:
-            return factor * 1024;
+            return factor * 1000;
         case megaBit:
         case megaByte:
-            return factor * 1024 * 1024;
+            return factor * 1000 * 1000;
         case gigaBit:
         case gigaByte:
-            return factor * 1024 * 1024 * 1024;
+            return factor * 1000 * 1000 * 1000;
         default: // should never be executed
             return factor;
     }
@@ -131,7 +149,8 @@ float Statistics::getUnitFactor(dataUnit unit, unsigned long long value)
 string Statistics::getUnitString(dataUnit unit, unsigned long long value)
 {
     const string description = (unit % 2 == 0 ? "Bit" : "Byte");
-    const string units[] = { "", "k", "M", "G" };
+    const string units[] = { "", "Ki", "Mi", "Gi" };
+    const string si_units[] = { "", "K", "M", "G" };
 
     switch(unit)
     {
@@ -146,18 +165,37 @@ string Statistics::getUnitString(dataUnit unit, unsigned long long value)
                 value /= 1024;
             }
             return units[3] + description;
+        case humanReadableSiBit:
+        case humanReadableSiByte:
+            value *= (unit % 2 == 0 ? 8 : 1);
+            for(int i = 0; i < 3; i++) {
+                if(value < 1000)
+                    return si_units[i] + description;
+
+                value /= 1000;
+            }
+            return si_units[3] + description;
         case bit:
         case byte:
             return description;
+        case kibiBit:
+        case kibiByte:
+            return "Ki" + description;
+        case mebiBit:
+        case mebiByte:
+            return "Mi" + description;
+        case gibiBit:
+        case gibiByte:
+            return "Gi" + description;
         case kiloBit:
         case kiloByte:
-            return 'k' + description;
+            return "k" + description;
         case megaBit:
         case megaByte:
-            return 'M' + description;
+            return "M" + description;
         case gigaBit:
         case gigaByte:
-            return 'G' + description;
+            return "G" + description;
         default: // should never be executed
             return description;
     }
