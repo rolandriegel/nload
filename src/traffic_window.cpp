@@ -61,8 +61,11 @@ void TrafficWindow::printTraffic(const vector<DeviceView*>& deviceViews)
     if(deviceViews.empty())
         return;
 
-    if((unsigned int) m_curDev >= deviceViews.size() || m_curDev < 0)
-        m_curDev = 0;
+    if(m_curDev < 0)
+        m_curDev = (int)deviceViews.size() + (m_curDev % (int)deviceViews.size());
+
+    if(m_curDev >= (int)deviceViews.size())
+        m_curDev %= (int)deviceViews.size();
 
     // print data of the current device(s)
     if(!showMultipleDevices())
