@@ -207,6 +207,11 @@ int App::run(const vector<string>& arguments)
                 break;
             }
         }
+        // has the user set to show statistics of single interval instead of second?
+        else if (*itArg == "-I")
+        {
+            SettingStore::get("StatisticsOfInterval") = true;
+        }
         // has the user set a non-default unit for traffic numbers?
         else if(*itArg == "-u")
         {
@@ -518,6 +523,7 @@ void App::printHelp(bool error)
         << "                Default is " << STANDARD_MAX_DEFLECTION << ".\n"
         << "-t interval     Determines the refresh interval of the display in milliseconds.\n"
         << "                Default is " << STANDARD_REFRESH_INTERVAL << ".\n"
+        << "-I              Show traffic stats of each interval instead of one second.\n"
         << "-u h|b|k|m|g    Sets the type of unit used for the display of traffic numbers.\n"
         << "   H|B|K|M|G    h: auto, b: Bit/s, k: kBit/s, m: MBit/s etc.\n"
         << "                H: auto, B: Byte/s, K: kByte/s, M: MByte/s etc.\n"
