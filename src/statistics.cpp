@@ -230,6 +230,10 @@ unsigned int Statistics::getAverageWindow()
 
 unsigned int Statistics::getSecondWindow()
 {
+    bool statisticsOfInterval = SettingStore::get("StatisticsOfInterval");
+    if (statisticsOfInterval)
+        return 1;
+
     unsigned int refreshInterval = SettingStore::get("RefreshInterval");
     unsigned int secondWindow = (unsigned int) (1000.0 / refreshInterval);
 

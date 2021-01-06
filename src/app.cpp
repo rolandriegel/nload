@@ -207,6 +207,11 @@ int App::run(const vector<string>& arguments)
                 break;
             }
         }
+        // has the user set to show statistics of single interval instead of second?
+        else if (*itArg == "-I")
+        {
+            SettingStore::get("StatisticsOfInterval") = true;
+        }
         // has the user set a non-default unit for traffic numbers?
         else if(*itArg == "-u")
         {
@@ -337,6 +342,11 @@ int App::run(const vector<string>& arguments)
 
             outputFile = *itNextArg;
             ++itArg;
+        }
+        // has the user set to show statistics of phy(nic) rx/tx bytes instead of rx/tx bytes?
+        else if (*itArg == "--phy")
+        {
+            SettingStore::get("StatisticsOfPhyBytes") = true;
         }
         // obsolete -b option
         else if(*itArg == "-b")
@@ -518,6 +528,7 @@ void App::printHelp(bool error)
         << "                Default is " << STANDARD_MAX_DEFLECTION << ".\n"
         << "-t interval     Determines the refresh interval of the display in milliseconds.\n"
         << "                Default is " << STANDARD_REFRESH_INTERVAL << ".\n"
+        << "-I              Show traffic stats of each interval instead of one second.\n"
         << "-u h|b|k|m|g    Sets the type of unit used for the display of traffic numbers.\n"
         << "   H|B|K|M|G    h: auto, b: Bit/s, k: kBit/s, m: MBit/s etc.\n"
         << "                H: auto, B: Byte/s, K: kByte/s, M: MByte/s etc.\n"
@@ -527,6 +538,8 @@ void App::printHelp(bool error)
         << "-f filename     Append traffic data to the named file.\n"
         << "devices         Network devices to use.\n"
         << "                Default is to use all auto-detected devices.\n"
+        << "--phy           Show traffic stats of phy(nic) rx/tx bytes instead of rx/tx bytes.\n"
+        << "                It helps to monitor RDMA traffics.\n"
         << "--help\n"
         << "-h              Print this help.\n\n"
 
