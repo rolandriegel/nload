@@ -343,6 +343,11 @@ int App::run(const vector<string>& arguments)
             outputFile = *itNextArg;
             ++itArg;
         }
+        // has the user set to show statistics of phy(nic) rx/tx bytes instead of rx/tx bytes?
+        else if (*itArg == "--phy")
+        {
+            SettingStore::get("StatisticsOfPhyBytes") = true;
+        }
         // obsolete -b option
         else if(*itArg == "-b")
         {
@@ -533,6 +538,8 @@ void App::printHelp(bool error)
         << "-f filename     Append traffic data to the named file.\n"
         << "devices         Network devices to use.\n"
         << "                Default is to use all auto-detected devices.\n"
+        << "--phy           Show traffic stats of phy(nic) rx/tx bytes instead of rx/tx bytes.\n"
+        << "                It helps to monitor RDMA traffics.\n"
         << "--help\n"
         << "-h              Print this help.\n\n"
 

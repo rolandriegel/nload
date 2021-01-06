@@ -38,7 +38,8 @@ endif
 
 if HAVE_LINUX
 nload_SOURCES += \
-	devreader-linux.cpp devreader-linux.h			\
+	devreader-linux.cpp devreader-linux.h \
+	devreader-linux-ioctl.cpp devreader-linux-ioctl.h \
 	devreader-linux-proc.cpp devreader-linux-proc.h \
 	devreader-linux-sys.cpp devreader-linux-sys.h
 endif
