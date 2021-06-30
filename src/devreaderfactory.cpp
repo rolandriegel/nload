@@ -113,14 +113,14 @@ const map<string, DevReader*>& DevReaderFactory::getAllDevReaders()
 DevReader* DevReaderFactory::createDevReader(const string& deviceName)
 {
     DevReader* reader = 0;
-    bool statofphy = SettingStore::get("StatisticsOfPhyBytes");
+    //bool ioctl_required = SettingStore::get("StatisticsOfPhyBytes") || SettingStore::get("StatisticsOfRDMABytes");
     
 #if defined HAVE_BSD
     reader = new DevReaderBsd(deviceName);
 #elif defined HAVE_HPUX
     reader = new DevReaderHpux(deviceName);
 #elif defined HAVE_LINUX
-    if (statofphy && DevReaderLinuxIoctl::isAvailable())
+    if (DevReaderLinuxIoctl::isAvailable())
 	reader = new DevReaderLinuxIoctl(deviceName);
     else if(DevReaderLinuxSys::isAvailable())
         reader = new DevReaderLinuxSys(deviceName);

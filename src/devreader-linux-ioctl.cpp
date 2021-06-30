@@ -110,9 +110,14 @@ bool DevReaderLinuxIoctl::init()
             return false;
         }
         bool statofphy = SettingStore::get("StatisticsOfPhyBytes");
+        bool statofrdma = SettingStore::get("StatisticsOfRDMABytes");
+        std::string nameofrxprop = SettingStore::get("NameOfRxProp");
+        std::string nameoftxprop = SettingStore::get("NameOfTxProp");
+        //fprintf(stderr, "%s statofrdma=%d\n", this->m_deviceName.c_str(), statofrdma);
         for (int i = 0; i < (int)strings->len; ++i) {
             char* p = i*ETH_GSTRING_LEN + (char*)&strings->data[0];
-            //printf("%4d : %s\n", i, p);
+            if (SettingStore::get("ListStatProps"))
+                printf("%s[%d] = %s\n", this->m_deviceName.c_str(), i, p);
             if (statofphy) {
                 if (strcmp(p, "rx_bytes_phy") == 0) {
                     this->m_datain_id = i;
@@ -127,9 +132,24 @@ bool DevReaderLinuxIoctl::init()
                 } else if (this->m_dataout_id == -1 && strcmp(p, "tx_bytes") == 0) {
                     this->m_dataout_id = i;
                 }
-            } else {
-                if (strcmp(p, "rx_bytes") == 0) {
+            } if (statofrdma) {
+                if (strcmp(p, "rx_vport_rdma_unicast_bytes") == 0) {
                     this->m_datain_id = i;
+                } else if (strcmp(p, "tx_vport_rdma_unicast_bytes") == 0) {
+                    this->m_dataout_id = i;
+                }
+            } else {
+                if (!nameofrxprop.empty()) {
+                    if (strcmp(p, nameofrxprop.c_str()) == 0) {
+                        this->m_datain_id = i;
+                    }
+                } else if (strcmp(p, "rx_bytes") == 0) {
+                    this->m_datain_id = i;
+                }
+                if (!nameoftxprop.empty()) {
+                    if (strcmp(p, nameoftxprop.c_str()) == 0) {
+                        this->m_dataout_id = i;
+                    }
                 } else if (strcmp(p, "tx_bytes") == 0) {
                     this->m_dataout_id = i;
                 }

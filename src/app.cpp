@@ -348,6 +348,38 @@ int App::run(const vector<string>& arguments)
         {
             SettingStore::get("StatisticsOfPhyBytes") = true;
         }
+        else if (*itArg == "--rdma")
+        {
+            SettingStore::get("StatisticsOfRDMABytes") = true;
+        }
+        else if (*itArg == "--list-props")
+        {
+            SettingStore::get("ListStatProps") = true;
+        }
+        else if(*itArg == "--rx")
+        {
+            if(!haveNextArg)
+            {
+                cerr << "Missing argument for the --rx parameter." << endl;
+                printHelpAndExit = true;
+                break;
+            }
+
+            SettingStore::get("NameOfRxProp") = *itNextArg;
+            ++itArg;
+        }
+        else if(*itArg == "--tx")
+        {
+            if(!haveNextArg)
+            {
+                cerr << "Missing argument for the --tx parameter." << endl;
+                printHelpAndExit = true;
+                break;
+            }
+
+            SettingStore::get("NameOfTxProp") = *itNextArg;
+            ++itArg;
+        }
         // obsolete -b option
         else if(*itArg == "-b")
         {
@@ -355,6 +387,11 @@ int App::run(const vector<string>& arguments)
         // obsolete -s option
         else if(*itArg == "-s")
         {
+        }
+        // unknown parameter
+        else if((*itArg)[0] == '-')
+        {
+            printHelpAndExit = true;
         }
         // assume unknown parameter to be the network device
         else
@@ -380,6 +417,18 @@ int App::run(const vector<string>& arguments)
     // auto-detect network devices
     DevReaderFactory::findAllDevices();
     const map<string, DevReader*>& deviceReaders = DevReaderFactory::getAllDevReaders();
+
+    // list all props if required
+    if (SettingStore::get("ListStatProps")) {
+        for(map<string, DevReader*>::const_iterator itDevice = deviceReaders.begin(); itDevice != deviceReaders.end(); ++itDevice)
+        {
+            Device* device = new Device(itDevice->second);
+            device->update();
+            delete device;
+        }
+        return 0;
+    }
+
 
     // create one instance of the Device class per device
     vector<Device*> devices;
@@ -539,6 +588,12 @@ void App::printHelp(bool error)
         << "devices         Network devices to use.\n"
         << "                Default is to use all auto-detected devices.\n"
         << "--phy           Show traffic stats of phy(nic) rx/tx bytes instead of rx/tx bytes.\n"
+        << "                It helps to monitor RDMA traffics.\n"
+        << "--rdma          Show traffic stats of [rx|tx]_vport_rdma_unicast_bytes instead of rx/tx bytes.\n"
+        << "                It helps to monitor RDMA traffics.\n"
+        << "--list-props    List all statistics propertis available. (ioctl/SIOCETHTOOL)\n"
+        << "--rx propname   Use propname to monitor rx bytes\n"
+        << "--tx propname   Use propname to monitor tx bytes\n"
         << "                It helps to monitor RDMA traffics.\n"
         << "--help\n"
         << "-h              Print this help.\n\n"
