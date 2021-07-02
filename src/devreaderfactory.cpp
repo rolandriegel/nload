@@ -120,8 +120,10 @@ DevReader* DevReaderFactory::createDevReader(const string& deviceName)
 #elif defined HAVE_HPUX
     reader = new DevReaderHpux(deviceName);
 #elif defined HAVE_LINUX
-    if (DevReaderLinuxIoctl::isAvailable())
-	reader = new DevReaderLinuxIoctl(deviceName);
+    if (deviceName.substr(0,3) == "ib:")
+        reader = new DevReaderLinuxSys(deviceName);
+    else if (DevReaderLinuxIoctl::isAvailable())
+        reader = new DevReaderLinuxIoctl(deviceName);
     else if(DevReaderLinuxSys::isAvailable())
         reader = new DevReaderLinuxSys(deviceName);
     else if(DevReaderLinuxProc::isAvailable())

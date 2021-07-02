@@ -39,7 +39,13 @@ class DevReaderLinuxSys : public DevReader
         void readFromDevice(DataFrame& dataFrame);
 
     private:
+        static std::list<std::string> findAllDevices_ib();
         unsigned long long readULongSysEntry(const std::string& entry);
+        void readFromDevice_nic(DataFrame& dataFrame);
+        unsigned long long readULongSysEntry_ib(const std::string& entry);
+        void readFromDevice_ib(DataFrame& dataFrame);
+        static std::string ibname_of(const std::string&);
+        static std::string portname_of(const std::string&);
 };
 
 #endif
