@@ -207,6 +207,11 @@ int App::run(const vector<string>& arguments)
                 break;
             }
         }
+        // has the user set to show statistics of single interval instead of second?
+        else if (*itArg == "-I")
+        {
+            SettingStore::get("StatisticsOfInterval") = true;
+        }
         // has the user set a non-default unit for traffic numbers?
         else if(*itArg == "-u")
         {
@@ -338,6 +343,43 @@ int App::run(const vector<string>& arguments)
             outputFile = *itNextArg;
             ++itArg;
         }
+        // has the user set to show statistics of phy(nic) rx/tx bytes instead of rx/tx bytes?
+        else if (*itArg == "--phy")
+        {
+            SettingStore::get("StatisticsOfPhyBytes") = true;
+        }
+        else if (*itArg == "--rdma")
+        {
+            SettingStore::get("StatisticsOfRDMABytes") = true;
+        }
+        else if (*itArg == "--list-props")
+        {
+            SettingStore::get("ListStatProps") = true;
+        }
+        else if(*itArg == "--rx")
+        {
+            if(!haveNextArg)
+            {
+                cerr << "Missing argument for the --rx parameter." << endl;
+                printHelpAndExit = true;
+                break;
+            }
+
+            SettingStore::get("NameOfRxProp") = *itNextArg;
+            ++itArg;
+        }
+        else if(*itArg == "--tx")
+        {
+            if(!haveNextArg)
+            {
+                cerr << "Missing argument for the --tx parameter." << endl;
+                printHelpAndExit = true;
+                break;
+            }
+
+            SettingStore::get("NameOfTxProp") = *itNextArg;
+            ++itArg;
+        }
         // obsolete -b option
         else if(*itArg == "-b")
         {
@@ -345,6 +387,11 @@ int App::run(const vector<string>& arguments)
         // obsolete -s option
         else if(*itArg == "-s")
         {
+        }
+        // unknown parameter
+        else if((*itArg)[0] == '-')
+        {
+            printHelpAndExit = true;
         }
         // assume unknown parameter to be the network device
         else
@@ -370,6 +417,18 @@ int App::run(const vector<string>& arguments)
     // auto-detect network devices
     DevReaderFactory::findAllDevices();
     const map<string, DevReader*>& deviceReaders = DevReaderFactory::getAllDevReaders();
+
+    // list all props if required
+    if (SettingStore::get("ListStatProps")) {
+        for(map<string, DevReader*>::const_iterator itDevice = deviceReaders.begin(); itDevice != deviceReaders.end(); ++itDevice)
+        {
+            Device* device = new Device(itDevice->second);
+            device->update();
+            delete device;
+        }
+        return 0;
+    }
+
 
     // create one instance of the Device class per device
     vector<Device*> devices;
@@ -518,6 +577,7 @@ void App::printHelp(bool error)
         << "                Default is " << STANDARD_MAX_DEFLECTION << ".\n"
         << "-t interval     Determines the refresh interval of the display in milliseconds.\n"
         << "                Default is " << STANDARD_REFRESH_INTERVAL << ".\n"
+        << "-I              Show traffic stats of each interval instead of one second.\n"
         << "-u h|b|k|m|g    Sets the type of unit used for the display of traffic numbers.\n"
         << "   H|B|K|M|G    h: auto, b: Bit/s, k: kBit/s, m: MBit/s etc.\n"
         << "                H: auto, B: Byte/s, K: kByte/s, M: MByte/s etc.\n"
@@ -527,6 +587,14 @@ void App::printHelp(bool error)
         << "-f filename     Append traffic data to the named file.\n"
         << "devices         Network devices to use.\n"
         << "                Default is to use all auto-detected devices.\n"
+        << "--phy           Show traffic stats of phy(nic) rx/tx bytes instead of rx/tx bytes.\n"
+        << "                It helps to monitor RDMA traffics.\n"
+        << "--rdma          Show traffic stats of [rx|tx]_vport_rdma_unicast_bytes instead of rx/tx bytes.\n"
+        << "                It helps to monitor RDMA traffics.\n"
+        << "--list-props    List all statistics propertis available. (ioctl/SIOCETHTOOL)\n"
+        << "--rx propname   Use propname to monitor rx bytes\n"
+        << "--tx propname   Use propname to monitor tx bytes\n"
+        << "                It helps to monitor RDMA traffics.\n"
         << "--help\n"
         << "-h              Print this help.\n\n"
 

@@ -25,10 +25,13 @@
 #include "devreader.h"
 #include "devreader-bsd.h"
 #include "devreader-hpux.h"
+#include "devreader-linux-ioctl.h"
 #include "devreader-linux-proc.h"
 #include "devreader-linux-sys.h"
 #include "devreader-linux.h"
 #include "devreader-solaris.h"
+#include "settingstore.h"
+#include "setting.h"
 
 #include <string>
 #include <list>
@@ -110,13 +113,18 @@ const map<string, DevReader*>& DevReaderFactory::getAllDevReaders()
 DevReader* DevReaderFactory::createDevReader(const string& deviceName)
 {
     DevReader* reader = 0;
+    //bool ioctl_required = SettingStore::get("StatisticsOfPhyBytes") || SettingStore::get("StatisticsOfRDMABytes");
     
 #if defined HAVE_BSD
     reader = new DevReaderBsd(deviceName);
 #elif defined HAVE_HPUX
     reader = new DevReaderHpux(deviceName);
 #elif defined HAVE_LINUX
-    if(DevReaderLinuxSys::isAvailable())
+    if (deviceName.substr(0,3) == "ib:")
+        reader = new DevReaderLinuxSys(deviceName);
+    else if (DevReaderLinuxIoctl::isAvailable())
+        reader = new DevReaderLinuxIoctl(deviceName);
+    else if(DevReaderLinuxSys::isAvailable())
         reader = new DevReaderLinuxSys(deviceName);
     else if(DevReaderLinuxProc::isAvailable())
         reader = new DevReaderLinuxProc(deviceName);

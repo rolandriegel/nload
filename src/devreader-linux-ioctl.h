@@ -18,35 +18,40 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#ifndef DEVREADER_LINUX_SYS_H
-#define DEVREADER_LINUX_SYS_H
+#ifndef DEVREADER_LINUX_IOCTL_H
+#define DEVREADER_LINUX_IOCTL_H
 
 #include "devreader.h"
 
 #include <string>
 #include <list>
 
-class DevReaderLinuxSys : public DevReader
+class DevReaderLinuxIoctl : public DevReader
 {
     public:
-        DevReaderLinuxSys(const std::string& deviceName);
-        virtual ~DevReaderLinuxSys();
+        DevReaderLinuxIoctl(const std::string& deviceName);
+        virtual ~DevReaderLinuxIoctl();
 
         static bool isAvailable();
-        static std::list<std::string> findAllDevices();
         
     protected:
         void readFromDevice(DataFrame& dataFrame);
 
     private:
-        static std::list<std::string> findAllDevices_ib();
-        unsigned long long readULongSysEntry(const std::string& entry);
-        void readFromDevice_nic(DataFrame& dataFrame);
-        unsigned long long readULongSysEntry_ib(const std::string& entry);
-        void readFromDevice_ib(DataFrame& dataFrame);
-        static std::string ibname_of(const std::string&);
-        static std::string portname_of(const std::string&);
+        bool init();
+
+        int m_fd;
+        int m_n_stats;
+        int m_datain_id;
+        int m_dataout_id;
+        int m_packetin_id;
+        int m_packetout_id;
+        int m_errorsin_id;
+        int m_errorsout_id;
+        int m_dropsin_id;
+        int m_dropsout_id;
 };
 
 #endif
+
 
