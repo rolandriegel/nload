@@ -26,6 +26,7 @@
 #include <vector>
 
 #include <signal.h>
+#include <locale.h>
 
 using namespace std;
 
@@ -35,6 +36,7 @@ static void signalHandler(int signal);
 
 int main(int argc, char *argv[])
 {
+    setlocale(LC_ALL, "");
     App application;
     m_application = &application;
 
