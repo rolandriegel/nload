@@ -80,15 +80,15 @@ case $host_os in
 esac
 
 dnl Checks for libraries.
-AC_CHECK_LIB(ncurses, initscr)
+AC_CHECK_LIB(ncursesw, initscr)
 AC_CHECK_LIB(form, new_form)
 
 dnl Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([limits.h stdlib.h string.h unistd.h curses.h form.h ncurses/form.h math.h sys/param.h sys/socket.h sys/time.h sys/ioctl.h arpa/inet.h netinet/in.h])
 
-if test "$ac_cv_lib_ncurses_initscr" != "yes"; then
-    AC_MSG_ERROR([ncurses library not found. ncurses is required for $PACKAGE_NAME.])
+if test "$ac_cv_lib_ncursesw_initscr" != "yes"; then
+    AC_MSG_ERROR([ncursesw library not found. ncursesw is required for $PACKAGE_NAME.])
 fi
 if test "$ac_cv_header_curses_h" != "yes"; then
     AC_MSG_ERROR([ncurses development files not found. ncurses is required for $PACKAGE_NAME.])
