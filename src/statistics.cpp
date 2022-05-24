@@ -103,7 +103,7 @@ float Statistics::getUnitFactor(dataUnit unit, unsigned long long value)
     {
         case humanReadableBit:
         case humanReadableByte:
-            for(int i = 0; i < 3; ++i)
+            for(int i = 0; i < 5; ++i)
             {
                 if(value / factor < 1024)
                     return factor;
@@ -113,7 +113,7 @@ float Statistics::getUnitFactor(dataUnit unit, unsigned long long value)
             return factor;
         case humanReadableSiBit:
         case humanReadableSiByte:
-            for(int i = 0; i < 3; i++) {
+            for(int i = 0; i < 5; i++) {
                 if(value / factor < 1000)
                     return factor;
 
@@ -132,6 +132,12 @@ float Statistics::getUnitFactor(dataUnit unit, unsigned long long value)
         case gibiBit:
         case gibiByte:
             return factor * 1024 * 1024 * 1024;
+        case tebiBit:
+        case tebiByte:
+            return factor * 1024 * 1024 * 1024 * 1024;
+        case pebiBit:
+        case pebiByte:
+            return factor * 1024 * 1024 * 1024 * 1024 * 1024;
         case kiloBit:
         case kiloByte:
             return factor * 1000;
@@ -141,6 +147,12 @@ float Statistics::getUnitFactor(dataUnit unit, unsigned long long value)
         case gigaBit:
         case gigaByte:
             return factor * 1000 * 1000 * 1000;
+        case teraBit:
+        case teraByte:
+            return factor * 1000 * 1000 * 1000 * 1000;
+        case petaBit:
+        case petaByte:
+            return factor * 1000 * 1000 * 1000 * 1000 * 1000;
         default: // should never be executed
             return factor;
     }
@@ -149,32 +161,32 @@ float Statistics::getUnitFactor(dataUnit unit, unsigned long long value)
 string Statistics::getUnitString(dataUnit unit, unsigned long long value)
 {
     const string description = (unit % 2 == 0 ? "Bit" : "Byte");
-    const string units[] = { "", "Ki", "Mi", "Gi" };
-    const string si_units[] = { "", "K", "M", "G" };
+    const string units[] = { "", "Ki", "Mi", "Gi", "Ti", "Pi" };
+    const string si_units[] = { "", "k", "M", "G", "T", "P" };
 
     switch(unit)
     {
         case humanReadableBit:
         case humanReadableByte:
             value *= (unit % 2 == 0 ? 8 : 1);
-            for(int i = 0; i < 3; ++i)
+            for(int i = 0; i < 5; ++i)
             {
                 if(value < 1024)
                     return units[i] + description;
 
                 value /= 1024;
             }
-            return units[3] + description;
+            return units[5] + description;
         case humanReadableSiBit:
         case humanReadableSiByte:
             value *= (unit % 2 == 0 ? 8 : 1);
-            for(int i = 0; i < 3; i++) {
+            for(int i = 0; i < 5; i++) {
                 if(value < 1000)
                     return si_units[i] + description;
 
                 value /= 1000;
             }
-            return si_units[3] + description;
+            return si_units[5] + description;
         case bit:
         case byte:
             return description;
@@ -187,6 +199,12 @@ string Statistics::getUnitString(dataUnit unit, unsigned long long value)
         case gibiBit:
         case gibiByte:
             return "Gi" + description;
+        case tebiBit:
+        case tebiByte:
+            return "Ti" + description;
+        case pebiBit:
+        case pebiByte:
+            return "Pi" + description;
         case kiloBit:
         case kiloByte:
             return "k" + description;
@@ -196,6 +214,12 @@ string Statistics::getUnitString(dataUnit unit, unsigned long long value)
         case gigaBit:
         case gigaByte:
             return "G" + description;
+        case teraBit:
+        case teraByte:
+            return "T" + description;
+        case petaBit:
+        case petaByte:
+            return "P" + description;
         default: // should never be executed
             return description;
     }

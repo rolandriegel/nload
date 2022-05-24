@@ -92,12 +92,20 @@ App::App()
     valueMapping[toString(Statistics::mebiByte)] = "MiByte";
     valueMapping[toString(Statistics::gibiBit)] = "GiBit";
     valueMapping[toString(Statistics::gibiByte)] = "GiByte";
+    valueMapping[toString(Statistics::tebiBit)] = "TiBit";
+    valueMapping[toString(Statistics::tebiByte)] = "TiByte";
+    valueMapping[toString(Statistics::pebiBit)] = "PiBit";
+    valueMapping[toString(Statistics::pebiByte)] = "PiByte";
     valueMapping[toString(Statistics::kiloBit)] = "kBit";
     valueMapping[toString(Statistics::kiloByte)] = "kByte";
     valueMapping[toString(Statistics::megaBit)] = "MBit";
     valueMapping[toString(Statistics::megaByte)] = "MByte";
     valueMapping[toString(Statistics::gigaBit)] = "GBit";
     valueMapping[toString(Statistics::gigaByte)] = "GByte";
+    valueMapping[toString(Statistics::teraBit)] = "TBit";
+    valueMapping[toString(Statistics::teraByte)] = "TByte";
+    valueMapping[toString(Statistics::petaBit)] = "PBit";
+    valueMapping[toString(Statistics::petaByte)] = "PByte";
     SettingStore::get("TrafficFormat").pushFilter(new SettingFilterMap(valueMapping));
     SettingStore::get("DataFormat").pushFilter(new SettingFilterMap(valueMapping));
     valueMapping.clear();
@@ -252,6 +260,18 @@ int App::run(const vector<string>& arguments)
                     case 'g':
                         setting = Statistics::gibiBit;
                         break;
+                    case 'T':
+                        setting = Statistics::tebiByte;
+                        break;
+                    case 't':
+                        setting = Statistics::tebiBit;
+                        break;
+                    case 'P':
+                        setting = Statistics::pebiByte;
+                        break;
+                    case 'p':
+                        setting = Statistics::pebiBit;
+                        break;
                     default:
                         printHelpAndExit = true;
                         break;
@@ -289,6 +309,18 @@ int App::run(const vector<string>& arguments)
                                     break;
                                 case Statistics::gibiByte:
                                     setting = Statistics::gigaByte;
+                                    break;
+                                case Statistics::tebiBit:
+                                    setting = Statistics::teraBit;
+                                    break;
+                                case Statistics::tebiByte:
+                                    setting = Statistics::teraByte;
+                                    break;
+                                case Statistics::pebiBit:
+                                    setting = Statistics::petaBit;
+                                    break;
+                                case Statistics::pebiByte:
+                                    setting = Statistics::petaByte;
                                     break;
                             }
                             break;
@@ -510,14 +542,15 @@ void App::printHelp(bool error)
         << "                Default is " << STANDARD_MAX_DEFLECTION << ".\n"
         << "-t <interval>   Determines the refresh interval of the display in milliseconds.\n"
         << "                Default is " << STANDARD_REFRESH_INTERVAL << ".\n"
-        << "-u h|b|k|m|g|   Sets the type of unit used for the display of traffic numbers.\n"
-        << "   H|B|K|M|G    h: auto, b: Bit/s, k: kBit/s, m: MBit/s etc.\n"
-        << "   [i|s]        H: auto, B: Byte/s, K: kByte/s, M: MByte/s etc.\n"
-	<< "                i: IEC binary prefixes, s: SI metric prefixes\n"
+        << "-u h|b|k|m|g|t|p|H|B|K|M|G|T|P[i|s]\n"
+        << "                Sets the type of unit used for the display of traffic numbers.\n"
+        << "                h: auto, b: Bit/s, k: {k|Ki}Bit/s, m: M[i]Bit/s etc.\n"
+        << "                H: auto, B: Byte/s, K: {k|Ki}Byte/s, M: M[i]Byte/s etc.\n"
+        << "                i: IEC binary prefixes, s: SI metric prefixes\n"
         << "                Default is hi.\n"
-        << "-U h|b|k|m|g|   Same as -u, but for a total amount of data (without \"/s\").\n"
-        << "   H|B|K|M|G    Default is Hi.\n"
-	<< "   [i|s]\n"
+        << "-U h|b|k|m|g|t|p|H|B|K|M|G|T|P[i|s]\n"
+        << "                Same as -u, but for a total amount of data (without \"/s\").\n"
+        << "                Default is Hi.\n"
         << "-f <filename>   Append traffic data to the named file.\n"
         << "<devices>       Network devices to use.\n"
         << "                Default is to use all auto-detected devices.\n"
