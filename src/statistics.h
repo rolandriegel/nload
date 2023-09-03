@@ -31,16 +31,32 @@ class Statistics
     public:
         enum dataUnit
         {
+            humanReadableSiBit = -4,
+            humanReadableSiByte = -3,
             humanReadableBit = -2,
             humanReadableByte = -1,
             bit = 0,
             byte = 1,
-            kiloBit = 2,
-            kiloByte = 3,
-            megaBit = 4,
-            megaByte = 5,
-            gigaBit = 6,
-            gigaByte = 7
+            kibiBit,
+            kibiByte,
+            mebiBit,
+            mebiByte,
+            gibiBit,
+            gibiByte,
+            tebiBit,
+            tebiByte,
+            pebiBit,
+            pebiByte,
+            kiloBit,
+            kiloByte,
+            megaBit,
+            megaByte,
+            gigaBit,
+            gigaByte,
+            teraBit,
+            teraByte,
+            petaBit,
+            petaByte
         };
         
         Statistics() {}
